@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Download, ImageIcon, Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,10 +21,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EnableSwitch } from "@/components/admin/EnableSwitch";
+import { LocaleSwitcher } from "@/components/admin/LocaleSwitcher";
 import { ThemePresetPicker } from "@/components/admin/ThemePresetPicker";
 import { SettingSlider } from "@/components/admin/SettingSlider";
 import {
-  ICON_FRAME_LABELS,
   ICON_FRAME_STYLES,
   MAX_ICON_SIZE,
   MAX_LAYOUT_MAX_WIDTH,
@@ -80,6 +81,9 @@ export function SettingsAdmin({
   onSuccess,
   onError,
 }: SettingsAdminProps) {
+  const t = useTranslations("adminSettings");
+  const tc = useTranslations("common");
+  const tLayout = useTranslations("layout.iconFrame");
   const [dashboardTitle, setDashboardTitle] = useState(
     settings.dashboard_title ?? "Dashboard",
   );
@@ -215,13 +219,13 @@ export function SettingsAdmin({
       if (response.ok) {
         setLogoImageUrl(data.url);
         setLogoText("");
-        onSuccess("Logo hochgeladen");
+        onSuccess(t("logoUploaded"));
         onRefresh();
       } else {
-        onError(data.error ?? "Upload fehlgeschlagen");
+        onError(data.error ?? tc("uploadFailed"));
       }
     } catch {
-      onError("Upload fehlgeschlagen");
+      onError(tc("uploadFailed"));
     } finally {
       setLogoUploading(false);
       if (logoFileInputRef.current) logoFileInputRef.current.value = "";
@@ -238,13 +242,13 @@ export function SettingsAdmin({
 
       if (response.ok) {
         setLogoImageUrl("");
-        onSuccess("Logo entfernt");
+        onSuccess(t("logoRemoved"));
         onRefresh();
       } else {
-        onError("Logo konnte nicht entfernt werden");
+        onError(t("logoRemoveFailed"));
       }
     } catch {
-      onError("Logo konnte nicht entfernt werden");
+      onError(t("logoRemoveFailed"));
     } finally {
       setLogoUploading(false);
     }
@@ -267,13 +271,13 @@ export function SettingsAdmin({
 
       if (response.ok) {
         setBackgroundImageUrl(data.url);
-        onSuccess("Hintergrundbild hochgeladen");
+        onSuccess(t("backgroundUploaded"));
         onRefresh();
       } else {
-        onError(data.error ?? "Upload fehlgeschlagen");
+        onError(data.error ?? tc("uploadFailed"));
       }
     } catch {
-      onError("Upload fehlgeschlagen");
+      onError(tc("uploadFailed"));
     } finally {
       setBackgroundUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -290,13 +294,13 @@ export function SettingsAdmin({
 
       if (response.ok) {
         setBackgroundImageUrl("");
-        onSuccess("Hintergrundbild entfernt");
+        onSuccess(t("backgroundRemoved"));
         onRefresh();
       } else {
-        onError("Entfernen fehlgeschlagen");
+        onError(tc("removeFailed"));
       }
     } catch {
-      onError("Entfernen fehlgeschlagen");
+      onError(tc("removeFailed"));
     } finally {
       setBackgroundUploading(false);
     }
@@ -318,7 +322,7 @@ export function SettingsAdmin({
       const response = await fetch("/api/backup/export");
       if (!response.ok) {
         const data = await response.json().catch(() => ({}));
-        throw new Error(data.error ?? "Export fehlgeschlagen");
+        throw new Error(data.error ?? tc("saveFailed"));
       }
 
       const blob = await response.blob();
@@ -328,9 +332,9 @@ export function SettingsAdmin({
       link.download = `dashboard-backup-${new Date().toISOString().slice(0, 10)}.zip`;
       link.click();
       URL.revokeObjectURL(url);
-      onSuccess("Backup wurde heruntergeladen");
+      onSuccess(t("backupDownloaded"));
     } catch (error) {
-      onError(error instanceof Error ? error.message : "Export fehlgeschlagen");
+      onError(error instanceof Error ? error.message : tc("saveFailed"));
     } finally {
       setBackupBusy(false);
     }
@@ -338,9 +342,7 @@ export function SettingsAdmin({
 
   async function handleImportBackup(file: File) {
     if (
-      !window.confirm(
-        "Alle aktuellen Daten (Dienste, Einstellungen, Uploads) werden durch das Backup ersetzt. Fortfahren?",
-      )
+      !window.confirm(t("confirmImport"))
     ) {
       return;
     }
@@ -357,13 +359,13 @@ export function SettingsAdmin({
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.error ?? "Import fehlgeschlagen");
+        throw new Error(data.error ?? tc("saveFailed"));
       }
 
-      onSuccess(data.message ?? "Backup importiert");
+      onSuccess(data.message ?? t("saved"));
       window.location.reload();
     } catch (error) {
-      onError(error instanceof Error ? error.message : "Import fehlgeschlagen");
+      onError(error instanceof Error ? error.message : tc("saveFailed"));
     } finally {
       setBackupBusy(false);
       if (backupInputRef.current) {
@@ -414,10 +416,10 @@ export function SettingsAdmin({
 
     if (response.ok) {
       applyColorMode(colorMode);
-      onSuccess("Einstellungen gespeichert");
+      onSuccess(t("saved"));
       onRefresh();
     } else {
-      onError("Fehler beim Speichern");
+      onError(tc("saveFailed"));
     }
   }
 
@@ -425,8 +427,8 @@ export function SettingsAdmin({
     <>
     <Card className="glass-panel-strong w-full min-w-0 rounded-2xl bg-transparent">
       <CardHeader>
-        <CardTitle>Einstellungen</CardTitle>
-        <CardDescription>Globale Dashboard-Konfiguration</CardDescription>
+        <CardTitle>{t("title")}</CardTitle>
+        <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
       <CardContent className="min-w-0">
         <form
@@ -434,8 +436,12 @@ export function SettingsAdmin({
           onSubmit={handleSubmit}
           className="w-full min-w-0 space-y-6 pb-24"
         >
+          <div className="space-y-3 rounded-xl border border-border/50 bg-muted/10 p-4">
+            <LocaleSwitcher onSuccess={onSuccess} onError={onError} />
+          </div>
+
           <div className="space-y-2">
-            <Label>Dashboard-Titel</Label>
+            <Label>{t("dashboardTitle")}</Label>
             <Input
               value={dashboardTitle}
               onChange={(e) => setDashboardTitle(e.target.value)}
@@ -443,22 +449,20 @@ export function SettingsAdmin({
           </div>
 
           <div className="space-y-2">
-            <Label>Untertitel</Label>
+            <Label>{t("dashboardSubtitle")}</Label>
             <Input
               value={dashboardSubtitle}
               onChange={(e) => setDashboardSubtitle(e.target.value)}
-              placeholder="z. B. Homelab"
+              placeholder={t("subtitlePlaceholder")}
             />
-            <p className="text-xs text-muted-foreground">
-              Kleine Zeile unter dem Titel im Header. Leer lassen zum Ausblenden.
-            </p>
+            <p className="text-xs text-muted-foreground">{t("subtitleHint")}</p>
           </div>
 
           <div className="space-y-3 rounded-xl border border-border/50 bg-muted/10 p-4">
             <div>
-              <Label>Header-Logo</Label>
+              <Label>{t("headerLogo")}</Label>
               <p className="mt-1 text-xs text-muted-foreground">
-                Ersetzt das Standard-Icon oben links. Bild-Upload oder Emoji/Text.
+                {t("headerLogoHint")}
               </p>
             </div>
 
@@ -490,7 +494,7 @@ export function SettingsAdmin({
                     onClick={() => logoFileInputRef.current?.click()}
                   >
                     <Upload className="mr-1.5 size-4" />
-                    {logoImageUrl ? "Ersetzen" : "Bild hochladen"}
+                    {logoImageUrl ? tc("replace") : t("uploadLogo")}
                   </Button>
                   {(logoImageUrl || logoText) && (
                     <Button
@@ -507,14 +511,14 @@ export function SettingsAdmin({
                       }}
                     >
                       <Trash2 className="mr-1.5 size-4" />
-                      Entfernen
+                      {tc("remove")}
                     </Button>
                   )}
                 </div>
                 <Input
                   value={logoText}
                   onChange={(e) => setLogoText(e.target.value)}
-                  placeholder="oder Emoji / Kurztext, z. B. 🏠"
+                  placeholder={t("logoTextPlaceholder")}
                   disabled={Boolean(logoImageUrl) || logoUploading}
                   maxLength={4}
                 />
@@ -532,17 +536,17 @@ export function SettingsAdmin({
 
           <div className="space-y-3 rounded-xl border border-border/50 bg-muted/10 p-4">
             <div>
-              <Label>Dashboard-Seiten</Label>
+              <Label>{t("dashboardPages")}</Label>
               <p className="mt-1 text-xs text-muted-foreground">
-                Steuert die Seiten-Auswahl oben im Header (bei mehreren Seiten).
+                {t("dashboardPagesHint")}
               </p>
             </div>
 
             <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 bg-background/40 p-3">
               <div className="space-y-1">
-                <Label>Seiten-Umschalter anzeigen</Label>
+                <Label>{t("showPageSwitcher")}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Ausblenden spart Platz im Header. Seitenwechsel per Tastatur bleibt möglich.
+                  {t("showPageSwitcherHint")}
                 </p>
               </div>
               <EnableSwitch
@@ -554,9 +558,9 @@ export function SettingsAdmin({
 
             <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 bg-background/40 p-3">
               <div className="space-y-1">
-                <Label>Tastenkürzel 1–9</Label>
+                <Label>{t("keyboardShortcuts")}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Erste neun Seiten per Zahlentaste wechseln.
+                  {t("keyboardShortcutsHint")}
                 </p>
               </div>
               <EnableSwitch
@@ -568,9 +572,9 @@ export function SettingsAdmin({
 
             <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 bg-background/40 p-3">
               <div className="space-y-1">
-                <Label>LAN-Umschalter</Label>
+                <Label>{t("lanToggle")}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Web/LAN-Schalter im Dashboard und LAN-URL-Felder bei Diensten.
+                  {t("lanToggleHint")}
                 </p>
               </div>
               <EnableSwitch
@@ -582,7 +586,7 @@ export function SettingsAdmin({
           </div>
 
           <div className="space-y-2">
-            <Label>Erscheinungsbild</Label>
+            <Label>{t("appearance")}</Label>
             <Select
               value={colorMode}
               onValueChange={(value) => setColorMode(parseColorMode(value))}
@@ -591,18 +595,15 @@ export function SettingsAdmin({
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="dark">Dunkel</SelectItem>
-                <SelectItem value="light">Hell</SelectItem>
+                <SelectItem value="dark">{t("darkMode")}</SelectItem>
+                <SelectItem value="light">{t("lightMode")}</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
           <div className="space-y-3">
-            <Label>Hintergrundbild</Label>
-            <p className="text-sm text-muted-foreground">
-              JPG, PNG, WebP oder GIF, maximal 5 MB. Wird hinter dem Dashboard
-              angezeigt.
-            </p>
+            <Label>{t("backgroundImage")}</Label>
+            <p className="text-sm text-muted-foreground">{t("backgroundHint")}</p>
 
             {backgroundImageUrl ? (
               <div className="relative overflow-hidden rounded-xl border border-border/50">
@@ -620,7 +621,7 @@ export function SettingsAdmin({
                     onClick={() => fileInputRef.current?.click()}
                   >
                     <Upload className="mr-1.5 size-4" />
-                    Ersetzen
+                    {tc("replace")}
                   </Button>
                   <Button
                     type="button"
@@ -630,7 +631,7 @@ export function SettingsAdmin({
                     onClick={handleBackgroundRemove}
                   >
                     <Trash2 className="mr-1.5 size-4" />
-                    Entfernen
+                    {tc("remove")}
                   </Button>
                 </div>
               </div>
@@ -643,11 +644,9 @@ export function SettingsAdmin({
               >
                 <ImageIcon className="size-8 opacity-60" />
                 <span className="text-sm font-medium">
-                  {backgroundUploading
-                    ? "Wird hochgeladen…"
-                    : "Bild auswählen oder hierher ziehen"}
+                  {backgroundUploading ? t("uploading") : t("dropBackground")}
                 </span>
-                <span className="text-xs opacity-70">Max. 5 MB</span>
+                <span className="text-xs opacity-70">{t("maxFileSize")}</span>
               </button>
             )}
 
@@ -661,7 +660,7 @@ export function SettingsAdmin({
           </div>
 
           <div className="space-y-3">
-            <Label>Theme-Preset</Label>
+            <Label>{t("themePreset")}</Label>
             <ThemePresetPicker
               value={themePreset}
               onChange={handlePresetChange}
@@ -676,9 +675,9 @@ export function SettingsAdmin({
           {themePreset === "custom" && (
             <>
               <div className="space-y-2">
-                <Label>Akzentfarbe (Header)</Label>
+                <Label>{t("accentColor")}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Steuert Header und den primären Hintergrund-Glow.
+                  {t("accentColorHint")}
                 </p>
                 <div className="flex gap-2">
                   <Input
@@ -695,9 +694,9 @@ export function SettingsAdmin({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Glow-Farbe (Hintergrund-Aurora)</Label>
+                <Label>{t("glowColor")}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Sekundäre Farbe der atmosphärischen Hintergrund-Verläufe.
+                  {t("glowColorHint")}
                 </p>
                 <div className="flex gap-2">
                   <Input
@@ -714,10 +713,9 @@ export function SettingsAdmin({
                 </div>
               </div>
               <div className="space-y-2">
-                <Label>Standard-Kachelfarbe</Label>
+                <Label>{t("defaultTileColor")}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Fallback für den dezenten Kachel-Glanz, wenn weder Kategorie noch
-                  Dienst eine eigene Farbe haben.
+                  {t("defaultTileColorHint")}
                 </p>
                 <div className="flex gap-2">
                   <Input
@@ -738,10 +736,9 @@ export function SettingsAdmin({
 
           <div className="space-y-5 rounded-xl border border-border/50 bg-muted/10 p-4">
             <div>
-              <h3 className="text-sm font-semibold">Kacheln & Layout</h3>
+              <h3 className="text-sm font-semibold">{t("tilesAndLayout")}</h3>
               <p className="text-xs text-muted-foreground">
-                Icon-Größe, Rahmenform und Gesamtbreite wie bei einem
-                Android-Launcher anpassen.
+                {t("tilesAndLayoutHint")}
               </p>
             </div>
 
@@ -776,20 +773,20 @@ export function SettingsAdmin({
                   className="truncate font-medium"
                   style={{ fontSize: `${previewMetrics.titleSize}px` }}
                 >
-                  Beispiel-Dienst
+                  {t("previewService")}
                 </p>
                 <p
                   className="truncate text-muted-foreground"
                   style={{ fontSize: `${previewMetrics.subtitleSize}px` }}
                 >
-                  Vorschau
+                  {t("previewSubtitle")}
                 </p>
               </div>
             </div>
 
             <SettingSlider
-              label="Kachel-Größe"
-              description="Skaliert Innenabstand und Icon-Rahmen — nicht die Schrift."
+              label={t("tileSize")}
+              description={t("tileSizeHint")}
               value={tileScale}
               min={MIN_TILE_SCALE}
               max={MAX_TILE_SCALE}
@@ -799,8 +796,8 @@ export function SettingsAdmin({
             />
 
             <SettingSlider
-              label="Schriftgröße"
-              description="Name, Untertitel und Spaltenüberschriften."
+              label={t("fontSize")}
+              description={t("fontSizeHint")}
               value={fontScale}
               min={MIN_FONT_SCALE}
               max={MAX_FONT_SCALE}
@@ -810,8 +807,8 @@ export function SettingsAdmin({
             />
 
             <SettingSlider
-              label="Icon-Größe"
-              description="Zusätzlich zur Kachel-Größe, nur das Icon."
+              label={t("iconSize")}
+              description={t("iconSizeHint")}
               value={iconSize}
               min={MIN_ICON_SIZE}
               max={MAX_ICON_SIZE}
@@ -819,7 +816,7 @@ export function SettingsAdmin({
             />
 
             <SettingSlider
-              label="Abstand zwischen Kacheln"
+              label={t("tileSpacing")}
               value={tileSpacing}
               min={MIN_TILE_SPACING}
               max={MAX_TILE_SPACING}
@@ -827,7 +824,7 @@ export function SettingsAdmin({
             />
 
             <div className="space-y-2">
-              <Label>Icon-Rahmen</Label>
+              <Label>{t("iconFrame")}</Label>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {ICON_FRAME_STYLES.map((style) => (
                   <button
@@ -846,7 +843,7 @@ export function SettingsAdmin({
                       <div className="size-5 rounded-sm bg-foreground/25" />
                     </div>
                     <span className="text-xs font-medium">
-                      {ICON_FRAME_LABELS[style]}
+                      {tLayout(style)}
                     </span>
                   </button>
                 ))}
@@ -854,7 +851,7 @@ export function SettingsAdmin({
             </div>
 
             <SettingSlider
-              label="Kachel-Eckenradius"
+              label={t("tileCornerRadius")}
               value={tileBorderRadius}
               min={MIN_TILE_BORDER_RADIUS}
               max={MAX_TILE_BORDER_RADIUS}
@@ -863,11 +860,11 @@ export function SettingsAdmin({
 
             <div className="space-y-4 rounded-lg border border-border/40 bg-background/20 p-3">
               <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                Spalten
+                {t("columns")}
               </p>
 
               <SettingSlider
-                label="Spaltenabstand"
+                label={t("columnGap")}
                 value={columnGap}
                 min={MIN_COLUMN_GAP}
                 max={MAX_COLUMN_GAP}
@@ -875,7 +872,7 @@ export function SettingsAdmin({
               />
 
               <SettingSlider
-                label="Spalten-Innenabstand"
+                label={t("columnPadding")}
                 value={columnPadding}
                 min={MIN_COLUMN_PADDING}
                 max={MAX_COLUMN_PADDING}
@@ -884,19 +881,19 @@ export function SettingsAdmin({
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-3">
-                  <Label>Min. Spaltenbreite</Label>
+                  <Label>{t("minColumnWidth")}</Label>
                   <Button
                     type="button"
                     size="sm"
                     variant={columnMinWidth === 0 ? "default" : "outline"}
                     onClick={() => setColumnMinWidth(0)}
                   >
-                    Automatisch
+                    {tc("automatic")}
                   </Button>
                 </div>
                 {columnMinWidth > 0 ? (
                   <SettingSlider
-                    label="Breite (min.)"
+                    label={t("widthMin")}
                     value={Math.max(columnMinWidth, MIN_COLUMN_MIN_WIDTH)}
                     min={MIN_COLUMN_MIN_WIDTH}
                     max={MAX_COLUMN_MIN_WIDTH}
@@ -910,7 +907,9 @@ export function SettingsAdmin({
                       min={MIN_COLUMN_MIN_WIDTH}
                       max={MAX_COLUMN_MIN_WIDTH}
                       step={10}
-                      placeholder={`z. B. ${MIN_COLUMN_MIN_WIDTH}`}
+                      placeholder={tc("examplePlaceholder", {
+                        value: String(MIN_COLUMN_MIN_WIDTH),
+                      })}
                       className="w-32"
                       onChange={(e) => {
                         const parsed = Number(e.target.value);
@@ -923,7 +922,7 @@ export function SettingsAdmin({
                       }}
                     />
                     <span className="text-xs text-muted-foreground">
-                      px — breitere Spalten
+                      {tc("pxWiderColumns")}
                     </span>
                   </div>
                 )}
@@ -931,19 +930,19 @@ export function SettingsAdmin({
 
               <div className="space-y-3">
                 <div className="flex items-center justify-between gap-3">
-                  <Label>Max. Spaltenbreite</Label>
+                  <Label>{t("maxColumnWidth")}</Label>
                   <Button
                     type="button"
                     size="sm"
                     variant={columnMaxWidth === 0 ? "default" : "outline"}
                     onClick={() => setColumnMaxWidth(0)}
                   >
-                    Automatisch
+                    {tc("automatic")}
                   </Button>
                 </div>
                 {columnMaxWidth > 0 ? (
                   <SettingSlider
-                    label="Breite (max.)"
+                    label={t("widthMax")}
                     value={Math.max(columnMaxWidth, MIN_COLUMN_MAX_WIDTH)}
                     min={MIN_COLUMN_MAX_WIDTH}
                     max={MAX_COLUMN_MAX_WIDTH}
@@ -957,7 +956,7 @@ export function SettingsAdmin({
                       min={MIN_COLUMN_MAX_WIDTH}
                       max={MAX_COLUMN_MAX_WIDTH}
                       step={10}
-                      placeholder={`z. B. 320`}
+                      placeholder={tc("examplePlaceholder", { value: "320" })}
                       className="w-32"
                       onChange={(e) => {
                         const parsed = Number(e.target.value);
@@ -970,7 +969,7 @@ export function SettingsAdmin({
                       }}
                     />
                     <span className="text-xs text-muted-foreground">
-                      px — schmalere Spalten
+                      {tc("pxNarrowerColumns")}
                     </span>
                   </div>
                 )}
@@ -979,22 +978,22 @@ export function SettingsAdmin({
 
             <div className="space-y-3">
               <div className="flex items-center justify-between gap-3">
-                <Label>Max. Inhaltsbreite</Label>
+                <Label>{t("maxContentWidth")}</Label>
                 <Button
                   type="button"
                   size="sm"
                   variant={layoutMaxWidth === 0 ? "default" : "outline"}
                   onClick={() => setLayoutMaxWidth(0)}
                 >
-                  Automatisch
+                  {tc("automatic")}
                 </Button>
               </div>
               <p className="text-xs text-muted-foreground">
-                Begrenzt Spalten und Footer auf eine gemeinsame Breite.
+                {t("maxContentWidthHint")}
               </p>
               {layoutMaxWidth > 0 ? (
                 <SettingSlider
-                  label="Breite"
+                  label={t("width")}
                   value={Math.max(layoutMaxWidth, MIN_LAYOUT_MAX_WIDTH)}
                   min={MIN_LAYOUT_MAX_WIDTH}
                   max={MAX_LAYOUT_MAX_WIDTH}
@@ -1008,7 +1007,9 @@ export function SettingsAdmin({
                     min={MIN_LAYOUT_MAX_WIDTH}
                     max={MAX_LAYOUT_MAX_WIDTH}
                     step={20}
-                    placeholder={`z. B. ${MIN_LAYOUT_MAX_WIDTH}`}
+                    placeholder={tc("examplePlaceholder", {
+                      value: String(MIN_LAYOUT_MAX_WIDTH),
+                    })}
                     className="w-32"
                     onKeyDown={(e) => {
                       if (e.key === "Enter") e.preventDefault();
@@ -1020,16 +1021,18 @@ export function SettingsAdmin({
                       }
                     }}
                   />
-                  <span className="text-xs text-muted-foreground">px festlegen</span>
+                  <span className="text-xs text-muted-foreground">
+                    {tc("pxSetWidth")}
+                  </span>
                 </div>
               )}
             </div>
 
             <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 p-3">
               <div className="space-y-1">
-                <Label>Header folgt Inhaltsbreite</Label>
+                <Label>{t("headerFollowsWidth")}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Aus: Header bleibt über die volle Bildschirmbreite.
+                  {t("headerFollowsWidthHint")}
                 </p>
               </div>
               <EnableSwitch
@@ -1041,9 +1044,9 @@ export function SettingsAdmin({
 
             <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 p-3">
               <div className="space-y-1">
-                <Label>Footer folgt Inhaltsbreite</Label>
+                <Label>{t("footerFollowsWidth")}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Aus: Footer bleibt über die volle Bildschirmbreite.
+                  {t("footerFollowsWidthHint")}
                 </p>
               </div>
               <EnableSwitch
@@ -1054,8 +1057,8 @@ export function SettingsAdmin({
             </div>
 
             <SettingSlider
-              label="Seitenabstand links/rechts"
-              description="Freier Rand innerhalb der maximalen Breite."
+              label={t("sideInset")}
+              description={t("sideInsetHint")}
               value={layoutSideInset}
               min={MIN_LAYOUT_SIDE_INSET}
               max={MAX_LAYOUT_SIDE_INSET}
@@ -1065,11 +1068,9 @@ export function SettingsAdmin({
 
           <div className="space-y-3 rounded-xl border border-border/50 bg-muted/10 p-4">
             <div>
-              <Label>Datensicherung</Label>
+              <Label>{t("backup")}</Label>
               <p className="mt-1 text-xs text-muted-foreground">
-                Vollständiges Backup der Datenbank und aller Uploads (Icons,
-                Hintergrund, Logo). Enthält auch verschlüsselte Widget-Zugangsdaten
-                — bewahre die Datei sicher auf.
+                {t("backupHint")}
               </p>
             </div>
 
@@ -1082,7 +1083,7 @@ export function SettingsAdmin({
                 onClick={handleExportBackup}
               >
                 <Download className="mr-1.5 size-4" />
-                Backup exportieren
+                {t("exportBackup")}
               </Button>
               <input
                 ref={backupInputRef}
@@ -1104,7 +1105,7 @@ export function SettingsAdmin({
                 onClick={() => backupInputRef.current?.click()}
               >
                 <Upload className="mr-1.5 size-4" />
-                Backup importieren
+                {t("importBackup")}
               </Button>
             </div>
           </div>
@@ -1119,7 +1120,7 @@ export function SettingsAdmin({
           form="settings-admin-form"
           className="pointer-events-auto min-w-36 shadow-[0_12px_40px_rgba(0,0,0,0.35)] ring-1 ring-foreground/10"
         >
-          Speichern
+          {tc("save")}
         </Button>
       </div>
     </div>

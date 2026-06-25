@@ -10,7 +10,7 @@ export async function fetchGenericWidget(
       title: "Health Check",
       status: "warning",
       fields: [],
-      error: "Keine URL konfiguriert",
+      error: "No URL configured",
     };
   }
 
@@ -29,11 +29,11 @@ export async function fetchGenericWidget(
           highlight: !response.ok,
         },
         {
-          label: "Response-Zeit",
+          label: "Response Time",
           value: `${elapsed}ms`,
         },
         {
-          label: "Erreichbar",
+          label: "Reachable",
           value: response.ok ? "Ja" : "Nein",
         },
       ],
@@ -43,7 +43,7 @@ export async function fetchGenericWidget(
       title: "Health Check",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

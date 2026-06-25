@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import type { NavLink } from "@/lib/db/schema";
 import {
@@ -29,6 +30,7 @@ export function LinkBarRow({
   onLayoutSaved,
   layoutEditable = false,
 }: LinkBarRowProps) {
+  const t = useTranslations("dashboard");
   const ctrlHeld = useCtrlKeyHeld();
   const layoutEditMode = ctrlHeld && layoutEditable;
 
@@ -75,14 +77,14 @@ export function LinkBarRow({
       });
 
       if (response.ok) {
-        toast.success("Links neu angeordnet");
+        toast.success(t("linksReordered"));
         onLayoutSaved?.();
       } else {
-        toast.error("Links konnten nicht gespeichert werden");
+        toast.error(t("linksReorderFailed"));
         setOrderedLinks(visibleLinks);
       }
     } catch {
-      toast.error("Links konnten nicht gespeichert werden");
+      toast.error(t("linksReorderFailed"));
       setOrderedLinks(visibleLinks);
     } finally {
       setSaving(false);

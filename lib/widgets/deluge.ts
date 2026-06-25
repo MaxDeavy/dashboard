@@ -33,7 +33,7 @@ async function delugeRpc<T>(
   };
 
   if (payload.error) {
-    throw new Error(payload.error.message ?? "RPC fehlgeschlagen");
+    throw new Error(payload.error.message ?? "RPC failed");
   }
 
   return payload.result as T;
@@ -50,7 +50,7 @@ export async function fetchDelugeWidget(
       title: "Deluge",
       status: "warning",
       fields: [],
-      error: "Passwort erforderlich",
+      error: "Password required",
     };
   }
 
@@ -89,7 +89,7 @@ export async function fetchDelugeWidget(
           value: formatBytesPerSec(stats.upload_rate ?? 0),
         },
         {
-          label: "Aktiv",
+          label: "Active",
           value: String(active),
           highlight: active > 0,
         },
@@ -104,7 +104,7 @@ export async function fetchDelugeWidget(
       title: "Deluge",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

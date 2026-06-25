@@ -20,7 +20,7 @@ export async function fetchProxmoxWidget(
       title: "Proxmox",
       status: "warning",
       fields: [],
-      error: "Kein API-Token konfiguriert (Token-ID + Secret)",
+      error: "No API token configured (Token-ID + Secret)",
     };
   }
 
@@ -83,7 +83,7 @@ export async function fetchProxmoxWidget(
       title: "Proxmox",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

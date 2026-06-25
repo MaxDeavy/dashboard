@@ -189,7 +189,7 @@ export async function fetchWidgetData(
           title: config.widgetType,
           status: "warning" as const,
           fields: [],
-          error: `Unbekannter Widget-Typ: ${config.widgetType}`,
+          error: `Unknown widget type: ${config.widgetType}`,
         };
     }
   });

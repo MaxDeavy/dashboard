@@ -29,16 +29,16 @@ export async function fetchDockerWidget(
 
     const fields = [
       {
-        label: "Container gesamt",
+        label: "Total Containers",
         value: String(containers.length),
       },
       {
-        label: "Laufend",
+        label: "Running",
         value: String(running),
         highlight: running > 0,
       },
       {
-        label: "Gestoppt",
+        label: "Stopped",
         value: String(stopped),
         highlight: stopped > 0,
       },
@@ -62,7 +62,7 @@ export async function fetchDockerWidget(
       title: "Docker",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

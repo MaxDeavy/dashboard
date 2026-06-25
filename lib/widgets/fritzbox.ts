@@ -8,12 +8,12 @@ import {
 import { parseSoapResponse } from "./xml-utils";
 
 const FRITZ_CONNECTION_STATUS: Record<string, string> = {
-  Connected: "Verbunden",
-  ConnectedUnconfigured: "Verbunden",
-  Unconfigured: "Nicht konfiguriert",
-  Disconnected: "Getrennt",
-  Disconnecting: "Trennt…",
-  Connecting: "Verbindet…",
+  Connected: "Connected",
+  ConnectedUnconfigured: "Connected",
+  Unconfigured: "Not configured",
+  Disconnected: "Disconnected",
+  Disconnecting: "Disconnecting…",
+  Connecting: "Connecting…",
 };
 
 function getFritzApiBase(apiUrl: string): string {
@@ -95,7 +95,7 @@ export async function fetchFritzboxWidget(
     const connectionStatus =
       FRITZ_CONNECTION_STATUS[statusInfo.NewConnectionStatus ?? ""] ??
       statusInfo.NewConnectionStatus ??
-      "Unbekannt";
+      "Unknown";
     const uptime = Number(statusInfo.NewUptime ?? 0);
     const downRate = Number(addonInfos.NewByteReceiveRate ?? 0);
     const upRate = Number(addonInfos.NewByteSendRate ?? 0);
@@ -129,7 +129,7 @@ export async function fetchFritzboxWidget(
       title: "FRITZ!Box",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

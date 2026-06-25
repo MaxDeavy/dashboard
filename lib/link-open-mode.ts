@@ -2,13 +2,12 @@ export type LinkOpenMode = "same_tab" | "new_tab";
 
 export const DEFAULT_LINK_OPEN_MODE: LinkOpenMode = "same_tab";
 
-export const LINK_OPEN_MODE_OPTIONS: Array<{
-  value: LinkOpenMode;
-  label: string;
-}> = [
-  { value: "same_tab", label: "Gleicher Tab" },
-  { value: "new_tab", label: "Neuer Tab" },
-];
+export const LINK_OPEN_MODE_VALUES: LinkOpenMode[] = ["same_tab", "new_tab"];
+
+const LINK_OPEN_MODE_I18N_KEYS = {
+  same_tab: "sameTab",
+  new_tab: "newTab",
+} as const;
 
 export function parseLinkOpenMode(
   value: string | undefined | null,
@@ -17,11 +16,13 @@ export function parseLinkOpenMode(
   return DEFAULT_LINK_OPEN_MODE;
 }
 
-export function getLinkOpenModeLabel(mode: LinkOpenMode): string {
-  return (
-    LINK_OPEN_MODE_OPTIONS.find((option) => option.value === mode)?.label ??
-    "Gleicher Tab"
-  );
+export function getLinkOpenModeLabel(
+  mode: LinkOpenMode,
+  t?: (key: "sameTab" | "newTab") => string,
+): string {
+  const key = LINK_OPEN_MODE_I18N_KEYS[mode];
+  if (t) return t(key);
+  return mode;
 }
 
 export function getLinkAnchorProps(mode: LinkOpenMode): {

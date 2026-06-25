@@ -37,7 +37,7 @@ export async function fetchNavidromeWidget(
       title: "Navidrome",
       status: "warning",
       fields: [],
-      error: "Benutzername und Passwort erforderlich",
+      error: "Username and password required",
     };
   }
 
@@ -57,7 +57,7 @@ export async function fetchNavidromeWidget(
     };
 
     if (ping["subsonic-response"]?.status !== "ok") {
-      throw new Error("Authentifizierung fehlgeschlagen");
+      throw new Error("Authentication failed");
     }
 
     const indexesRes = await fetchWithTimeout(
@@ -104,11 +104,11 @@ export async function fetchNavidromeWidget(
           value: ping["subsonic-response"]?.version ?? "—",
         },
         {
-          label: "Künstler",
+          label: "Artists",
           value: String(artists),
         },
         {
-          label: "Wiedergaben",
+          label: "Plays",
           value: String(playing),
           highlight: playing > 0,
         },
@@ -119,7 +119,7 @@ export async function fetchNavidromeWidget(
       title: "Navidrome",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

@@ -1,5 +1,13 @@
+import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
+
+async function AdminLoading() {
+  const t = await getTranslations("common");
+  return (
+    <div className="py-20 text-center text-muted-foreground">{t("loading")}</div>
+  );
+}
 
 export default function AdminLayout({
   children,
@@ -21,13 +29,7 @@ export default function AdminLayout({
 
       <AdminHeader />
       <main className="relative mx-auto max-w-5xl px-4 py-6 sm:px-6">
-        <Suspense
-          fallback={
-            <div className="py-20 text-center text-muted-foreground">Lade…</div>
-          }
-        >
-          {children}
-        </Suspense>
+        <Suspense fallback={<AdminLoading />}>{children}</Suspense>
       </main>
     </div>
   );

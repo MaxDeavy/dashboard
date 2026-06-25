@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,9 +23,11 @@ export function DiscardChangesDialog({
   open,
   onConfirm,
   onCancel,
-  title = "Änderungen verwerfen?",
-  description = "Du hast ungespeicherte Änderungen. Wenn du jetzt schließt, gehen sie verloren.",
+  title,
+  description,
 }: DiscardChangesDialogProps) {
+  const t = useTranslations("admin.discard");
+
   return (
     <Dialog
       open={open}
@@ -37,15 +40,15 @@ export function DiscardChangesDialog({
         className="glass-panel-strong z-[60] max-w-md border-white/10 bg-popover/95 sm:max-w-md"
       >
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogTitle>{title ?? t("title")}</DialogTitle>
+          <DialogDescription>{description ?? t("description")}</DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-2 sm:justify-end">
           <Button type="button" variant="outline" onClick={onCancel}>
-            Weiter bearbeiten
+            {t("keepEditing")}
           </Button>
           <Button type="button" variant="destructive" onClick={onConfirm}>
-            Verwerfen
+            {t("confirm")}
           </Button>
         </DialogFooter>
       </DialogContent>

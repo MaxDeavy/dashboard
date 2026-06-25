@@ -16,7 +16,7 @@ export async function fetchAudiobookshelfWidget(
       title: "Audiobookshelf",
       status: "warning",
       fields: [],
-      error: "API-Token erforderlich",
+      error: "API token required",
     };
   }
 
@@ -51,11 +51,11 @@ export async function fetchAudiobookshelfWidget(
       status: "ok",
       fields: [
         {
-          label: "Bibliotheken",
+          label: "Libraries",
           value: String(libraries.length),
         },
         {
-          label: "Medien",
+          label: "Media",
           value: String(totalItems),
         },
         {
@@ -70,7 +70,7 @@ export async function fetchAudiobookshelfWidget(
       title: "Audiobookshelf",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

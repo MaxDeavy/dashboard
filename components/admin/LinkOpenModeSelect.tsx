@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   Select,
   SelectContent,
@@ -8,7 +9,7 @@ import {
 } from "@/components/ui/select";
 import {
   getLinkOpenModeLabel,
-  LINK_OPEN_MODE_OPTIONS,
+  LINK_OPEN_MODE_VALUES,
   parseLinkOpenMode,
   type LinkOpenMode,
 } from "@/lib/link-open-mode";
@@ -24,6 +25,8 @@ export function LinkOpenModeSelect({
   onChange,
   className,
 }: LinkOpenModeSelectProps) {
+  const t = useTranslations("linkOpenMode");
+
   return (
     <Select
       value={value}
@@ -31,13 +34,13 @@ export function LinkOpenModeSelect({
     >
       <SelectTrigger className={className}>
         <span className="flex flex-1 text-left text-sm">
-          {getLinkOpenModeLabel(value)}
+          {getLinkOpenModeLabel(value, t)}
         </span>
       </SelectTrigger>
       <SelectContent>
-        {LINK_OPEN_MODE_OPTIONS.map((option) => (
-          <SelectItem key={option.value} value={option.value}>
-            {option.label}
+        {LINK_OPEN_MODE_VALUES.map((mode) => (
+          <SelectItem key={mode} value={mode}>
+            {getLinkOpenModeLabel(mode, t)}
           </SelectItem>
         ))}
       </SelectContent>

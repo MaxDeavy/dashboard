@@ -33,7 +33,7 @@ async function loginFilebrowser(
 
   const text = (await response.text()).trim();
   if (!text) {
-    throw new Error("Login: Kein Token erhalten");
+    throw new Error("Login: No token received");
   }
 
   try {
@@ -60,7 +60,7 @@ export async function fetchFilebrowserWidget(
       title: "FileBrowser",
       status: "warning",
       fields: [],
-      error: "Benutzername und Passwort erforderlich",
+      error: "Username and password required",
     };
   }
 
@@ -95,14 +95,14 @@ export async function fetchFilebrowserWidget(
       status: "ok",
       fields: [
         {
-          label: "Belegt",
+          label: "Used",
           value: formatBytes(used),
           highlight: usedPercent > 85,
         },
-        { label: "Frei", value: formatBytes(free) },
-        { label: "Gesamt", value: formatBytes(total) },
+        { label: "Free", value: formatBytes(free) },
+        { label: "Total", value: formatBytes(total) },
         {
-          label: "Auslastung",
+          label: "Usage",
           value: `${usedPercent.toFixed(1)}%`,
         },
       ],
@@ -112,7 +112,7 @@ export async function fetchFilebrowserWidget(
       title: "FileBrowser",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

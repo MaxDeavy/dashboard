@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import {
   HoverCard,
   HoverCardContent,
@@ -25,6 +26,8 @@ export function PageSwitcher({
   keyboardShortcutsEnabled = true,
   className,
 }: PageSwitcherProps) {
+  const t = useTranslations("dashboard");
+
   if (pages.length < 2) return null;
 
   const shortcutPages = pages.slice(0, 9);
@@ -36,7 +39,7 @@ export function PageSwitcher({
         className,
       )}
       role="tablist"
-      aria-label="Dashboard-Seiten"
+      aria-label={t("pageSwitcherLabel")}
     >
       {shortcutPages.map((page, index) => {
         const isActive = page.id === activePageId;
@@ -90,11 +93,11 @@ export function PageSwitcher({
               <p className="text-sm font-medium text-foreground">{page.name}</p>
               {keyboardShortcutsEnabled ? (
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  Hotkey: <span className="font-mono text-foreground/90">{hotkey}</span>
+                  {t("pageHotkey", { key: hotkey })}
                 </p>
               ) : (
                 <p className="mt-0.5 text-xs text-muted-foreground">
-                  Klicken zum Wechseln
+                  {t("clickToSwitch")}
                 </p>
               )}
             </HoverCardContent>

@@ -19,7 +19,7 @@ export async function fetchArrWidget(
       title: app.title,
       status: "warning",
       fields: [],
-      error: "Kein API-Key konfiguriert",
+      error: "No API key configured",
     };
   }
 
@@ -66,11 +66,11 @@ export async function fetchArrWidget(
         status: "ok",
         fields: [
           {
-            label: "Indexer gesamt",
+            label: "Total Indexers",
             value: String(indexerCount),
           },
           {
-            label: "Aktiv",
+            label: "Active",
             value: String(enabledCount),
             highlight: enabledCount > 0,
           },
@@ -93,11 +93,11 @@ export async function fetchArrWidget(
           highlight: queueCount > 0,
         },
         {
-          label: "Queue-Größe",
+          label: "Queue Size",
           value: formatSize(queueTotal),
         },
         {
-          label: "Fehlend",
+          label: "Missing",
           value: String(missingCount),
           highlight: missingCount > 0,
         },
@@ -108,7 +108,7 @@ export async function fetchArrWidget(
       title: app.title,
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

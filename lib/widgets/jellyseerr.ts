@@ -20,7 +20,7 @@ export async function fetchJellyseerrWidget(
       title: "Jellyseerr",
       status: "warning",
       fields: [],
-      error: "Kein API-Key konfiguriert",
+      error: "No API key configured",
     };
   }
 
@@ -44,21 +44,21 @@ export async function fetchJellyseerrWidget(
       status: "ok",
       fields: [
         {
-          label: "Ausstehend",
+          label: "Pending",
           value: String(pending),
           highlight: pending > 0,
         },
         {
-          label: "In Bearbeitung",
+          label: "In Progress",
           value: String(processing),
           highlight: processing > 0,
         },
         {
-          label: "Genehmigt",
+          label: "Approved",
           value: String(approved),
         },
         {
-          label: "Abgeschlossen",
+          label: "Completed",
           value: String(counts.completed ?? 0),
         },
       ],
@@ -68,7 +68,7 @@ export async function fetchJellyseerrWidget(
       title: "Jellyseerr",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

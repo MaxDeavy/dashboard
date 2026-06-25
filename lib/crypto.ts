@@ -82,5 +82,5 @@ export function decrypt(encrypted: string): string {
   if (lastError instanceof Error) {
     throw lastError;
   }
-  throw new Error("Entschlüsselung fehlgeschlagen");
+  throw new Error("Decryption failed");
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -149,6 +150,8 @@ export function ServicesAdmin({
   onSuccess,
   onError,
 }: ServicesAdminProps) {
+  const t = useTranslations("adminServices");
+  const tc = useTranslations("common");
   const [activePageId, setActivePageId] = useState(0);
   const [open, setOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
@@ -272,28 +275,28 @@ export function ServicesAdmin({
 
     if (response.ok) {
       onSuccess(
-        editingCategory ? "Kategorie aktualisiert" : "Kategorie erstellt",
+        editingCategory ? t("categoryUpdated") : t("categoryCreated"),
       );
       setCategoryOpen(false);
       resetCategoryForm();
       onRefresh();
     } else {
-      onError("Fehler beim Speichern");
+      onError(tc("saveFailed"));
     }
   }
 
   async function handleDeleteCategory(id: number) {
-    if (!confirm("Kategorie wirklich löschen? Alle Dienste werden mitgelöscht."))
+    if (!confirm(t("confirmDeleteCategory")))
       return;
 
     const response = await fetch(`/api/categories/${id}`, { method: "DELETE" });
     if (response.ok) {
-      onSuccess("Kategorie gelöscht");
+      onSuccess(t("categoryDeleted"));
       setCategoryOpen(false);
       resetCategoryForm();
       onRefresh();
     } else {
-      onError("Fehler beim Löschen");
+      onError(tc("deleteFailed"));
     }
   }
 
@@ -424,12 +427,12 @@ export function ServicesAdmin({
     });
 
     if (response.ok) {
-      onSuccess(editing ? "Dienst aktualisiert" : "Dienst erstellt");
+      onSuccess(editing ? t("serviceUpdated") : t("serviceCreated"));
       setOpen(false);
       resetForm();
       onRefresh();
     } else {
-      onError("Fehler beim Speichern");
+      onError(tc("saveFailed"));
     }
   }
 
@@ -473,26 +476,26 @@ export function ServicesAdmin({
       });
 
       if (response.ok) {
-        onSuccess(enabled ? "Dienst aktiviert" : "Dienst ausgeblendet");
+        onSuccess(enabled ? t("serviceEnabled") : t("serviceHidden"));
         onRefresh();
       } else {
-        onError("Fehler beim Aktualisieren");
+        onError(tc("updateFailed"));
       }
     } catch {
-      onError("Fehler beim Aktualisieren");
+      onError(tc("updateFailed"));
     } finally {
       setTogglingId(null);
     }
   }
 
   async function handleDelete(id: number) {
-    if (!confirm("Dienst wirklich löschen?")) return;
+    if (!confirm(t("confirmDeleteService"))) return;
     const response = await fetch(`/api/services/${id}`, { method: "DELETE" });
     if (response.ok) {
-      onSuccess("Dienst gelöscht");
+      onSuccess(t("serviceDeleted"));
       onRefresh();
     } else {
-      onError("Fehler beim Löschen");
+      onError(tc("deleteFailed"));
     }
   }
 
@@ -500,10 +503,8 @@ export function ServicesAdmin({
     <Card className="glass-panel-strong rounded-2xl border-white/10 bg-transparent">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Dienste</CardTitle>
-          <CardDescription>
-            Kategorien und Dienste für das Dashboard verwalten
-          </CardDescription>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
         </div>
         <Dialog
           open={categoryOpen}
@@ -522,21 +523,19 @@ export function ServicesAdmin({
             render={
               <Button size="sm" onClick={openNewCategory}>
                 <Plus className="mr-2 size-4" />
-                Neue Kategorie
+                {t("newCategory")}
               </Button>
             }
           />
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {editingCategory
-                  ? "Kategorie-Einstellungen"
-                  : "Neue Kategorie"}
+                {editingCategory ? t("editCategory") : t("newCategory")}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleCategorySubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label>Name</Label>
+                <Label>{tc("name")}</Label>
                 <Input
                   value={categoryName}
                   onChange={(e) => setCategoryName(e.target.value)}
@@ -545,7 +544,7 @@ export function ServicesAdmin({
                 />
               </div>
               <div className="space-y-2">
-                <Label>Kategoriefarbe (optional)</Label>
+                <Label>{t("categoryColor")}</Label>
                 <div className="flex gap-2">
                   <Input
                     type="color"
@@ -556,7 +555,7 @@ export function ServicesAdmin({
                   <Input
                     value={categoryColor}
                     onChange={(e) => setCategoryColor(e.target.value)}
-                    placeholder={`leer = ${defaultCardColor} (Theme)`}
+                    placeholder={t("tileColorPlaceholder", { color: defaultCardColor })}
                   />
                   <Button
                     type="button"
@@ -564,21 +563,19 @@ export function ServicesAdmin({
                     className="shrink-0"
                     onClick={() => setCategoryColor("")}
                   >
-                    Standard
+                    {tc("default")}
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Färbt Kategorie-Reiter und den Glanz aller Kacheln in dieser
-                  Spalte.
+                  {t("categoryColorHint")}
                 </p>
               </div>
               {editingCategory && (
                 <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 p-3">
                   <div className="space-y-0.5">
-                    <Label>Kategorie im Dashboard</Label>
+                    <Label>{t("categoryOnDashboard")}</Label>
                     <p className="text-xs text-muted-foreground">
-                      Ausgeblendete Kategorien erscheinen nicht auf der
-                      Startseite.
+                      {t("categoryHiddenHint")}
                     </p>
                   </div>
                   <EnableSwitch
@@ -596,11 +593,11 @@ export function ServicesAdmin({
                     className="flex-1"
                     onClick={() => handleDeleteCategory(editingCategory.id)}
                   >
-                    Löschen
+                    {tc("delete")}
                   </Button>
                 )}
                 <Button type="submit" className="flex-1">
-                  Speichern
+                  {tc("save")}
                 </Button>
               </div>
             </form>
@@ -622,7 +619,7 @@ export function ServicesAdmin({
           <DialogContent className="flex max-h-[90vh] max-w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-4xl lg:max-w-5xl">
             <DialogHeader className="border-b border-border/50 px-6 py-4">
               <DialogTitle>
-                {editing ? "Dienst bearbeiten" : "Neuer Dienst"}
+                {editing ? t("editService") : t("newService")}
               </DialogTitle>
             </DialogHeader>
             <form
@@ -632,11 +629,11 @@ export function ServicesAdmin({
               <div className="grid flex-1 gap-6 overflow-y-auto px-6 py-5 lg:grid-cols-2">
                 <div className="space-y-4">
                   <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                    Allgemein
+                    {t("general")}
                   </p>
 
                   <div className="space-y-2">
-                    <Label>Name</Label>
+                    <Label>{tc("name")}</Label>
                     <Input
                       value={form.name}
                       onChange={(e) =>
@@ -647,7 +644,7 @@ export function ServicesAdmin({
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Untertitel</Label>
+                    <Label>{tc("subtitle")}</Label>
                     <Input
                       value={form.subtitle}
                       onChange={(e) =>
@@ -657,7 +654,7 @@ export function ServicesAdmin({
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Link öffnen</Label>
+                    <Label>{t("openLink")}</Label>
                     <LinkOpenModeSelect
                       value={form.linkOpenMode}
                       onChange={(linkOpenMode) =>
@@ -675,7 +672,7 @@ export function ServicesAdmin({
                   />
 
                   <div className="space-y-2">
-                    <Label>Kachelfarbe (optional)</Label>
+                    <Label>{t("tileColor")}</Label>
                     <div className="flex gap-2">
                       <Input
                         type="color"
@@ -690,7 +687,9 @@ export function ServicesAdmin({
                         onChange={(e) =>
                           setForm({ ...form, cardColor: e.target.value })
                         }
-                        placeholder={`leer = ${effectiveCardColor} (Kategorie/Theme)`}
+                        placeholder={t("tileColorPlaceholder", {
+                          color: effectiveCardColor,
+                        })}
                       />
                       <Button
                         type="button"
@@ -698,75 +697,72 @@ export function ServicesAdmin({
                         className="shrink-0"
                         onClick={() => setForm({ ...form, cardColor: "" })}
                       >
-                        Standard
+                        {tc("default")}
                       </Button>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      Dunkle Kachel mit dezentem farbigen Glanz am Rand und beim
-                      Hover.
+                      {t("tileColorHint")}
                     </p>
                   </div>
                 </div>
 
                 <div className="space-y-4">
                   <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-                    Links & Widget
+                    {t("linksAndWidget")}
                   </p>
 
                   <div className="space-y-2">
-                    <Label>Web-URL</Label>
+                    <Label>{t("webUrl")}</Label>
                     <Input
                       value={form.url}
                       onChange={(e) =>
                         setForm({ ...form, url: e.target.value })
                       }
-                      placeholder="https://dienst.deine-domain.de"
+                      placeholder={t("webUrlPlaceholder")}
                       required
                     />
                     <p className="text-xs text-muted-foreground">
-                      Externe URL (z. B. Cloudflare Zero Trust) — aktiv im
-                      Web-Modus
+                      {t("webUrlHint")}
                     </p>
                   </div>
 
                   {lanEnabled && (
                     <div className="space-y-2">
-                      <Label>LAN-URL (optional)</Label>
+                      <Label>{t("lanUrl")}</Label>
                       <Input
                         value={form.lanUrl}
                         onChange={(e) =>
                           setForm({ ...form, lanUrl: e.target.value })
                         }
-                        placeholder="http://192.168.1.10:8080"
+                        placeholder={t("lanUrlPlaceholder")}
                       />
                       <p className="text-xs text-muted-foreground">
-                        Lokale IP/Hostname — aktiv wenn oben auf LAN umgeschaltet
-                        ist
+                        {t("lanUrlHint")}
                       </p>
                     </div>
                   )}
 
                   <div className="space-y-2 rounded-lg border border-border/50 bg-muted/20 p-3">
-                    <Label>HealthCheck URL (optional)</Label>
+                    <Label>{t("healthCheckUrl")}</Label>
                     <Input
                       value={form.healthCheckUrl}
                       onChange={(e) =>
                         setForm({ ...form, healthCheckUrl: e.target.value })
                       }
-                      placeholder="z.B. http://192.168.1.10:8080"
+                      placeholder={t("healthCheckPlaceholder")}
                     />
                     <p className="text-xs text-muted-foreground leading-relaxed">
-                      <strong>Link-URL</strong> = wohin du klickst.{" "}
-                      <strong>HealthCheck URL</strong> = Adresse für den
-                      Online-Punkt (z. B.{" "}
-                      <code className="text-[10px]">http://sonarr:8989</code> im
-                      Docker-Netzwerk).
+                      {t("healthCheckHint", {
+                        linkLabel: t("linkUrl"),
+                        healthLabel: t("healthCheckUrlLabel"),
+                        example: "http://sonarr:8989",
+                      })}
                     </p>
                     <div className="flex items-center justify-between gap-4 pt-1">
                       <div className="space-y-0.5">
-                        <Label>Selbstsigniertes TLS-Zertifikat</Label>
+                        <Label>{t("insecureTls")}</Label>
                         <p className="text-xs text-muted-foreground">
-                          Für Health-Check und Widget-API dieses Dienstes
+                          {t("insecureTlsHint")}
                         </p>
                       </div>
                       <EnableSwitch
@@ -780,9 +776,9 @@ export function ServicesAdmin({
                   </div>
 
                   <div className="space-y-3 rounded-lg border border-border/50 p-3">
-                    <p className="text-sm font-medium">Hover-Widget</p>
+                    <p className="text-sm font-medium">{t("hoverWidget")}</p>
                     <div className="space-y-2">
-                      <Label>Widget-Typ</Label>
+                      <Label>{t("widgetType")}</Label>
                       <Select
                         value={form.widgetType || "none"}
                         onValueChange={(v) =>
@@ -793,10 +789,10 @@ export function ServicesAdmin({
                         }
                       >
                         <SelectTrigger>
-                          <SelectValue placeholder="Kein Widget" />
+                          <SelectValue placeholder={t("noWidget")} />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="none">Kein Widget</SelectItem>
+                          <SelectItem value="none">{t("noWidget")}</SelectItem>
                           {WIDGET_TYPES.map((w) => (
                             <SelectItem key={w.value} value={w.value}>
                               {w.label}
@@ -817,7 +813,7 @@ export function ServicesAdmin({
               </div>
 
               <DialogFooter className="!mx-0 !mb-0 shrink-0 border-t border-border/50 bg-muted/30 px-6 py-4 sm:justify-end">
-                <Button type="submit">Speichern</Button>
+                <Button type="submit">{tc("save")}</Button>
               </DialogFooter>
             </form>
           </DialogContent>

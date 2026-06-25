@@ -16,7 +16,7 @@ export async function fetchSabnzbdWidget(
       title: "SABnzbd",
       status: "warning",
       fields: [],
-      error: "Kein API-Key konfiguriert",
+      error: "No API key configured",
     };
   }
 
@@ -55,7 +55,7 @@ export async function fetchSabnzbdWidget(
           highlight: slots.length > 0,
         },
         {
-          label: "Verbleibend",
+          label: "Remaining",
           value: `${Number(remaining).toFixed(1)} MB`,
         },
         {
@@ -69,7 +69,7 @@ export async function fetchSabnzbdWidget(
       title: "SABnzbd",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

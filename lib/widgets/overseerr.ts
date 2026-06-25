@@ -20,7 +20,7 @@ export async function fetchOverseerrWidget(
       title: "Overseerr",
       status: "warning",
       fields: [],
-      error: "Kein API-Key konfiguriert",
+      error: "No API key configured",
     };
   }
 
@@ -44,17 +44,17 @@ export async function fetchOverseerrWidget(
       status: "ok",
       fields: [
         {
-          label: "Ausstehend",
+          label: "Pending",
           value: String(pending),
           highlight: pending > 0,
         },
         {
-          label: "In Bearbeitung",
+          label: "In Progress",
           value: String(processing),
           highlight: processing > 0,
         },
-        { label: "Genehmigt", value: String(approved) },
-        { label: "Abgeschlossen", value: String(counts.completed ?? 0) },
+        { label: "Approved", value: String(approved) },
+        { label: "Completed", value: String(counts.completed ?? 0) },
       ],
     };
   } catch (error) {
@@ -62,7 +62,7 @@ export async function fetchOverseerrWidget(
       title: "Overseerr",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

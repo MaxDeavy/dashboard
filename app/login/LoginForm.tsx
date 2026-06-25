@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +16,7 @@ function sanitizeNextPath(next: string | null): string {
 }
 
 export function LoginForm() {
+  const t = useTranslations("login");
   const router = useRouter();
   const searchParams = useSearchParams();
   const next = sanitizeNextPath(searchParams.get("next"));
@@ -37,14 +39,14 @@ export function LoginForm() {
       });
 
       if (!response.ok) {
-        setError("Ungültiges Passwort");
+        setError(t("invalidPassword"));
         return;
       }
 
       router.push(next);
       router.refresh();
     } catch {
-      setError("Anmeldung fehlgeschlagen");
+      setError(t("failed"));
     } finally {
       setPending(false);
     }
@@ -71,24 +73,22 @@ export function LoginForm() {
           </div>
           <div>
             <h1 className="text-lg font-semibold tracking-tight text-foreground">
-              Admin Login
+              {t("title")}
             </h1>
-            <p className="text-sm text-muted-foreground">
-              Dashboard konfigurieren
-            </p>
+            <p className="text-sm text-muted-foreground">{t("subtitle")}</p>
           </div>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
             <Label htmlFor="password" className="text-foreground/80">
-              Passwort
+              {t("password")}
             </Label>
             <Input
               id="password"
               name="password"
               type="password"
-              placeholder="Admin-Passwort"
+              placeholder={t("passwordPlaceholder")}
               required
               autoComplete="current-password"
             />
@@ -99,7 +99,7 @@ export function LoginForm() {
             className="w-full bg-gradient-to-r from-orange-500 to-amber-600 text-white hover:from-orange-400 hover:to-amber-500"
             disabled={pending}
           >
-            {pending ? "Anmelden…" : "Anmelden"}
+            {pending ? t("submitting") : t("submit")}
           </Button>
         </form>
       </div>

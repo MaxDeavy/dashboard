@@ -21,7 +21,7 @@ export async function fetchPortainerWidget(
       title: "Portainer",
       status: "warning",
       fields: [],
-      error: "Kein API-Token konfiguriert",
+      error: "No API token configured",
     };
   }
 
@@ -71,16 +71,16 @@ export async function fetchPortainerWidget(
           value: endpointId,
         },
         {
-          label: "Container gesamt",
+          label: "Total Containers",
           value: String(containers.length),
         },
         {
-          label: "Laufend",
+          label: "Running",
           value: String(running),
           highlight: running > 0,
         },
         {
-          label: "Gestoppt",
+          label: "Stopped",
           value: String(stopped),
           highlight: stopped > 0,
         },
@@ -91,7 +91,7 @@ export async function fetchPortainerWidget(
       title: "Portainer",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

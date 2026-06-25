@@ -1,5 +1,6 @@
 import fs from "fs";
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { getSetting } from "@/lib/db/queries";
 import {
   BACKGROUND_SETTING_KEY,
@@ -16,6 +17,7 @@ const MIME_TYPES: Record<string, string> = {
 };
 
 export async function GET() {
+  const t = await getTranslations("api");
   const storedUrl = await getSetting(BACKGROUND_SETTING_KEY);
   const filename =
     storedUrl?.split("file=")[1] != null
@@ -23,18 +25,18 @@ export async function GET() {
       : findBackgroundFilename();
 
   if (!filename) {
-    return NextResponse.json({ error: "Kein Hintergrundbild" }, { status: 404 });
+    return NextResponse.json({ error: t("noBackgroundImage") }, { status: 404 });
   }
 
   let filePath: string;
   try {
     filePath = getBackgroundFilePath(filename);
   } catch {
-    return NextResponse.json({ error: "Ungültiger Pfad" }, { status: 400 });
+    return NextResponse.json({ error: t("invalidPath") }, { status: 400 });
   }
 
   if (!fs.existsSync(filePath)) {
-    return NextResponse.json({ error: "Datei nicht gefunden" }, { status: 404 });
+    return NextResponse.json({ error: t("fileNotFound") }, { status: 404 });
   }
 
   const ext = filePath.slice(filePath.lastIndexOf(".")).toLowerCase();

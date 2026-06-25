@@ -62,7 +62,7 @@ async function fetchTechnitiumStats(
   };
 
   if (payload.status && payload.status !== "ok") {
-    throw new Error("API: Ungültige Antwort");
+    throw new Error("API: Invalid response");
   }
 
   return payload.response?.stats ?? {};
@@ -83,7 +83,7 @@ export async function fetchTechnitiumWidget(
       title: "Technitium",
       status: "warning",
       fields: [],
-      error: "Kein API-Token konfiguriert",
+      error: "No API token configured",
     };
   }
 
@@ -101,11 +101,11 @@ export async function fetchTechnitiumWidget(
       status: "ok",
       fields: [
         {
-          label: "Anfragen",
+          label: "Queries",
           value: String(stats.totalQueries ?? 0),
         },
         {
-          label: "Blockiert",
+          label: "Blocked",
           value: String(stats.totalBlocked ?? 0),
           highlight: (stats.totalBlocked ?? 0) > 0,
         },
@@ -124,7 +124,7 @@ export async function fetchTechnitiumWidget(
       title: "Technitium DNS",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

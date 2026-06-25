@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/lib/auth";
 import { createBackupArchive } from "@/lib/backup";
 
 export async function GET() {
   const authError = await requireAuth();
   if (authError) return authError;
+
+  const t = await getTranslations("api");
 
   try {
     const archive = createBackupArchive();
@@ -18,7 +21,7 @@ export async function GET() {
     });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Backup-Export fehlgeschlagen";
+      error instanceof Error ? error.message : t("backupExportFailed");
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

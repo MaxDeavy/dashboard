@@ -34,7 +34,7 @@ export async function fetchQbittorrentWidget(
       title: "qBittorrent",
       status: "warning",
       fields: [],
-      error: "Keine Zugangsdaten konfiguriert",
+      error: "No credentials configured",
     };
   }
 
@@ -45,7 +45,7 @@ export async function fetchQbittorrentWidget(
         title: "qBittorrent",
         status: "error",
         fields: [],
-        error: "Login fehlgeschlagen",
+        error: "Login failed",
       };
     }
 
@@ -78,7 +78,7 @@ export async function fetchQbittorrentWidget(
           value: formatBytesPerSec(transfer.up_info_speed ?? 0),
         },
         {
-          label: "Aktive Torrents",
+          label: "Active Torrents",
           value: String(torrents.length ?? 0),
         },
         {
@@ -92,7 +92,7 @@ export async function fetchQbittorrentWidget(
       title: "qBittorrent",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

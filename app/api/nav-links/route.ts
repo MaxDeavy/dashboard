@@ -1,5 +1,6 @@
 import { asc } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
 
@@ -15,10 +16,11 @@ export async function POST(request: Request) {
   const authError = await requireAuth();
   if (authError) return authError;
 
+  const t = await getTranslations("api");
   const body = await request.json();
 
   if (!body.barId) {
-    return NextResponse.json({ error: "barId erforderlich" }, { status: 400 });
+    return NextResponse.json({ error: t("barIdRequired") }, { status: 400 });
   }
 
   const [link] = await db

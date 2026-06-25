@@ -59,7 +59,7 @@ export async function authenticatePihole(
 
   const sid = data.session?.sid ?? data.sid;
   if (!sid) {
-    throw new Error("Auth: Keine Session-ID erhalten");
+    throw new Error("Auth: No session ID received");
   }
 
   return sid;
@@ -112,7 +112,7 @@ export async function fetchPiholeWidget(
       title: "Pi-hole",
       status: "warning",
       fields: [],
-      error: "Kein API-Key konfiguriert",
+      error: "No API key configured",
     };
   }
 
@@ -131,20 +131,20 @@ export async function fetchPiholeWidget(
       status: "ok",
       fields: [
         {
-          label: "DNS-Anfragen",
+          label: "DNS Queries",
           value: String(queries.total ?? 0),
         },
         {
-          label: "Blockiert",
+          label: "Blocked",
           value: String(queries.blocked ?? 0),
           highlight: (queries.blocked ?? 0) > 0,
         },
         {
-          label: "Block-Rate",
+          label: "Block Rate",
           value: formatPercent(queries.percent_blocked ?? 0),
         },
         {
-          label: "Blocklisten",
+          label: "Blocklists",
           value: String(gravity.domains_being_blocked ?? 0),
         },
       ],
@@ -154,7 +154,7 @@ export async function fetchPiholeWidget(
       title: "Pi-hole",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }
@@ -165,20 +165,20 @@ function buildLegacyResult(data: PiHoleSummary): WidgetResult {
     status: "ok",
     fields: [
       {
-        label: "DNS-Anfragen heute",
+        label: "DNS Queries Today",
         value: String(data.dns_queries_today ?? 0),
       },
       {
-        label: "Blockiert heute",
+        label: "Blocked Today",
         value: String(data.ads_blocked_today ?? 0),
         highlight: (data.ads_blocked_today ?? 0) > 0,
       },
       {
-        label: "Block-Rate",
+        label: "Block Rate",
         value: formatPercent(data.ads_percentage_today ?? 0),
       },
       {
-        label: "Blocklisten",
+        label: "Blocklists",
         value: String(data.domains_being_blocked ?? 0),
       },
     ],

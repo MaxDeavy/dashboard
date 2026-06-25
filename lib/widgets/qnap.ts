@@ -53,7 +53,7 @@ async function loginQnap(
   const authPassed = extractXmlTagValue(xml, "authPassed");
 
   if (!sid || authPassed === "0") {
-    throw new Error("Login fehlgeschlagen");
+    throw new Error("Login failed");
   }
 
   sessionCache.set(cacheKey, {
@@ -134,7 +134,7 @@ export async function fetchQnapWidget(
       title: "QNAP",
       status: "warning",
       fields: [],
-      error: "Passwort erforderlich",
+      error: "Password required",
     };
   }
 
@@ -197,7 +197,7 @@ export async function fetchQnapWidget(
           highlight: volumePercent > 90,
         },
         {
-          label: "Temperatur",
+          label: "Temperature",
           value: systemTemp ? `${systemTemp} °C` : "—",
         },
       ],
@@ -207,7 +207,7 @@ export async function fetchQnapWidget(
       title: "QNAP",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

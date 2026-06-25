@@ -24,7 +24,7 @@ export async function fetchImmichWidget(
       title: "Immich",
       status: "warning",
       fields: [],
-      error: "Kein API-Key konfiguriert",
+      error: "No API key configured",
     };
   }
 
@@ -53,10 +53,10 @@ export async function fetchImmichWidget(
       title: "Immich",
       status: "ok",
       fields: [
-        { label: "Fotos", value: String(photos) },
+        { label: "Photos", value: String(photos) },
         { label: "Videos", value: String(videos) },
         {
-          label: "Speicher",
+          label: "Storage",
           value: formatBytes(usage),
           highlight: usage > 0,
         },
@@ -67,7 +67,7 @@ export async function fetchImmichWidget(
       title: "Immich",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

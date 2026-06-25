@@ -33,7 +33,7 @@ async function loginNpm(
 
   const data = (await response.json()) as { token?: string };
   if (!data.token) {
-    throw new Error("Login: Kein Token erhalten");
+    throw new Error("Login: No token received");
   }
 
   return data.token;
@@ -51,7 +51,7 @@ export async function fetchNpmWidget(
       title: "NPM",
       status: "warning",
       fields: [],
-      error: "E-Mail und Passwort erforderlich",
+      error: "Email and password required",
     };
   }
 
@@ -96,7 +96,7 @@ export async function fetchNpmWidget(
           value: String(proxyHosts.length),
         },
         {
-          label: "Aktiv",
+          label: "Active",
           value: String(enabled),
         },
         {
@@ -110,7 +110,7 @@ export async function fetchNpmWidget(
           highlight: offline > 0,
         },
         {
-          label: "Weiterleitungen",
+          label: "Redirections",
           value: String(redirects.length),
         },
       ],
@@ -120,7 +120,7 @@ export async function fetchNpmWidget(
       title: "NPM",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

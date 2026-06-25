@@ -26,7 +26,7 @@ export async function fetchAdguardWidget(
       title: "AdGuard",
       status: "warning",
       fields: [],
-      error: "Passwort erforderlich",
+      error: "Password required",
     };
   }
 
@@ -72,20 +72,20 @@ export async function fetchAdguardWidget(
       status: "ok",
       fields: [
         {
-          label: "DNS-Anfragen",
+          label: "DNS Queries",
           value: String(queries),
         },
         {
-          label: "Blockiert",
+          label: "Blocked",
           value: String(blocked),
           highlight: blocked > 0,
         },
         {
-          label: "Block-Rate",
+          label: "Block Rate",
           value: formatPercent(blockRate),
         },
         {
-          label: "Ø Latenz",
+          label: "Avg Latency",
           value: stats.avg_processing_time
             ? `${stats.avg_processing_time.toFixed(2)} ms`
             : "—",
@@ -97,7 +97,7 @@ export async function fetchAdguardWidget(
       title: "AdGuard",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

@@ -58,7 +58,7 @@ async function transmissionRpc<T>(
 
   const payload = (await response.json()) as TransmissionRpcResponse<T>;
   if (payload.result !== "success") {
-    throw new Error("RPC fehlgeschlagen");
+    throw new Error("RPC failed");
   }
 
   return payload.arguments as T;
@@ -76,7 +76,7 @@ export async function fetchTransmissionWidget(
       title: "Transmission",
       status: "warning",
       fields: [],
-      error: "Passwort erforderlich",
+      error: "Password required",
     };
   }
 
@@ -102,12 +102,12 @@ export async function fetchTransmissionWidget(
           value: formatBytesPerSec(stats.uploadSpeed ?? 0),
         },
         {
-          label: "Aktiv",
+          label: "Active",
           value: String(stats.activeTorrentCount ?? 0),
           highlight: (stats.activeTorrentCount ?? 0) > 0,
         },
         {
-          label: "Pausiert",
+          label: "Paused",
           value: String(stats.pausedTorrentCount ?? 0),
         },
       ],
@@ -117,7 +117,7 @@ export async function fetchTransmissionWidget(
       title: "Transmission",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

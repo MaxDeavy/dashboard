@@ -81,7 +81,7 @@ export async function fetchNextcloudWidget(
       status: "warning",
       fields: [],
       error:
-        "Zugangsdaten in DB, aber Entschlüsselung fehlgeschlagen (SESSION_SECRET unverändert lassen und Token neu speichern)",
+        "Credentials in DB, but decryption failed (keep SESSION_SECRET unchanged and re-save token)",
     };
   }
 
@@ -90,7 +90,7 @@ export async function fetchNextcloudWidget(
       title: "Nextcloud",
       status: "warning",
       fields: [],
-      error: "Kein NC-Token konfiguriert",
+      error: "No NC token configured",
     };
   }
 
@@ -99,7 +99,7 @@ export async function fetchNextcloudWidget(
       title: "Nextcloud",
       status: "warning",
       fields: [],
-      error: "Keine API-URL konfiguriert",
+      error: "No API URL configured",
     };
   }
 
@@ -124,15 +124,15 @@ export async function fetchNextcloudWidget(
     try {
       payload = JSON.parse(text) as NextcloudInfoResponse;
     } catch {
-      throw new Error(`API: ${response.status} — Ungültige Antwort`);
+      throw new Error(`API: ${response.status} — Invalid response`);
     }
 
     const meta = payload.ocs?.meta;
     if (!response.ok || meta?.status !== "ok") {
       const hint = /[^\x00-\x7F]/.test(token)
-        ? " (Token enthält Umlaute/Sonderzeichen?)"
+        ? " (Token contains special characters?)"
         : "";
-      const message = meta?.message ?? "Anfrage fehlgeschlagen";
+      const message = meta?.message ?? "Request failed";
       throw new Error(
         `API: ${meta?.statuscode ?? response.status} — ${message}${hint}`,
       );
@@ -153,7 +153,7 @@ export async function fetchNextcloudWidget(
       status: "ok",
       fields: [
         {
-          label: "CPU-Last (1 min)",
+          label: "CPU Load (1 min)",
           value: cpuLoad,
           highlight: Number(cpuLoad) > 1,
         },
@@ -163,16 +163,16 @@ export async function fetchNextcloudWidget(
           highlight: memory !== "—" && Number.parseFloat(memory) > 80,
         },
         {
-          label: "Speicher frei",
+          label: "Free Storage",
           value: freespace > 0 ? formatBytes(freespace) : "—",
         },
         {
-          label: "Aktive Nutzer (5 min)",
+          label: "Active Users (5 min)",
           value: String(active),
           highlight: active > 0,
         },
         {
-          label: "Dateien",
+          label: "Files",
           value: files > 0 ? String(files) : "—",
         },
       ],
@@ -182,7 +182,7 @@ export async function fetchNextcloudWidget(
       title: "Nextcloud",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

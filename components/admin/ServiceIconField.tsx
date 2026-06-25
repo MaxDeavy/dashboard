@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +34,8 @@ export function ServiceIconField({
   onUploadComplete,
   onError,
 }: ServiceIconFieldProps) {
+  const t = useTranslations("adminIcon");
+  const tc = useTranslations("common");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
 
@@ -55,10 +58,10 @@ export function ServiceIconField({
         onChange(data.url);
         onUploadComplete?.(data.url);
       } else {
-        onError?.(data.error ?? "Upload fehlgeschlagen");
+        onError?.(data.error ?? tc("uploadFailed"));
       }
     } catch {
-      onError?.("Upload fehlgeschlagen");
+      onError?.(tc("uploadFailed"));
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
@@ -81,10 +84,10 @@ export function ServiceIconField({
         onChange("");
         onUploadComplete?.("");
       } else {
-        onError?.("Entfernen fehlgeschlagen");
+        onError?.(tc("removeFailed"));
       }
     } catch {
-      onError?.("Entfernen fehlgeschlagen");
+      onError?.(tc("removeFailed"));
     } finally {
       setUploading(false);
     }
@@ -96,7 +99,7 @@ export function ServiceIconField({
 
   return (
     <div className="space-y-3">
-      <Label>Icon</Label>
+      <Label>{t("label")}</Label>
 
       <div className="flex items-center gap-3 rounded-lg border border-border/50 bg-muted/10 p-3">
         <div className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-background/60 ring-1 ring-border/40">
@@ -108,7 +111,7 @@ export function ServiceIconField({
           />
         </div>
         <p className="min-w-0 flex-1 truncate text-xs text-muted-foreground">
-          {value || "Kein Icon gesetzt"}
+          {value || t("noneSet")}
         </p>
         {value && (
           <Button
@@ -130,7 +133,7 @@ export function ServiceIconField({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">Vorlage</Label>
+        <Label className="text-xs text-muted-foreground">{t("preset")}</Label>
         <Select
           value={presetValue || undefined}
           onValueChange={(url) => {
@@ -138,7 +141,7 @@ export function ServiceIconField({
           }}
         >
           <SelectTrigger>
-            <SelectValue placeholder="Icon aus Vorlagen wählen…" />
+            <SelectValue placeholder={t("presetPlaceholder")} />
           </SelectTrigger>
           <SelectContent className="max-h-64">
             {BUNDLED_ICON_OPTIONS.map((option) => (
@@ -159,16 +162,16 @@ export function ServiceIconField({
       </div>
 
       <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">URL</Label>
+        <Label className="text-xs text-muted-foreground">{t("url")}</Label>
         <Input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="https://… oder /assets/icon.png"
+          placeholder={t("urlPlaceholder")}
         />
       </div>
 
       <div className="space-y-2">
-        <Label className="text-xs text-muted-foreground">Eigenes Bild hochladen</Label>
+        <Label className="text-xs text-muted-foreground">{t("uploadCustom")}</Label>
         {serviceId ? (
           <div className="flex gap-2">
             <Button
@@ -179,17 +182,15 @@ export function ServiceIconField({
               onClick={() => fileInputRef.current?.click()}
             >
               <Upload className="mr-2 size-4" />
-              {uploading ? "Wird hochgeladen…" : "Datei wählen"}
+              {uploading ? t("uploading") : t("chooseFile")}
             </Button>
           </div>
         ) : (
           <p className="text-xs text-muted-foreground">
-            Upload ist nach dem ersten Speichern des Dienstes möglich.
+            {t("uploadAfterSave")}
           </p>
         )}
-        <p className="text-xs text-muted-foreground">
-          JPG, PNG, WebP, GIF, SVG oder ICO, maximal 5 MB.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("fileTypes")}</p>
       </div>
 
       <input

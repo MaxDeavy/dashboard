@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,6 +39,8 @@ export function PagesAdmin({
   onSuccess,
   onError,
 }: PagesAdminProps) {
+  const t = useTranslations("adminPages");
+  const tc = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Page | null>(null);
   const [name, setName] = useState("");
@@ -88,29 +91,29 @@ export function PagesAdmin({
     });
 
     if (response.ok) {
-      onSuccess(editing ? "Seite aktualisiert" : "Seite erstellt");
+      onSuccess(editing ? t("pageUpdated") : t("pageCreated"));
       setOpen(false);
       resetForm();
       onRefresh();
     } else {
       const data = await response.json().catch(() => ({}));
-      onError(data.error ?? "Fehler beim Speichern");
+      onError(data.error ?? tc("saveFailed"));
     }
   }
 
   async function handleDelete(id: number) {
-    if (!confirm("Seite wirklich löschen? Alle Kategorien und Dienste werden mitgelöscht."))
+    if (!confirm(t("confirmDeletePage")))
       return;
 
     const response = await fetch(`/api/pages/${id}`, { method: "DELETE" });
     if (response.ok) {
-      onSuccess("Seite gelöscht");
+      onSuccess(t("pageDeleted"));
       setOpen(false);
       resetForm();
       onRefresh();
     } else {
       const data = await response.json().catch(() => ({}));
-      onError(data.error ?? "Fehler beim Löschen");
+      onError(data.error ?? tc("deleteFailed"));
     }
   }
 
@@ -129,13 +132,13 @@ export function PagesAdmin({
       });
 
       if (response.ok) {
-        onSuccess(nextEnabled ? "Seite aktiviert" : "Seite ausgeblendet");
+        onSuccess(nextEnabled ? t("pageEnabled") : t("pageHidden"));
         onRefresh();
       } else {
-        onError("Status konnte nicht gespeichert werden");
+        onError(tc("statusSaveFailed"));
       }
     } catch {
-      onError("Status konnte nicht gespeichert werden");
+      onError(tc("statusSaveFailed"));
     } finally {
       setTogglingId(null);
     }
@@ -145,10 +148,8 @@ export function PagesAdmin({
     <Card className="glass-panel-strong rounded-2xl border-white/10 bg-transparent">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Seiten</CardTitle>
-          <CardDescription>
-            Mehrere Dashboard-Ansichten mit eigenen Kategorien und Diensten
-          </CardDescription>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
         </div>
         <Dialog
           open={open}
@@ -167,19 +168,19 @@ export function PagesAdmin({
             render={
               <Button size="sm" onClick={openNew}>
                 <Plus className="mr-2 size-4" />
-                Neue Seite
+                {t("newPage")}
               </Button>
             }
           />
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {editing ? "Seite bearbeiten" : "Neue Seite"}
+                {editing ? t("editPage") : t("newPage")}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label>Name</Label>
+                <Label>{tc("name")}</Label>
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -190,9 +191,9 @@ export function PagesAdmin({
               {editing && (
                 <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 p-3">
                   <div className="space-y-0.5">
-                    <Label>Seite im Dashboard</Label>
+                    <Label>{t("pageOnDashboard")}</Label>
                     <p className="text-xs text-muted-foreground">
-                      Ausgeblendete Seiten erscheinen nicht im Umschalter.
+                      {t("pageHiddenHint")}
                     </p>
                   </div>
                   <EnableSwitch
@@ -211,11 +212,11 @@ export function PagesAdmin({
                     disabled={pages.length <= 1}
                     onClick={() => handleDelete(editing.id)}
                   >
-                    Löschen
+                    {tc("delete")}
                   </Button>
                 )}
                 <Button type="submit" className="flex-1">
-                  Speichern
+                  {tc("save")}
                 </Button>
               </div>
             </form>
@@ -223,10 +224,7 @@ export function PagesAdmin({
         </Dialog>
       </CardHeader>
       <CardContent className="space-y-3">
-        <p className="text-xs text-muted-foreground">
-          Reihenfolge per Drag &amp; Drop. Die ersten neun aktiven Seiten sind im
-          Dashboard über die Tasten 1–9 erreichbar.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("boardHint")}</p>
         <PagesAdminBoard
           pages={pages}
           onEdit={openEdit}

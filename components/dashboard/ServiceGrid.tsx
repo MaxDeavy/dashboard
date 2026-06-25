@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { GripVertical } from "lucide-react";
 import { toast } from "sonner";
 import type { HealthStatus } from "@/lib/health";
@@ -93,6 +94,7 @@ export function ServiceGrid({
   onLayoutSaved,
   layoutEditable = false,
 }: ServiceGridProps) {
+  const t = useTranslations("dashboard");
   const ctrlHeld = useCtrlKeyHeld();
   const layoutEditMode = ctrlHeld && !searchQuery && layoutEditable;
 
@@ -151,14 +153,14 @@ export function ServiceGrid({
       });
 
       if (response.ok) {
-        toast.success("Kategorien neu angeordnet");
+        toast.success(t("categoriesReordered"));
         onLayoutSaved?.();
       } else {
-        toast.error("Kategorien konnten nicht gespeichert werden");
+        toast.error(t("categoriesReorderFailed"));
         setLayoutColumns(filteredColumns);
       }
     } catch {
-      toast.error("Kategorien konnten nicht gespeichert werden");
+      toast.error(t("categoriesReorderFailed"));
       setLayoutColumns(filteredColumns);
     } finally {
       setSavingLayout(false);
@@ -186,14 +188,14 @@ export function ServiceGrid({
       });
 
       if (response.ok) {
-        toast.success("Dienste neu angeordnet");
+        toast.success(t("servicesReordered"));
         onLayoutSaved?.();
       } else {
-        toast.error("Dienste konnten nicht gespeichert werden");
+        toast.error(t("servicesReorderFailed"));
         setLayoutColumns(filteredColumns);
       }
     } catch {
-      toast.error("Dienste konnten nicht gespeichert werden");
+      toast.error(t("servicesReorderFailed"));
       setLayoutColumns(filteredColumns);
     } finally {
       setSavingLayout(false);
@@ -267,7 +269,7 @@ export function ServiceGrid({
     return (
       <div className="glass-panel rounded-2xl py-20 text-center">
         <p className="text-sm text-muted-foreground">
-          Keine Dienste für &quot;{searchQuery}&quot; gefunden.
+          {t("noServicesFound", { query: searchQuery })}
         </p>
       </div>
     );
@@ -288,8 +290,7 @@ export function ServiceGrid({
     <div className="space-y-3">
       {layoutEditMode && (
         <div className="rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-xs text-muted-foreground">
-          Strg gedrückt: Kategorien, Kacheln und Navigationslinks per Drag &amp; Drop
-          anordnen. Loslassen von Strg beendet den Layout-Modus.
+          {t("layoutEditHint")}. {t("layoutEditHintEnd")}
         </div>
       )}
 
@@ -368,7 +369,7 @@ export function ServiceGrid({
                 )}
                 aria-label={
                   layoutEditMode
-                    ? `Kategorie ${column.name} verschieben`
+                    ? t("moveCategory", { name: column.name })
                     : undefined
                 }
               >

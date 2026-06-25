@@ -1,6 +1,7 @@
 import fs from "fs";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import path from "path";
 import { requireAuth } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
@@ -20,10 +21,11 @@ export async function POST(
   const authError = await requireAuth();
   if (authError) return authError;
 
+  const t = await getTranslations("api");
   const { id } = await params;
   const serviceId = Number(id);
   if (!serviceId) {
-    return NextResponse.json({ error: "Ungültige Dienst-ID" }, { status: 400 });
+    return NextResponse.json({ error: t("invalidServiceId") }, { status: 400 });
   }
 
   const [existing] = await db
@@ -32,26 +34,26 @@ export async function POST(
     .where(eq(schema.services.id, serviceId));
 
   if (!existing) {
-    return NextResponse.json({ error: "Dienst nicht gefunden" }, { status: 404 });
+    return NextResponse.json({ error: t("serviceNotFound") }, { status: 404 });
   }
 
   const formData = await request.formData();
   const file = formData.get("file");
 
   if (!(file instanceof File)) {
-    return NextResponse.json({ error: "Keine Datei übermittelt" }, { status: 400 });
+    return NextResponse.json({ error: t("noFile") }, { status: 400 });
   }
 
   if (!isAllowedImage(file)) {
     return NextResponse.json(
-      { error: "Nur JPG, PNG, WebP, GIF, SVG oder ICO erlaubt" },
+      { error: t("invalidFileType") },
       { status: 400 },
     );
   }
 
   if (file.size > MAX_ICON_SIZE_BYTES) {
     return NextResponse.json(
-      { error: "Datei zu groß (Icon-Limit überschritten)" },
+      { error: t("iconTooLarge") },
       { status: 400 },
     );
   }
@@ -87,10 +89,11 @@ export async function DELETE(
   const authError = await requireAuth();
   if (authError) return authError;
 
+  const t = await getTranslations("api");
   const { id } = await params;
   const serviceId = Number(id);
   if (!serviceId) {
-    return NextResponse.json({ error: "Ungültige Dienst-ID" }, { status: 400 });
+    return NextResponse.json({ error: t("invalidServiceId") }, { status: 400 });
   }
 
   removeServiceIconFiles(serviceId);

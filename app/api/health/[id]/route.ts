@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { getServiceById } from "@/lib/db/queries";
 import { checkServiceHealth } from "@/lib/health";
 
@@ -6,11 +7,12 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const t = await getTranslations("api");
   const { id } = await params;
   const service = await getServiceById(Number(id));
 
   if (!service) {
-    return NextResponse.json({ error: "Service nicht gefunden" }, { status: 404 });
+    return NextResponse.json({ error: t("serviceNotFound") }, { status: 404 });
   }
 
   if (!service.healthCheckUrl) {

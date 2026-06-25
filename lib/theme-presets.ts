@@ -18,7 +18,7 @@ export const THEME_PRESETS: ThemePreset[] = [
   {
     id: "ember",
     name: "Ember",
-    description: "Orange & Schwarz — Standard-Theme",
+    description: "Orange & black — default theme",
     accent: "#f97316",
     cardBase: "#ea580c",
     glow: "#fbbf24",
@@ -26,7 +26,7 @@ export const THEME_PRESETS: ThemePreset[] = [
   {
     id: "stealth",
     name: "Stealth",
-    description: "Grautöne, zurückhaltend & clean",
+    description: "Grays, subtle & clean",
     accent: "#94a3b8",
     cardBase: "#64748b",
     glow: "#cbd5e1",
@@ -34,7 +34,7 @@ export const THEME_PRESETS: ThemePreset[] = [
   {
     id: "neon",
     name: "Neon",
-    description: "Cyan & Violett, futuristisch",
+    description: "Cyan & violet, futuristic",
     accent: "#22d3ee",
     cardBase: "#06b6d4",
     glow: "#a78bfa",
@@ -42,15 +42,15 @@ export const THEME_PRESETS: ThemePreset[] = [
   {
     id: "cobalt",
     name: "Cobalt",
-    description: "Klassisches Blau, ruhig & klar",
+    description: "Classic blue, calm & clear",
     accent: "#3b82f6",
     cardBase: "#2563eb",
     glow: "#6366f1",
   },
   {
     id: "custom",
-    name: "Eigenes",
-    description: "Eigene Akzent-, Kachel- und Glow-Farben",
+    name: "Custom",
+    description: "Your own accent, tile and glow colors",
     accent: "#f97316",
     cardBase: "#ea580c",
     glow: "#fbbf24",

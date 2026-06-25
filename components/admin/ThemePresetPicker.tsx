@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 import {
   THEME_PRESETS,
@@ -48,6 +49,8 @@ export function ThemePresetPicker({
   onChange,
   customColors,
 }: ThemePresetPickerProps) {
+  const t = useTranslations("theme.presets");
+
   return (
     <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
       {THEME_PRESETS.map((preset) => (
@@ -79,9 +82,9 @@ export function ThemePresetPicker({
               />
             )}
           </div>
-          <p className="text-sm font-medium">{preset.name}</p>
+          <p className="text-sm font-medium">{t(`${preset.id}.name`)}</p>
           <p className="mt-0.5 text-[11px] leading-snug text-muted-foreground">
-            {preset.description}
+            {t(`${preset.id}.description`)}
           </p>
         </button>
       ))}

@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import Link from "next/link";
 import { LayoutGrid, Search, Settings } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -42,8 +43,8 @@ export function DashboardHeader({
   searchQuery,
   onSearchChange,
   accentColor = "#f97316",
-  dashboardTitle = "Dashboard",
-  dashboardSubtitle = "Homelab",
+  dashboardTitle,
+  dashboardSubtitle,
   dashboardLogo = null,
   networkMode,
   onNetworkModeChange,
@@ -54,6 +55,9 @@ export function DashboardHeader({
   pageKeyboardShortcutsEnabled = true,
   lanEnabled = true,
 }: DashboardHeaderProps) {
+  const t = useTranslations("dashboard");
+  const resolvedTitle = dashboardTitle ?? t("defaultTitle");
+  const resolvedSubtitle = dashboardSubtitle ?? t("defaultSubtitle");
   const visibleBars = headerBars.filter((bar) => bar.links.length > 0);
   const hasBars = visibleBars.length > 0;
   const logoValue = dashboardLogo?.trim() ?? "";
@@ -111,11 +115,11 @@ export function DashboardHeader({
               </div>
               <div className="hidden min-w-0 sm:block">
                 <p className="truncate text-[15px] font-semibold tracking-tight text-foreground">
-                  {dashboardTitle}
+                  {resolvedTitle}
                 </p>
-                {dashboardSubtitle && (
+                {resolvedSubtitle && (
                   <p className="truncate text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
-                    {dashboardSubtitle}
+                    {resolvedSubtitle}
                   </p>
                 )}
               </div>
@@ -159,7 +163,7 @@ export function DashboardHeader({
                 <Search className="absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
                 <Input
                   type="search"
-                  placeholder="Suchen…"
+                  placeholder={t("search")}
                   value={searchQuery}
                   onChange={(e) => onSearchChange(e.target.value)}
                   className="h-9 w-44 rounded-xl border-border/60 bg-background/50 pl-9 text-sm shadow-inner ring-1 ring-foreground/5 lg:w-56"
@@ -172,7 +176,7 @@ export function DashboardHeader({
                   "bg-foreground/[0.04] text-foreground/75 transition-all",
                   "hover:border-foreground/20 hover:bg-foreground/[0.08] hover:text-foreground",
                 )}
-                title="Administration"
+                title={t("administration")}
               >
                 <Settings className="size-4" />
               </Link>

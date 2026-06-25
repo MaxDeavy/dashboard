@@ -16,7 +16,7 @@ export async function fetchPaperlessWidget(
       title: "Paperless",
       status: "warning",
       fields: [],
-      error: "API-Token erforderlich",
+      error: "API token required",
     };
   }
 
@@ -45,7 +45,7 @@ export async function fetchPaperlessWidget(
       status: "ok",
       fields: [
         {
-          label: "Dokumente",
+          label: "Documents",
           value: String(stats.documents_total ?? 0),
         },
         {
@@ -54,7 +54,7 @@ export async function fetchPaperlessWidget(
           highlight: (stats.documents_inbox ?? 0) > 0,
         },
         {
-          label: "Zeichen",
+          label: "Characters",
           value: formatCount(stats.character_count ?? 0),
         },
       ],
@@ -64,7 +64,7 @@ export async function fetchPaperlessWidget(
       title: "Paperless",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

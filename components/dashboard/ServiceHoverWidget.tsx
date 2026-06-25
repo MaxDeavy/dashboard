@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import type { WidgetResult } from "@/lib/widgets/base";
 
@@ -9,6 +10,7 @@ interface ServiceHoverWidgetProps {
 }
 
 export function ServiceHoverWidget({ serviceId }: ServiceHoverWidgetProps) {
+  const t = useTranslations("dashboard");
   const [data, setData] = useState<WidgetResult | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +28,7 @@ export function ServiceHoverWidget({ serviceId }: ServiceHoverWidgetProps) {
             title: "Widget",
             status: "error",
             fields: [],
-            error: "Daten nicht verfügbar",
+            error: t("widgetUnavailable"),
           });
         }
       } catch {
@@ -35,7 +37,7 @@ export function ServiceHoverWidget({ serviceId }: ServiceHoverWidgetProps) {
             title: "Widget",
             status: "error",
             fields: [],
-            error: "Nicht erreichbar",
+            error: t("widgetUnreachable"),
           });
         }
       } finally {
@@ -47,13 +49,13 @@ export function ServiceHoverWidget({ serviceId }: ServiceHoverWidgetProps) {
     return () => {
       cancelled = true;
     };
-  }, [serviceId]);
+  }, [serviceId, t]);
 
   if (loading) {
     return (
       <div className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
         <Loader2 className="size-4 animate-spin" />
-        Lade Live-Daten...
+        {t("widgetLoading")}
       </div>
     );
   }
@@ -72,10 +74,10 @@ export function ServiceHoverWidget({ serviceId }: ServiceHoverWidgetProps) {
         <h4 className="text-sm font-semibold">{data.title}</h4>
         <span className={`text-xs font-medium ${statusColor}`}>
           {data.status === "ok"
-            ? "Online"
+            ? t("widgetOnline")
             : data.status === "warning"
-              ? "Konfiguration"
-              : "Fehler"}
+              ? t("widgetConfig")
+              : t("widgetError")}
         </span>
       </div>
 

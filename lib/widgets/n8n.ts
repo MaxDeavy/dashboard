@@ -16,7 +16,7 @@ export async function fetchN8nWidget(
       title: "n8n",
       status: "warning",
       fields: [],
-      error: "API-Key erforderlich",
+      error: "API key required",
     };
   }
 
@@ -59,12 +59,12 @@ export async function fetchN8nWidget(
           value: String(workflowList.length),
         },
         {
-          label: "Aktiv",
+          label: "Active",
           value: String(active),
           highlight: active > 0,
         },
         {
-          label: "Laufend",
+          label: "Running",
           value: String(running),
           highlight: running > 0,
         },
@@ -75,7 +75,7 @@ export async function fetchN8nWidget(
       title: "n8n",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

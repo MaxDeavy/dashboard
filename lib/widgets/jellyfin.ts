@@ -17,7 +17,7 @@ export async function fetchJellyfinWidget(
       title: "Jellyfin",
       status: "warning",
       fields: [],
-      error: "Kein API-Key konfiguriert",
+      error: "No API key configured",
     };
   }
 
@@ -41,7 +41,7 @@ export async function fetchJellyfinWidget(
       status: "ok",
       fields: [
         {
-          label: "Aktive Streams",
+          label: "Active Streams",
           value: String(activeStreams),
           highlight: activeStreams > 0,
         },
@@ -64,7 +64,7 @@ export async function fetchJellyfinWidget(
       title: "Jellyfin",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

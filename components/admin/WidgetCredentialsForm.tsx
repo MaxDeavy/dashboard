@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -33,12 +34,16 @@ export function WidgetCredentialsForm({
   editing,
   onChange,
 }: WidgetCredentialsFormProps) {
+  const t = useTranslations("widgets");
+
   if (!form.widgetType) return null;
+
+  const unchangedPlaceholder = editing ? t("unchangedPlaceholder") : "";
 
   return (
     <>
       <div className="space-y-2">
-        <Label>API-URL</Label>
+        <Label>{t("apiUrl")}</Label>
         <Input
           value={form.apiUrl}
           onChange={(e) => onChange({ apiUrl: e.target.value })}
@@ -48,7 +53,7 @@ export function WidgetCredentialsForm({
 
       {form.widgetType === "adguard" && (
         <div className="space-y-2">
-          <Label>Benutzername (optional)</Label>
+          <Label>{t("username")} (optional)</Label>
           <Input
             value={form.username}
             onChange={(e) => onChange({ username: e.target.value })}
@@ -59,12 +64,12 @@ export function WidgetCredentialsForm({
 
       {API_KEY_WIDGETS.has(form.widgetType) && (
         <div className="space-y-2">
-          <Label>{getApiKeyLabel(form.widgetType)}</Label>
+          <Label>{getApiKeyLabel(form.widgetType, t)}</Label>
           <Input
             type="password"
             value={form.apiKey}
             onChange={(e) => onChange({ apiKey: e.target.value })}
-            placeholder={editing ? "Leer lassen = unverändert" : ""}
+            placeholder={unchangedPlaceholder}
           />
         </div>
       )}
@@ -73,9 +78,7 @@ export function WidgetCredentialsForm({
         <>
           <div className="space-y-2">
             <Label>
-              {form.widgetType === "npm"
-                ? "E-Mail"
-                : "Benutzername"}
+              {form.widgetType === "npm" ? t("email") : t("username")}
             </Label>
             <Input
               value={form.username}
@@ -87,12 +90,12 @@ export function WidgetCredentialsForm({
           </div>
           {form.widgetType !== "adguard" && (
             <div className="space-y-2">
-              <Label>Passwort</Label>
+              <Label>{t("password")}</Label>
               <Input
                 type="password"
                 value={form.password}
                 onChange={(e) => onChange({ password: e.target.value })}
-                placeholder={editing ? "Leer lassen = unverändert" : ""}
+                placeholder={unchangedPlaceholder}
               />
             </div>
           )}
@@ -102,13 +105,13 @@ export function WidgetCredentialsForm({
       {TOKEN_WIDGETS.has(form.widgetType) && (
         <div className="space-y-2">
           <Label>
-            {form.widgetType === "mealie" ? "API-Token" : "Access-Token"}
+            {form.widgetType === "mealie" ? t("apiToken") : t("accessToken")}
           </Label>
           <Input
             type="password"
             value={form.token}
             onChange={(e) => onChange({ token: e.target.value })}
-            placeholder={editing ? "Leer lassen = unverändert" : ""}
+            placeholder={unchangedPlaceholder}
           />
         </div>
       )}
@@ -116,28 +119,27 @@ export function WidgetCredentialsForm({
       {form.widgetType === "proxmox" && (
         <>
           <div className="space-y-2">
-            <Label>Token-ID</Label>
+            <Label>{t("proxmoxTokenId")}</Label>
             <Input
               value={form.token}
               onChange={(e) => onChange({ token: e.target.value })}
               placeholder="root@pam!dashboard"
             />
             <p className="text-xs text-muted-foreground">
-              Format: Benutzer@Realm!Tokenname (ohne Secret). Node-Name wird bei
-              Bedarf automatisch ermittelt.
+              {t("proxmoxTokenHint")}
             </p>
           </div>
           <div className="space-y-2">
-            <Label>Secret</Label>
+            <Label>{t("proxmoxTokenSecret")}</Label>
             <Input
               type="password"
               value={form.tokenSecret}
               onChange={(e) => onChange({ tokenSecret: e.target.value })}
-              placeholder={editing ? "Leer lassen = unverändert" : ""}
+              placeholder={unchangedPlaceholder}
             />
           </div>
           <div className="space-y-2">
-            <Label>Node-Name</Label>
+            <Label>{t("proxmoxNode")}</Label>
             <Input
               value={form.extraNode}
               onChange={(e) => onChange({ extraNode: e.target.value })}
@@ -149,100 +151,87 @@ export function WidgetCredentialsForm({
 
       {form.widgetType === "portainer" && (
         <div className="space-y-2">
-          <Label>Endpoint-ID (optional)</Label>
+          <Label>{t("portainerEndpoint")}</Label>
           <Input
             value={form.extraEndpoint}
             onChange={(e) => onChange({ extraEndpoint: e.target.value })}
-            placeholder="Leer = erster lokaler Endpoint"
+            placeholder={t("portainerEndpointPlaceholder")}
           />
         </div>
       )}
 
       {form.widgetType === "homeassistant" && (
         <div className="space-y-2">
-          <Label>Entity-ID (optional)</Label>
+          <Label>{t("homeAssistantEntity")}</Label>
           <Input
             value={form.extraEntity}
             onChange={(e) => onChange({ extraEntity: e.target.value })}
-            placeholder="z.B. sensor.cpu_temp"
+            placeholder={t("homeAssistantPlaceholder")}
           />
         </div>
       )}
 
       {form.widgetType === "docker" && (
-        <p className="text-xs text-muted-foreground">
-          Docker Engine API URL, z. B. http://docker-socket-proxy:2375
-        </p>
+        <p className="text-xs text-muted-foreground">{t("dockerHint")}</p>
       )}
 
       {form.widgetType === "pihole" && (
-            <p className="text-xs text-muted-foreground">
-              App-Passwort aus Pi-hole v6 (Einstellungen → API) oder API-Key aus
-              v5. Basis-URL ohne <code className="text-[10px]">/admin</code>.
-            </p>
+        <p className="text-xs text-muted-foreground">
+          {t("piholeHint", { admin: "/admin" })}
+        </p>
       )}
 
       {form.widgetType === "immich" && (
         <p className="text-xs text-muted-foreground">
-          API-Key unter Benutzereinstellungen → API-Schlüssel mit Berechtigung{" "}
-          <code className="text-[10px]">server.statistics</code>.
+          {t("immichHint", { permission: "server.statistics" })}
         </p>
       )}
 
       {form.widgetType === "mealie" && (
-        <p className="text-xs text-muted-foreground">
-          API-Token unter Profil → API-Tokens erzeugen (Bearer-Token).
-        </p>
+        <p className="text-xs text-muted-foreground">{t("mealieHint")}</p>
       )}
 
       {form.widgetType === "kavita" && (
         <p className="text-xs text-muted-foreground">
-          Auth-Key unter Benutzereinstellungen → Auth Keys (Header{" "}
-          <code className="text-[10px]">x-api-key</code>).
+          {t("kavitaHint", { header: "x-api-key" })}
         </p>
       )}
 
       {form.widgetType === "plex" && (
-        <p className="text-xs text-muted-foreground">
-          Plex-Token aus Kontoeinstellungen. Basis-URL des Media Servers (Port
-          32400), ohne Pfad.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("plexHint")}</p>
       )}
 
       {form.widgetType === "nextcloud" && (
         <p className="text-xs text-muted-foreground">
-          App „Server info“ muss aktiv sein. Token per{" "}
-          <code className="text-[10px]">occ config:app:set serverinfo token</code>{" "}
-          setzen — nur ASCII-Zeichen (keine Umlaute).
+          {t("nextcloudHint", {
+            command: "occ config:app:set serverinfo token",
+          })}
         </p>
       )}
 
       {form.widgetType === "overseerr" && (
-        <p className="text-xs text-muted-foreground">
-          API-Key aus Overseerr → Einstellungen → General → API Key.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("overseerrHint")}</p>
       )}
 
       {form.widgetType === "technitium" && (
         <>
           <div className="space-y-2">
-            <Label>Zeitraum (optional)</Label>
+            <Label>{t("technitiumRange")}</Label>
             <Input
               value={form.extraEndpoint}
               onChange={(e) => onChange({ extraEndpoint: e.target.value })}
               placeholder="LastHour"
             />
             <p className="text-xs text-muted-foreground">
-              LastHour, LastDay, LastWeek, LastMonth oder LastYear. API-Token im
-              Technitium-Dashboard erzeugen.
+              {t("technitiumRangeHint")}
             </p>
           </div>
           <div className="space-y-2">
-            <Label>Cluster-Node (optional)</Label>
+            <Label>{t("technitiumNode")}</Label>
             <Input
               value={form.extraNode}
               onChange={(e) => onChange({ extraNode: e.target.value })}
-              placeholder="Leer = aktueller Node"
+              placeholder={t("technitiumNodePlaceholder")}
             />
           </div>
         </>
@@ -251,128 +240,117 @@ export function WidgetCredentialsForm({
       {form.widgetType === "qnap" && (
         <>
           <div className="space-y-2">
-            <Label>Volume-Name (optional)</Label>
+            <Label>{t("qnapVolume")}</Label>
             <Input
               value={form.extraEntity}
               onChange={(e) => onChange({ extraEntity: e.target.value })}
-              placeholder="Leer = alle Volumes"
+              placeholder={t("qnapVolumePlaceholder")}
             />
           </div>
-          <p className="text-xs text-muted-foreground">
-            Benutzer braucht Systemüberwachung-Rechte, 2FA muss deaktiviert sein.
-          </p>
+          <p className="text-xs text-muted-foreground">{t("qnapHint")}</p>
         </>
       )}
 
       {form.widgetType === "guacamole" && (
         <div className="space-y-2">
-          <Label>Datenquelle (optional)</Label>
+          <Label>{t("guacamoleDataSource")}</Label>
           <Input
             value={form.extraEndpoint}
             onChange={(e) => onChange({ extraEndpoint: e.target.value })}
-            placeholder="postgresql oder mysql"
+            placeholder={t("guacamolePlaceholder")}
           />
         </div>
       )}
 
       {form.widgetType === "adguard" && (
         <p className="text-xs text-muted-foreground">
-          Admin-Passwort der AdGuard-Weboberfläche. Optional Benutzername, Standard
-          ist <code className="text-[10px]">admin</code>.
+          {t("adguardHint", { admin: "admin" })}
         </p>
       )}
 
       {form.widgetType === "npm" && (
         <p className="text-xs text-muted-foreground">
-          Login-Daten der NPM-Weboberfläche (Port 81). API-URL ohne{" "}
-          <code className="text-[10px]">/api</code>.
+          {t("npmHint", { api: "/api" })}
         </p>
       )}
 
       {form.widgetType === "transmission" && (
-        <p className="text-xs text-muted-foreground">
-          RPC-URL zur Transmission-Instanz. Benutzername leer lassen, wenn nur
-          Passwort gesetzt ist.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("transmissionHint")}</p>
       )}
 
       {form.widgetType === "deluge" && (
         <p className="text-xs text-muted-foreground">
-          Deluge-WebUI-URL. Passwort aus den WebUI-Einstellungen (
-          <code className="text-[10px]">/json</code>-API).
+          {t("delugeHint", { api: "/json" })}
         </p>
       )}
 
       {form.widgetType === "audiobookshelf" && (
         <p className="text-xs text-muted-foreground">
-          API-Token unter Benutzer → API Keys erzeugen.
+          {t("audiobookshelfHint")}
         </p>
       )}
 
       {form.widgetType === "n8n" && (
-        <p className="text-xs text-muted-foreground">
-          API-Key unter Einstellungen → API. Basis-URL ohne Pfad.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("n8nHint")}</p>
       )}
 
       {form.widgetType === "grafana" && (
-        <p className="text-xs text-muted-foreground">
-          Service-Account- oder API-Key mit Lesezugriff auf Organisation/Stats.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("grafanaHint")}</p>
       )}
 
       {form.widgetType === "paperless" && (
-        <p className="text-xs text-muted-foreground">
-          API-Token unter Benutzerprofil → API Tokens erzeugen.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("paperlessHint")}</p>
       )}
 
       {form.widgetType === "tautulli" && (
-        <p className="text-xs text-muted-foreground">
-          API-Key aus Tautulli → Einstellungen → Webinterface.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("tautulliHint")}</p>
       )}
 
       {form.widgetType === "navidrome" && (
-        <p className="text-xs text-muted-foreground">
-          Navidrome-Zugangsdaten (Subsonic-API). URL zur Web-Oberfläche.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("navidromeHint")}</p>
       )}
 
       {form.widgetType === "fritzbox" && (
         <p className="text-xs text-muted-foreground">
-          Keine Anmeldung nötig (UPnP/TR-064). URL zur Fritz!Box, z. B.{" "}
-          <code className="text-[10px]">http://192.168.178.1</code>. UPnP-Zugriff
-          für Apps muss aktiv sein.
+          {t("fritzboxHint", { example: "http://192.168.178.1" })}
         </p>
       )}
 
       {form.widgetType === "filebrowser" && (
         <p className="text-xs text-muted-foreground">
-          Admin-Zugang für Login und Speicher-Statistik (
-          <code className="text-[10px]">/api/usage</code>).
+          {t("filebrowserHint", { api: "/api/usage" })}
         </p>
       )}
     </>
   );
 }
 
-function getApiKeyLabel(widgetType: string): string {
-  if (widgetType === "portainer") return "API-Token";
-  if (widgetType === "pihole") return "App-Passwort / API-Key";
-  if (widgetType === "adguard") return "Passwort";
-  if (widgetType === "plex") return "Plex-Token";
-  if (widgetType === "nextcloud") return "NC-Token";
-  if (widgetType === "immich") return "API-Key (server.statistics)";
-  if (widgetType === "kavita") return "Auth-Key";
-  if (widgetType === "technitium") return "API-Token";
-  if (widgetType === "audiobookshelf") return "API-Token";
-  if (widgetType === "paperless") return "API-Token";
-  if (widgetType === "tautulli") return "API-Key";
-  if (widgetType === "n8n") return "API-Key";
-  if (widgetType === "grafana") return "API-Key";
-  return "API-Key";
+function getApiKeyLabel(
+  widgetType: string,
+  t: ReturnType<typeof useTranslations<"widgets">>,
+): string {
+  const key = widgetType as keyof typeof credentialLabelKeys;
+  if (key in credentialLabelKeys) {
+    return t(`credentialLabels.${key}`);
+  }
+  return t("credentialLabels.default");
 }
+
+const credentialLabelKeys = {
+  portainer: true,
+  pihole: true,
+  adguard: true,
+  plex: true,
+  nextcloud: true,
+  immich: true,
+  kavita: true,
+  technitium: true,
+  audiobookshelf: true,
+  paperless: true,
+  tautulli: true,
+  n8n: true,
+  grafana: true,
+} as const;
 
 function getApiUrlPlaceholder(widgetType: string): string {
   switch (widgetType) {

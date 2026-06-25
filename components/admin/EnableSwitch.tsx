@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
 interface EnableSwitchProps {
@@ -15,12 +18,14 @@ export function EnableSwitch({
   compact = false,
   mini = false,
 }: EnableSwitchProps) {
+  const t = useTranslations("enableSwitch");
+
   return (
     <button
       type="button"
       role="switch"
       aria-checked={enabled}
-      aria-label={enabled ? "Dienst aktiv" : "Dienst inaktiv"}
+      aria-label={enabled ? t("enabled") : t("disabled")}
       disabled={disabled}
       onClick={() => onChange(!enabled)}
       className={cn(

@@ -19,7 +19,7 @@ export async function fetchMealieWidget(
       title: "Mealie",
       status: "warning",
       fields: [],
-      error: "Kein API-Token konfiguriert",
+      error: "No API token configured",
     };
   }
 
@@ -55,13 +55,13 @@ export async function fetchMealieWidget(
       status: "ok",
       fields: [
         {
-          label: "Rezepte",
+          label: "Recipes",
           value: String(recipes),
           highlight: recipes > 0,
         },
-        { label: "Kategorien", value: String(stats.totalCategories ?? 0) },
+        { label: "Categories", value: String(stats.totalCategories ?? 0) },
         { label: "Tags", value: String(stats.totalTags ?? 0) },
-        { label: "Nutzer", value: String(stats.totalUsers ?? 0) },
+        { label: "Users", value: String(stats.totalUsers ?? 0) },
       ],
     };
   } catch (error) {
@@ -69,7 +69,7 @@ export async function fetchMealieWidget(
       title: "Mealie",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

@@ -1,5 +1,6 @@
 import fs from "fs";
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import path from "path";
 import { getServiceIconFilePath } from "@/lib/uploads";
 
@@ -14,23 +15,24 @@ const MIME_TYPES: Record<string, string> = {
 };
 
 export async function GET(request: Request) {
+  const t = await getTranslations("api");
   const { searchParams } = new URL(request.url);
   const serviceId = Number(searchParams.get("serviceId"));
   const filename = searchParams.get("file");
 
   if (!serviceId || !filename) {
-    return NextResponse.json({ error: "Ungültige Anfrage" }, { status: 400 });
+    return NextResponse.json({ error: t("invalidRequest") }, { status: 400 });
   }
 
   let filePath: string;
   try {
     filePath = getServiceIconFilePath(serviceId, filename);
   } catch {
-    return NextResponse.json({ error: "Ungültiger Pfad" }, { status: 400 });
+    return NextResponse.json({ error: t("invalidPath") }, { status: 400 });
   }
 
   if (!fs.existsSync(filePath)) {
-    return NextResponse.json({ error: "Datei nicht gefunden" }, { status: 404 });
+    return NextResponse.json({ error: t("fileNotFound") }, { status: 404 });
   }
 
   const ext = path.extname(filePath).toLowerCase();

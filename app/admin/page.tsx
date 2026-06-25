@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useState, useCallback, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -32,6 +33,8 @@ interface LinkBarsData {
 }
 
 export default function AdminPage() {
+  const t = useTranslations("admin");
+  const tc = useTranslations("common");
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -98,7 +101,7 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="py-20 text-center text-muted-foreground">Lade…</div>
+      <div className="py-20 text-center text-muted-foreground">{tc("loading")}</div>
     );
   }
 
@@ -109,16 +112,16 @@ export default function AdminPage() {
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full min-w-0">
       <TabsList className="glass-panel mb-6 h-auto w-full justify-start gap-1 rounded-xl p-1 sm:w-auto">
         <TabsTrigger value="services" className="rounded-lg px-4 py-2">
-          Dienste
+          {t("tabs.services")}
         </TabsTrigger>
         <TabsTrigger value="pages" className="rounded-lg px-4 py-2">
-          Seiten
+          {t("tabs.pages")}
         </TabsTrigger>
         <TabsTrigger value="nav" className="rounded-lg px-4 py-2">
-          Header & Footer
+          {t("tabs.nav")}
         </TabsTrigger>
         <TabsTrigger value="settings" className="rounded-lg px-4 py-2">
-          Einstellungen
+          {t("tabs.settings")}
         </TabsTrigger>
       </TabsList>
 

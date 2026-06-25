@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import type { HealthStatus } from "@/lib/health";
 import type { Category, LinkBarWithLinks, Page } from "@/lib/db/schema";
 import { applyColorMode, resolveTheme } from "@/lib/theme-presets";
@@ -49,6 +50,7 @@ function resolveInitialPageId(pages: Page[]): number {
 }
 
 export function DashboardClient({ initialData }: { initialData: DashboardData }) {
+  const t = useTranslations("dashboard");
   const [data, setData] = useState(initialData);
   const [activePageId, setActivePageId] = useState(() =>
     resolveInitialPageId(initialData.pages),
@@ -125,8 +127,8 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
   const glowColor = theme.glowColor;
   const colorMode = theme.colorMode;
   const dashboardTitle =
-    data.settings.dashboard_title ?? "Dashboard";
-  const dashboardSubtitle = data.settings.dashboard_subtitle ?? "Homelab";
+    data.settings.dashboard_title ?? t("defaultTitle");
+  const dashboardSubtitle = data.settings.dashboard_subtitle ?? t("defaultSubtitle");
   const showPageSwitcher =
     data.settings[SHOW_PAGE_SWITCHER_SETTING] !== "false";
   const pageKeyboardShortcutsEnabled =
@@ -198,7 +200,7 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
           )}
           <input
             type="search"
-            placeholder="Suchen…"
+            placeholder={t("search")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full rounded-xl border border-border/60 bg-background/50 px-4 py-2.5 text-sm shadow-inner ring-1 ring-foreground/5 placeholder:text-muted-foreground backdrop-blur-sm"

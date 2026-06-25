@@ -74,23 +74,23 @@ function removeWalFiles(dbPath: string) {
 function parseManifest(zip: AdmZip): BackupManifest {
   const entry = zip.getEntry(MANIFEST_FILE);
   if (!entry) {
-    throw new Error("Ungültiges Backup: manifest.json fehlt");
+    throw new Error("Invalid backup: manifest.json missing");
   }
 
   let manifest: BackupManifest;
   try {
     manifest = JSON.parse(entry.getData().toString("utf8")) as BackupManifest;
   } catch {
-    throw new Error("Ungültiges Backup: manifest.json ist beschädigt");
+    throw new Error("Invalid backup: manifest.json is corrupted");
   }
 
   if (manifest.app !== "homelab-dashboard" || manifest.version !== MANIFEST_VERSION) {
-    throw new Error("Ungültiges oder inkompatibles Backup");
+    throw new Error("Invalid or incompatible backup");
   }
 
   const dbEntry = zip.getEntry(DB_ARCHIVE_PATH);
   if (!dbEntry) {
-    throw new Error("Ungültiges Backup: Datenbank fehlt");
+    throw new Error("Invalid backup: database missing");
   }
 
   return manifest;
@@ -137,7 +137,7 @@ export function restoreBackupArchive(buffer: Buffer): void {
 
   const dbEntry = zip.getEntry(DB_ARCHIVE_PATH);
   if (!dbEntry) {
-    throw new Error("Ungültiges Backup: Datenbank fehlt");
+    throw new Error("Invalid backup: database missing");
   }
 
   fs.writeFileSync(dbPath, dbEntry.getData());

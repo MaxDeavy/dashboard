@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { GripVertical, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EnableSwitch } from "@/components/admin/EnableSwitch";
@@ -28,6 +29,8 @@ export function PagesAdminBoard({
   onError,
   togglingId,
 }: PagesAdminBoardProps) {
+  const t = useTranslations("adminPages");
+  const tc = useTranslations("common");
   const [orderedPages, setOrderedPages] = useState(pages);
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [dropIndex, setDropIndex] = useState<number | null>(null);
@@ -62,16 +65,16 @@ export function PagesAdminBoard({
       });
 
       if (response.ok) {
-        onSuccess("Reihenfolge gespeichert");
+        onSuccess(tc("orderSaved"));
         onRefresh();
       } else {
-        onError("Reihenfolge konnte nicht gespeichert werden");
+        onError(tc("orderSaveFailed"));
         setOrderedPages(
           [...pages].sort((a, b) => a.sortOrder - b.sortOrder),
         );
       }
     } catch {
-      onError("Reihenfolge konnte nicht gespeichert werden");
+      onError(tc("orderSaveFailed"));
       setOrderedPages(
         [...pages].sort((a, b) => a.sortOrder - b.sortOrder),
       );
@@ -159,7 +162,7 @@ export function PagesAdminBoard({
                 setDropIndex(null);
               }}
               className="shrink-0 cursor-grab rounded p-0.5 text-muted-foreground/50 hover:bg-muted/40 hover:text-muted-foreground active:cursor-grabbing"
-              aria-label={`${page.name} verschieben`}
+              aria-label={t("movePage", { name: page.name })}
             >
               <GripVertical className="size-4" />
             </button>
@@ -171,7 +174,9 @@ export function PagesAdminBoard({
             >
               <p className="truncate text-sm font-semibold">{page.name}</p>
               <p className="text-[10px] text-muted-foreground">
-                Taste {index < 9 ? index + 1 : "—"} im Dashboard
+                {t("keyboardShortcut", {
+                  key: index < 9 ? String(index + 1) : "—",
+                })}
               </p>
             </button>
 
@@ -197,7 +202,7 @@ export function PagesAdminBoard({
 
       {orderedPages.length === 0 && (
         <div className="flex min-h-24 items-center justify-center rounded-xl border border-dashed border-border/50 text-sm text-muted-foreground">
-          Noch keine Seite — „Neue Seite“ oben rechts
+          {t("noPagesYet")}
         </div>
       )}
     </div>

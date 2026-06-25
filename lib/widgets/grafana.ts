@@ -16,7 +16,7 @@ export async function fetchGrafanaWidget(
       title: "Grafana",
       status: "warning",
       fields: [],
-      error: "API-Key erforderlich",
+      error: "API key required",
     };
   }
 
@@ -65,7 +65,7 @@ export async function fetchGrafanaWidget(
           value: String(dashboards),
         },
         {
-          label: "Benutzer",
+          label: "Users",
           value: String(users),
         },
         {
@@ -80,7 +80,7 @@ export async function fetchGrafanaWidget(
       title: "Grafana",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

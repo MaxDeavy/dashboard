@@ -1,6 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Globe, Wifi } from "lucide-react";
 import {
   NETWORK_MODE_STORAGE_KEY,
@@ -21,13 +22,15 @@ export function NetworkModeToggle({
   onChange,
   className,
 }: NetworkModeToggleProps) {
+  const t = useTranslations("dashboard");
+
   return (
     <div
       className={cn(
         "relative flex rounded-xl border border-foreground/10 bg-foreground/[0.04] p-1 shadow-inner",
         className,
       )}
-      title="Web = externe URL · LAN = lokale IP (Einstellung wird gespeichert)"
+      title={t("networkModeTooltip")}
     >
       <div
         className="absolute top-1 bottom-1 rounded-lg bg-foreground/10 shadow-sm transition-all duration-300 ease-out"

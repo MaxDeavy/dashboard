@@ -16,7 +16,7 @@ export async function fetchTautulliWidget(
       title: "Tautulli",
       status: "warning",
       fields: [],
-      error: "API-Key erforderlich",
+      error: "API key required",
     };
   }
 
@@ -89,7 +89,7 @@ export async function fetchTautulliWidget(
           highlight: (activity?.stream_count_transcode ?? 0) > 0,
         },
         {
-          label: "Bibliotheken",
+          label: "Libraries",
           value: String(libraries),
         },
       ],
@@ -99,7 +99,7 @@ export async function fetchTautulliWidget(
       title: "Tautulli",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

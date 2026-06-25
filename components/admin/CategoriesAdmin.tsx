@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -39,6 +40,8 @@ export function CategoriesAdmin({
   onSuccess,
   onError,
 }: CategoriesAdminProps) {
+  const t = useTranslations("adminCategories");
+  const tc = useTranslations("common");
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Category | null>(null);
   const [name, setName] = useState("");
@@ -95,25 +98,25 @@ export function CategoriesAdmin({
     });
 
     if (response.ok) {
-      onSuccess(editing ? "Kategorie aktualisiert" : "Kategorie erstellt");
+      onSuccess(editing ? t("categoryUpdated") : t("categoryCreated"));
       setOpen(false);
       resetForm();
       onRefresh();
     } else {
-      onError("Fehler beim Speichern");
+      onError(tc("saveFailed"));
     }
   }
 
   async function handleDelete(id: number) {
-    if (!confirm("Kategorie wirklich löschen? Alle Dienste werden mitgelöscht."))
+    if (!confirm(t("confirmDeleteCategory")))
       return;
 
     const response = await fetch(`/api/categories/${id}`, { method: "DELETE" });
     if (response.ok) {
-      onSuccess("Kategorie gelöscht");
+      onSuccess(t("categoryDeleted"));
       onRefresh();
     } else {
-      onError("Fehler beim Löschen");
+      onError(tc("deleteFailed"));
     }
   }
 
@@ -134,13 +137,13 @@ export function CategoriesAdmin({
       });
 
       if (response.ok) {
-        onSuccess(enabled ? "Kategorie aktiviert" : "Kategorie ausgeblendet");
+        onSuccess(enabled ? t("categoryEnabled") : t("categoryHidden"));
         onRefresh();
       } else {
-        onError("Status konnte nicht gespeichert werden");
+        onError(tc("statusSaveFailed"));
       }
     } catch {
-      onError("Status konnte nicht gespeichert werden");
+      onError(tc("statusSaveFailed"));
     } finally {
       setTogglingId(null);
     }
@@ -150,8 +153,8 @@ export function CategoriesAdmin({
     <Card className="glass-panel-strong rounded-2xl border-white/10 bg-transparent">
       <CardHeader className="flex flex-row items-center justify-between">
         <div>
-          <CardTitle>Kategorien</CardTitle>
-          <CardDescription>Spalten im Dashboard verwalten</CardDescription>
+          <CardTitle>{t("title")}</CardTitle>
+          <CardDescription>{t("description")}</CardDescription>
         </div>
         <Dialog
           open={open}
@@ -170,19 +173,19 @@ export function CategoriesAdmin({
             render={
               <Button size="sm" onClick={openNew}>
                 <Plus className="mr-2 size-4" />
-                Neu
+                {t("new")}
               </Button>
             }
           />
           <DialogContent>
             <DialogHeader>
               <DialogTitle>
-                {editing ? "Kategorie bearbeiten" : "Neue Kategorie"}
+                {editing ? t("editCategory") : t("newCategory")}
               </DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
-                <Label>Name</Label>
+                <Label>{tc("name")}</Label>
                 <Input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -191,7 +194,7 @@ export function CategoriesAdmin({
                 />
               </div>
               <div className="space-y-2">
-                <Label>Kategoriefarbe (optional)</Label>
+                <Label>{t("categoryColor")}</Label>
                 <div className="flex gap-2">
                   <Input
                     type="color"
@@ -202,7 +205,7 @@ export function CategoriesAdmin({
                   <Input
                     value={color}
                     onChange={(e) => setColor(e.target.value)}
-                    placeholder={`leer = ${defaultCardColor} (Theme)`}
+                    placeholder={tc("examplePlaceholder", { value: defaultCardColor })}
                   />
                   <Button
                     type="button"
@@ -210,25 +213,22 @@ export function CategoriesAdmin({
                     className="shrink-0"
                     onClick={() => setColor("")}
                   >
-                    Standard
+                    {tc("default")}
                   </Button>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Färbt Kategorie-Reiter und den Glanz aller Kacheln in dieser Spalte.
+                  {t("categoryColorHint")}
                 </p>
               </div>
               <Button type="submit" className="w-full">
-                Speichern
+                {tc("save")}
               </Button>
             </form>
           </DialogContent>
         </Dialog>
       </CardHeader>
       <CardContent className="space-y-3">
-        <p className="text-xs text-muted-foreground">
-          Kachel anklicken zum Bearbeiten. Per Drag &amp; Drop die
-          Spaltenreihenfolge ändern.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("editBoardHint")}</p>
 
         <CategoriesAdminBoard
           categories={categories}

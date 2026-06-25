@@ -25,7 +25,7 @@ export async function fetchKavitaWidget(
       title: "Kavita",
       status: "warning",
       fields: [],
-      error: "Kein API-Key konfiguriert",
+      error: "No API key configured",
     };
   }
 
@@ -55,12 +55,12 @@ export async function fetchKavitaWidget(
       status: "ok",
       fields: [
         {
-          label: "Serien",
+          label: "Series",
           value: String(series),
           highlight: series > 0,
         },
-        { label: "Dateien", value: String(files) },
-        { label: "Speicher", value: formatBytes(size) },
+        { label: "Files", value: String(files) },
+        { label: "Storage", value: formatBytes(size) },
       ],
     };
   } catch (error) {
@@ -68,7 +68,7 @@ export async function fetchKavitaWidget(
       title: "Kavita",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

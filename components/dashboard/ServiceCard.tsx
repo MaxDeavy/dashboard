@@ -1,6 +1,7 @@
 "use client";
 
 import { Activity, Wifi } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { HealthStatus } from "@/lib/health";
 import { hasLanUrl, resolveServiceUrl, type NetworkMode } from "@/lib/network-mode";
 import { parseLinkOpenMode } from "@/lib/link-open-mode";
@@ -61,6 +62,7 @@ export function ServiceCard({
   layoutEditMode = false,
   dragging = false,
 }: ServiceCardProps) {
+  const t = useTranslations("dashboard");
   const href = resolveServiceUrl(service, networkMode);
   const lanMissing = networkMode === "lan" && !hasLanUrl(service);
   const tileColor = resolveTileColor(
@@ -171,7 +173,7 @@ export function ServiceCard({
       {service.hasWidget && (
         <span
           className="absolute right-2 bottom-2 flex items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/[0.07] p-0.5 transition-opacity duration-300 group-hover:opacity-35"
-          title="Live-Daten verfügbar"
+          title={t("liveDataAvailable")}
         >
           <Activity
             className="size-2 text-emerald-400/50"
@@ -182,7 +184,7 @@ export function ServiceCard({
       )}
 
       {networkMode === "lan" && hasLanUrl(service) && (
-        <span title="LAN-URL aktiv" className="absolute top-2 right-2">
+        <span title={t("lanUrlActive")} className="absolute top-2 right-2">
           <Wifi className="size-2.5 text-emerald-400/80" />
         </span>
       )}

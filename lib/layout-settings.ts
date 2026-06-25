@@ -9,11 +9,11 @@ export const ICON_FRAME_STYLES = [
 export type IconFrameStyle = (typeof ICON_FRAME_STYLES)[number];
 
 export const ICON_FRAME_LABELS: Record<IconFrameStyle, string> = {
-  rounded: "Abgerundet",
+  rounded: "Rounded",
   squircle: "Squircle",
-  circle: "Kreis",
-  square: "Eckig",
-  none: "Ohne Rahmen",
+  circle: "Circle",
+  square: "Square",
+  none: "No frame",
 };
 
 export const DEFAULT_ICON_SIZE = 44;

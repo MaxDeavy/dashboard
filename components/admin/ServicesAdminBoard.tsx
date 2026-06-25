@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { GripVertical, Plus, Settings, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ServiceIconDisplay } from "@/components/ServiceIconDisplay";
@@ -89,6 +90,8 @@ export function ServicesAdminBoard({
   onError,
   togglingId,
 }: ServicesAdminBoardProps) {
+  const t = useTranslations("adminServices");
+  const tc = useTranslations("common");
   const [columns, setColumns] = useState<ServiceBoardColumn<ServiceWithWidget>[]>(
     [],
   );
@@ -175,14 +178,14 @@ export function ServicesAdminBoard({
       });
 
       if (response.ok) {
-        onSuccess("Reihenfolge gespeichert");
+        onSuccess(tc("orderSaved"));
         onRefresh();
       } else {
-        onError("Reihenfolge konnte nicht gespeichert werden");
+        onError(tc("orderSaveFailed"));
         setColumns(buildServiceBoard(services, categories, pageId));
       }
     } catch {
-      onError("Reihenfolge konnte nicht gespeichert werden");
+      onError(tc("orderSaveFailed"));
       setColumns(buildServiceBoard(services, categories, pageId));
     } finally {
       setSavingServiceOrder(false);
@@ -212,16 +215,16 @@ export function ServicesAdminBoard({
       });
 
       if (response.ok) {
-        onSuccess("Kategorie-Reihenfolge gespeichert");
+        onSuccess(t("categoryOrderSaved"));
         onRefresh();
       } else {
-        onError("Kategorie-Reihenfolge konnte nicht gespeichert werden");
+        onError(t("categoryOrderSaveFailed"));
         setOrderedCategories(
           [...pageCategories].sort((a, b) => a.columnPosition - b.columnPosition),
         );
       }
     } catch {
-      onError("Kategorie-Reihenfolge konnte nicht gespeichert werden");
+      onError(t("categoryOrderSaveFailed"));
       setOrderedCategories(
         [...categories].sort((a, b) => a.columnPosition - b.columnPosition),
       );
@@ -322,7 +325,7 @@ export function ServicesAdminBoard({
               setServiceDropTarget(null);
             }}
             className="shrink-0 cursor-grab rounded p-0.5 text-muted-foreground/50 hover:bg-muted/40 hover:text-muted-foreground active:cursor-grabbing"
-            aria-label={`${service.name} verschieben`}
+            aria-label={t("moveService", { name: service.name })}
           >
             <GripVertical className="size-3.5" />
           </button>
@@ -423,7 +426,7 @@ export function ServicesAdminBoard({
               setCategoryDropIndex(null);
             }}
             className="shrink-0 cursor-grab rounded p-0.5 text-muted-foreground/50 hover:bg-muted/40 hover:text-muted-foreground active:cursor-grabbing"
-            aria-label={`Kategorie ${category.name} verschieben`}
+            aria-label={t("moveCategory", { name: category.name })}
           >
             <GripVertical className="size-4" />
           </button>
@@ -452,7 +455,7 @@ export function ServicesAdminBoard({
             size="icon"
             className="size-7 shrink-0 text-muted-foreground hover:text-foreground"
             onClick={() => onEditCategory(category)}
-            aria-label={`${category.name} Einstellungen`}
+            aria-label={t("categorySettings", { name: category.name })}
           >
             <Settings className="size-3.5" />
           </Button>
@@ -469,7 +472,7 @@ export function ServicesAdminBoard({
             onClick={() => onAddService(column.categoryId)}
           >
             <Plus className="mr-1 size-3" />
-            Dienst
+            {t("addService")}
           </Button>
         </div>
 
@@ -480,7 +483,7 @@ export function ServicesAdminBoard({
 
           {column.services.length === 0 && (
             <div className="flex min-h-12 items-center justify-center rounded-lg border border-dashed border-border/50 text-xs text-muted-foreground">
-              Dienste hierher ziehen
+              {t("dragServicesHere")}
             </div>
           )}
         </div>
@@ -490,10 +493,7 @@ export function ServicesAdminBoard({
 
   return (
     <div className="space-y-4">
-      <p className="text-xs text-muted-foreground">
-        Kategorien per Drag &amp; Drop anordnen. Dienste in der Liste von oben
-        nach unten sortieren — diese Reihenfolge gilt später im Dashboard.
-      </p>
+      <p className="text-xs text-muted-foreground">{t("boardHint")}</p>
 
       <div
         className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
@@ -531,7 +531,7 @@ export function ServicesAdminBoard({
 
         {categoryColumns.length === 0 && (
           <div className="col-span-full flex min-h-24 items-center justify-center rounded-xl border border-dashed border-border/50 text-sm text-muted-foreground">
-            Noch keine Kategorie — „Neue Kategorie“ oben rechts anlegen
+            {t("noCategoriesYet")}
           </div>
         )}
       </div>

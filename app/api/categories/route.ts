@@ -1,5 +1,6 @@
 import { asc, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
 
@@ -15,10 +16,11 @@ export async function POST(request: Request) {
   const authError = await requireAuth();
   if (authError) return authError;
 
+  const t = await getTranslations("api");
   const body = await request.json();
   const pageId = Number(body.pageId);
   if (!Number.isFinite(pageId) || pageId < 1) {
-    return NextResponse.json({ error: "pageId erforderlich" }, { status: 400 });
+    return NextResponse.json({ error: t("pageIdRequired") }, { status: 400 });
   }
 
   const existing = await db

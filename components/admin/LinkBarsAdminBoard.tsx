@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { GripVertical, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EnableSwitch } from "@/components/admin/EnableSwitch";
@@ -32,6 +33,8 @@ export function LinkBarsAdminBoard({
   onError,
   togglingId,
 }: LinkBarsAdminBoardProps) {
+  const t = useTranslations("adminLinkBars");
+  const tc = useTranslations("common");
   const [orderedLinks, setOrderedLinks] = useState(links);
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [dropIndex, setDropIndex] = useState<number | null>(null);
@@ -66,14 +69,14 @@ export function LinkBarsAdminBoard({
       });
 
       if (response.ok) {
-        onSuccess("Reihenfolge gespeichert");
+        onSuccess(tc("orderSaved"));
         onRefresh();
       } else {
-        onError("Reihenfolge konnte nicht gespeichert werden");
+        onError(tc("orderSaveFailed"));
         setOrderedLinks([...links].sort((a, b) => a.sortOrder - b.sortOrder));
       }
     } catch {
-      onError("Reihenfolge konnte nicht gespeichert werden");
+      onError(tc("orderSaveFailed"));
       setOrderedLinks([...links].sort((a, b) => a.sortOrder - b.sortOrder));
     } finally {
       setSavingOrder(false);
@@ -162,7 +165,7 @@ export function LinkBarsAdminBoard({
                   controlButtonClass,
                   "cursor-grab text-muted-foreground/50 hover:bg-muted/40 hover:text-muted-foreground active:cursor-grabbing",
                 )}
-                aria-label={`${link.label} verschieben`}
+                aria-label={t("moveLink", { name: link.label })}
               >
                 <GripVertical className="size-3.5" />
               </button>
@@ -202,7 +205,7 @@ export function LinkBarsAdminBoard({
 
       {orderedLinks.length === 0 && (
         <div className="col-span-full flex min-h-16 items-center justify-center rounded-lg border border-dashed border-border/50 text-xs text-muted-foreground">
-          Noch keine Links — „Link hinzufügen“ oben rechts
+          {t("noLinksYet")}
         </div>
       )}
     </div>

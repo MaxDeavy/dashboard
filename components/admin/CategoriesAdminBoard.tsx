@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useTranslations } from "next-intl";
 import { GripVertical, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { EnableSwitch } from "@/components/admin/EnableSwitch";
@@ -57,6 +58,8 @@ export function CategoriesAdminBoard({
   onError,
   togglingId,
 }: CategoriesAdminBoardProps) {
+  const t = useTranslations("adminCategories");
+  const tc = useTranslations("common");
   const [orderedCategories, setOrderedCategories] = useState(categories);
   const [draggingId, setDraggingId] = useState<number | null>(null);
   const [dropIndex, setDropIndex] = useState<number | null>(null);
@@ -93,16 +96,16 @@ export function CategoriesAdminBoard({
       });
 
       if (response.ok) {
-        onSuccess("Reihenfolge gespeichert");
+        onSuccess(tc("orderSaved"));
         onRefresh();
       } else {
-        onError("Reihenfolge konnte nicht gespeichert werden");
+        onError(tc("orderSaveFailed"));
         setOrderedCategories(
           [...categories].sort((a, b) => a.columnPosition - b.columnPosition),
         );
       }
     } catch {
-      onError("Reihenfolge konnte nicht gespeichert werden");
+      onError(tc("orderSaveFailed"));
       setOrderedCategories(
         [...categories].sort((a, b) => a.columnPosition - b.columnPosition),
       );
@@ -193,7 +196,7 @@ export function CategoriesAdminBoard({
                   controlButtonClass,
                   "cursor-grab text-muted-foreground/50 hover:bg-muted/40 hover:text-muted-foreground active:cursor-grabbing",
                 )}
-                aria-label={`${category.name} verschieben`}
+                aria-label={t("moveCategory", { name: category.name })}
               >
                 <GripVertical className="size-3.5" />
               </button>
@@ -246,7 +249,7 @@ export function CategoriesAdminBoard({
 
       {orderedCategories.length === 0 && (
         <div className="col-span-full flex min-h-24 items-center justify-center rounded-xl border border-dashed border-border/50 text-sm text-muted-foreground">
-          Noch keine Kategorie — „Neu“ oben rechts
+          {t("noCategoriesYet")}
         </div>
       )}
     </div>

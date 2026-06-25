@@ -45,7 +45,7 @@ export async function fetchGuacamoleWidget(
       title: "Guacamole",
       status: "warning",
       fields: [],
-      error: "Benutzername und Passwort erforderlich",
+      error: "Username and password required",
     };
   }
 
@@ -59,7 +59,7 @@ export async function fetchGuacamoleWidget(
 
     const authToken = login.authToken;
     if (!authToken) {
-      throw new Error("Login: Kein Token erhalten");
+      throw new Error("Login: No token received");
     }
 
     const dataSource =
@@ -108,12 +108,12 @@ export async function fetchGuacamoleWidget(
       status: "ok",
       fields: [
         {
-          label: "Aktive Sessions",
+          label: "Active Sessions",
           value: String(activeCount),
           highlight: activeCount > 0,
         },
-        { label: "Verbindungen", value: configuredCount },
-        { label: "Datenquelle", value: dataSource },
+        { label: "Connections", value: configuredCount },
+        { label: "Data Source", value: dataSource },
       ],
     };
   } catch (error) {
@@ -121,7 +121,7 @@ export async function fetchGuacamoleWidget(
       title: "Guacamole",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }

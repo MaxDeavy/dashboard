@@ -62,7 +62,7 @@ export function isAllowedImage(file: File): boolean {
 export function getBackgroundFilePath(filename: string): string {
   const safeName = path.basename(filename);
   if (!safeName.startsWith("background.")) {
-    throw new Error("Ungültiger Dateiname");
+    throw new Error("Invalid filename");
   }
   return path.join(getUploadsDir(), safeName);
 }
@@ -91,7 +91,7 @@ export function getBackgroundPublicUrl(filename: string): string {
 export function getDashboardLogoFilePath(filename: string): string {
   const safeName = path.basename(filename);
   if (!safeName.startsWith("dashboard-logo.")) {
-    throw new Error("Ungültiger Dateiname");
+    throw new Error("Invalid filename");
   }
   return path.join(getUploadsDir(), safeName);
 }
@@ -137,7 +137,7 @@ export function getServiceIconFilePath(serviceId: number, filename: string): str
   const safeName = path.basename(filename);
   const expectedPrefix = `service-${serviceId}.`;
   if (!safeName.startsWith(expectedPrefix)) {
-    throw new Error("Ungültiger Dateiname");
+    throw new Error("Invalid filename");
   }
   return path.join(getServiceIconsDir(), safeName);
 }

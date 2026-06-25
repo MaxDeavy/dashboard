@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,8 +55,6 @@ export function LinkBarsAdmin({
     <div className="space-y-6">
       <LinkZoneSection
         zone="header"
-        title="Header-Leisten"
-        description="Quick-Links oben im Dashboard — mehrere Zeilen möglich"
         bars={data.headers}
         onRefresh={onRefresh}
         onSuccess={onSuccess}
@@ -63,8 +62,6 @@ export function LinkBarsAdmin({
       />
       <LinkZoneSection
         zone="footer"
-        title="Footer-Leisten"
-        description="Links am unteren Dashboard-Rand — mehrere Zeilen möglich"
         bars={data.footers}
         onRefresh={onRefresh}
         onSuccess={onSuccess}
@@ -76,21 +73,23 @@ export function LinkBarsAdmin({
 
 function LinkZoneSection({
   zone,
-  title,
-  description,
   bars,
   onRefresh,
   onSuccess,
   onError,
 }: {
   zone: LinkZone;
-  title: string;
-  description: string;
   bars: LinkBarWithLinks[];
   onRefresh: () => void;
   onSuccess: (msg: string) => void;
   onError: (msg: string) => void;
 }) {
+  const t = useTranslations("adminLinkBars");
+  const tc = useTranslations("common");
+  const title = zone === "header" ? t("headerTitle") : t("footerTitle");
+  const description =
+    zone === "header" ? t("headerDescription") : t("footerDescription");
+
   async function addBar() {
     const response = await fetch("/api/link-bars", {
       method: "POST",
@@ -102,21 +101,21 @@ function LinkZoneSection({
       }),
     });
     if (response.ok) {
-      onSuccess("Leiste erstellt");
+      onSuccess(t("barCreated"));
       onRefresh();
     } else {
-      onError("Fehler beim Erstellen");
+      onError(t("createFailed"));
     }
   }
 
   async function deleteBar(id: number) {
-    if (!confirm("Leiste und alle Links darin wirklich löschen?")) return;
+    if (!confirm(t("confirmDeleteBar"))) return;
     const response = await fetch(`/api/link-bars/${id}`, { method: "DELETE" });
     if (response.ok) {
-      onSuccess("Leiste gelöscht");
+      onSuccess(t("barDeleted"));
       onRefresh();
     } else {
-      onError("Fehler beim Löschen");
+      onError(tc("deleteFailed"));
     }
   }
 
@@ -129,19 +128,14 @@ function LinkZoneSection({
         </div>
         <Button size="sm" onClick={addBar}>
           <Plus className="mr-2 size-4" />
-          Leiste hinzufügen
+          {t("addBar")}
         </Button>
       </CardHeader>
       <CardContent className="space-y-4">
-        <p className="text-xs text-muted-foreground">
-          Kachel anklicken zum Bearbeiten. Per Drag &amp; Drop innerhalb einer
-          Leiste sortieren.
-        </p>
+        <p className="text-xs text-muted-foreground">{t("boardHint")}</p>
 
         {bars.length === 0 && (
-          <p className="text-sm text-muted-foreground">
-            Noch keine Leiste — klicke auf &quot;Leiste hinzufügen&quot;.
-          </p>
+          <p className="text-sm text-muted-foreground">{t("noBarsYet")}</p>
         )}
 
         {bars.map((bar, index) => (
@@ -178,6 +172,9 @@ function BarEditor({
   onError: (msg: string) => void;
   onDelete: () => void;
 }) {
+  const t = useTranslations("adminLinkBars");
+  const ts = useTranslations("adminServices");
+  const tc = useTranslations("common");
   const [linkOpen, setLinkOpen] = useState(false);
   const [editingLink, setEditingLink] = useState<NavLink | null>(null);
   const [label, setLabel] = useState("");
@@ -236,10 +233,10 @@ function BarEditor({
       }),
     });
     if (response.ok) {
-      onSuccess("Titel gespeichert");
+      onSuccess(t("titleSaved"));
       onRefresh();
     } else {
-      onError("Titel konnte nicht gespeichert werden");
+      onError(t("titleSaveFailed"));
     }
   }
 
@@ -271,23 +268,23 @@ function BarEditor({
     });
 
     if (response.ok) {
-      onSuccess(editingLink ? "Link aktualisiert" : "Link erstellt");
+      onSuccess(editingLink ? t("linkUpdated") : t("linkCreated"));
       setLinkOpen(false);
       resetLinkForm();
       onRefresh();
     } else {
-      onError("Fehler beim Speichern");
+      onError(tc("saveFailed"));
     }
   }
 
   async function deleteLink(id: number) {
-    if (!confirm("Link löschen?")) return;
+    if (!confirm(t("confirmDeleteLink"))) return;
     const response = await fetch(`/api/nav-links/${id}`, { method: "DELETE" });
     if (response.ok) {
-      onSuccess("Link gelöscht");
+      onSuccess(t("linkDeleted"));
       onRefresh();
     } else {
-      onError("Fehler beim Löschen");
+      onError(tc("deleteFailed"));
     }
   }
 
@@ -306,13 +303,13 @@ function BarEditor({
       });
 
       if (response.ok) {
-        onSuccess(enabled ? "Leiste aktiviert" : "Leiste ausgeblendet");
+        onSuccess(enabled ? t("barEnabled") : t("barHidden"));
         onRefresh();
       } else {
-        onError("Status konnte nicht gespeichert werden");
+        onError(tc("statusSaveFailed"));
       }
     } catch {
-      onError("Status konnte nicht gespeichert werden");
+      onError(tc("statusSaveFailed"));
     } finally {
       setTogglingBar(false);
     }
@@ -337,13 +334,13 @@ function BarEditor({
       });
 
       if (response.ok) {
-        onSuccess(enabled ? "Link aktiviert" : "Link ausgeblendet");
+        onSuccess(enabled ? t("linkEnabled") : t("linkHidden"));
         onRefresh();
       } else {
-        onError("Status konnte nicht gespeichert werden");
+        onError(tc("statusSaveFailed"));
       }
     } catch {
-      onError("Status konnte nicht gespeichert werden");
+      onError(tc("statusSaveFailed"));
     } finally {
       setTogglingId(null);
     }
@@ -362,11 +359,11 @@ function BarEditor({
             <Input
               value={barTitle}
               onChange={(e) => setBarTitle(e.target.value)}
-              placeholder={`Leiste ${bar.sortOrder + 1}`}
+              placeholder={t("barTitlePlaceholder", { number: bar.sortOrder + 1 })}
               className="h-8 max-w-xs text-sm"
             />
             <Button variant="outline" size="sm" onClick={saveBarTitle}>
-              Titel speichern
+              {t("saveTitle")}
             </Button>
           </div>
         )}
@@ -385,7 +382,7 @@ function BarEditor({
           />
           <Button size="sm" variant="outline" onClick={openNewLink}>
             <Plus className="mr-1 size-3" />
-            Link
+            {t("addLink")}
           </Button>
           <Button variant="ghost" size="icon" onClick={onDelete}>
             <Trash2 className="size-4 text-destructive" />
@@ -396,7 +393,7 @@ function BarEditor({
       {!hideBarTitle && (
         <div className="mb-2 flex items-center justify-between gap-2">
           <h3 className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
-            {barTitle || `Leiste ${bar.sortOrder + 1}`}
+            {barTitle || t("barTitlePlaceholder", { number: bar.sortOrder + 1 })}
           </h3>
           <span className="text-[10px] text-muted-foreground tabular-nums">
             {bar.links.length}
@@ -407,7 +404,7 @@ function BarEditor({
       {hideBarTitle && zone === "header" && (
         <div className="mb-2 flex items-center justify-end gap-2">
           <span className="text-[10px] text-muted-foreground tabular-nums">
-            {bar.links.length} Link{bar.links.length !== 1 ? "s" : ""}
+            {t("linksCount", { count: bar.links.length })}
           </span>
         </div>
       )}
@@ -439,12 +436,12 @@ function BarEditor({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {editingLink ? "Link bearbeiten" : "Neuer Link"}
+              {editingLink ? t("editLink") : t("newLink")}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={handleLinkSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label>Label</Label>
+              <Label>{tc("label")}</Label>
               <Input
                 value={label}
                 onChange={(e) => setLabel(e.target.value)}
@@ -460,15 +457,15 @@ function BarEditor({
               />
             </div>
             <div className="space-y-2">
-              <Label>Icon (optional)</Label>
+              <Label>{t("iconOptional")}</Label>
               <Input
                 value={icon}
                 onChange={(e) => setIcon(e.target.value)}
-                placeholder="Emoji oder Bild-URL"
+                placeholder={t("iconPlaceholder")}
               />
             </div>
             <div className="space-y-2">
-              <Label>Link-Ziel</Label>
+              <Label>{ts("openLink")}</Label>
               <LinkOpenModeSelect
                 value={linkOpenMode}
                 onChange={setLinkOpenMode}
@@ -476,7 +473,7 @@ function BarEditor({
             </div>
             <DialogFooter>
               <Button type="submit">
-                {editingLink ? "Speichern" : "Link anlegen"}
+                {editingLink ? tc("save") : t("createLink")}
               </Button>
             </DialogFooter>
           </form>

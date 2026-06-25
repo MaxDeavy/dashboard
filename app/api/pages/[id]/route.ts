@@ -1,5 +1,6 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
 
@@ -33,13 +34,14 @@ export async function DELETE(
   const authError = await requireAuth();
   if (authError) return authError;
 
+  const t = await getTranslations("api");
   const { id } = await params;
   const pageId = Number(id);
 
   const allPages = await db.select().from(schema.pages);
   if (allPages.length <= 1) {
     return NextResponse.json(
-      { error: "Die letzte Seite kann nicht gelöscht werden" },
+      { error: t("cannotDeleteLastPage") },
       { status: 400 },
     );
   }

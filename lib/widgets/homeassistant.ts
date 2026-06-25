@@ -12,7 +12,7 @@ export async function fetchHomeAssistantWidget(
       title: "Home Assistant",
       status: "warning",
       fields: [],
-      error: "Kein Access-Token konfiguriert",
+      error: "No access token configured",
     };
   }
 
@@ -51,7 +51,7 @@ export async function fetchHomeAssistantWidget(
             value: String(state.attributes?.friendly_name ?? entityId),
           },
           {
-            label: "Zuletzt geändert",
+            label: "Last Changed",
             value: state.last_changed
               ? new Date(state.last_changed).toLocaleString("de-DE")
               : "—",
@@ -72,7 +72,7 @@ export async function fetchHomeAssistantWidget(
       status: "ok",
       fields: [
         {
-          label: "Standort",
+          label: "Location",
           value: String(haConfig.location_name ?? "—"),
         },
         {
@@ -80,11 +80,11 @@ export async function fetchHomeAssistantWidget(
           value: String(haConfig.version ?? "—"),
         },
         {
-          label: "Zeitzone",
+          label: "Timezone",
           value: String(haConfig.time_zone ?? "—"),
         },
         {
-          label: "Hinweis",
+          label: "Note",
           value: "Entity-ID optional",
         },
       ],
@@ -94,7 +94,7 @@ export async function fetchHomeAssistantWidget(
       title: "Home Assistant",
       status: "error",
       fields: [],
-      error: error instanceof Error ? error.message : "Nicht erreichbar",
+      error: error instanceof Error ? error.message : "Unreachable",
     };
   }
 }
