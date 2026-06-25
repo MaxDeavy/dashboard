@@ -1,0 +1,67 @@
+import { asc } from "drizzle-orm";
+import { NextResponse } from "next/server";
+import { requireAuth } from "@/lib/auth";
+import { encrypt } from "@/lib/crypto";
+import { db, schema } from "@/lib/db";
+import { invalidateWidgetCache } from "@/lib/widgets";
+
+export async function GET() {
+  const services = await db
+    .select()
+    .from(schema.services)
+    .orderBy(asc(schema.services.sortOrder));
+
+  const widgets = await db.select().from(schema.widgetConfigs);
+  const widgetByService = Object.fromEntries(
+    widgets.map((w) => [w.serviceId, w]),
+  );
+
+  return NextResponse.json(
+    services.map((s) => ({
+      ...s,
+      widget: widgetByService[s.id] ?? null,
+    })),
+  );
+}
+
+export async function POST(request: Request) {
+  const authError = await requireAuth();
+  if (authError) return authError;
+
+  const body = await request.json();
+
+  const [service] = await db
+    .insert(schema.services)
+    .values({
+      categoryId: body.categoryId,
+      name: body.name,
+      subtitle: body.subtitle ?? null,
+      url: body.url,
+      lanUrl: body.lanUrl ?? null,
+      cardColor: body.cardColor ?? null,
+      linkOpenMode: body.linkOpenMode ?? "same_tab",
+      icon: body.icon ?? null,
+      sortOrder: body.sortOrder ?? 0,
+      healthCheckUrl: body.healthCheckUrl ?? null,
+      enabled: body.enabled ?? true,
+      insecureTls: body.insecureTls ?? false,
+    })
+    .returning();
+
+  if (body.widget?.widgetType) {
+    await db.insert(schema.widgetConfigs).values({
+      serviceId: service.id,
+      widgetType: body.widget.widgetType,
+      apiUrl: body.widget.apiUrl,
+      credentials: body.widget.credentials
+        ? encrypt(JSON.stringify(body.widget.credentials))
+        : null,
+      extraConfig: body.widget.extraConfig
+        ? JSON.stringify(body.widget.extraConfig)
+        : null,
+    });
+  }
+
+  invalidateWidgetCache();
+  return NextResponse.json(service, { status: 201 });
+}

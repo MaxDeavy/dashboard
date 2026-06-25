@@ -1,0 +1,83 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1782222676797,
+      "tag": "0000_sloppy_spacker_dave",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1782222676798,
+      "tag": "0001_link_bars",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1782222676799,
+      "tag": "0002_lan_url",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1782222676800,
+      "tag": "0003_service_card_color",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1782222676801,
+      "tag": "0004_service_link_open_mode",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1782222676802,
+      "tag": "0005_nav_link_enabled",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1782222676803,
+      "tag": "0006_nav_link_open_mode",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1782222676804,
+      "tag": "0007_link_bar_category_enabled",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1782222676805,
+      "tag": "0008_service_insecure_tls",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1782222676806,
+      "tag": "0009_category_color",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1782222676807,
+      "tag": "0010_pages",
+      "breakpoints": true
+    }
+  ]
+}
