@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,7 +21,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { EnableSwitch } from "@/components/admin/EnableSwitch";
 import { PagesAdminBoard } from "@/components/admin/PagesAdminBoard";
+import { DiscardChangesDialog } from "@/components/admin/DiscardChangesDialog";
 import type { Page } from "@/lib/db/schema";
+import { useDiscardConfirm } from "@/hooks/useDiscardConfirm";
 
 interface PagesAdminProps {
   pages: Page[];
@@ -41,6 +43,16 @@ export function PagesAdmin({
   const [name, setName] = useState("");
   const [enabled, setEnabled] = useState(true);
   const [togglingId, setTogglingId] = useState<number | null>(null);
+  const discardConfirm = useDiscardConfirm();
+  const [formSnapshot, setFormSnapshot] = useState("");
+
+  useEffect(() => {
+    if (!open) return;
+    setFormSnapshot(JSON.stringify({ name, enabled }));
+  }, [open]);
+
+  const isDirty =
+    open && JSON.stringify({ name, enabled }) !== formSnapshot;
 
   function resetForm() {
     setEditing(null);
@@ -141,8 +153,14 @@ export function PagesAdmin({
         <Dialog
           open={open}
           onOpenChange={(value) => {
-            setOpen(value);
-            if (!value) resetForm();
+            if (value) {
+              setOpen(true);
+              return;
+            }
+            discardConfirm.requestClose(isDirty, () => {
+              setOpen(false);
+              resetForm();
+            });
           }}
         >
           <DialogTrigger
@@ -220,6 +238,11 @@ export function PagesAdmin({
           togglingId={togglingId}
         />
       </CardContent>
+      <DiscardChangesDialog
+        open={discardConfirm.open}
+        onConfirm={discardConfirm.confirmDiscard}
+        onCancel={discardConfirm.cancelDiscard}
+      />
     </Card>
   );
 }

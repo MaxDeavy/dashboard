@@ -5,6 +5,7 @@ const ARR_APPS: Record<string, { title: string; apiPath: string }> = {
   radarr: { title: "Radarr", apiPath: "/api/v3" },
   lidarr: { title: "Lidarr", apiPath: "/api/v1" },
   prowlarr: { title: "Prowlarr", apiPath: "/api/v1" },
+  bazarr: { title: "Bazarr", apiPath: "/api/v1" },
 };
 
 export async function fetchArrWidget(

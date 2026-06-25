@@ -46,6 +46,17 @@ export function WidgetCredentialsForm({
         />
       </div>
 
+      {form.widgetType === "adguard" && (
+        <div className="space-y-2">
+          <Label>Benutzername (optional)</Label>
+          <Input
+            value={form.username}
+            onChange={(e) => onChange({ username: e.target.value })}
+            placeholder="admin"
+          />
+        </div>
+      )}
+
       {API_KEY_WIDGETS.has(form.widgetType) && (
         <div className="space-y-2">
           <Label>{getApiKeyLabel(form.widgetType)}</Label>
@@ -61,21 +72,30 @@ export function WidgetCredentialsForm({
       {USERNAME_PASSWORD_WIDGETS.has(form.widgetType) && (
         <>
           <div className="space-y-2">
-            <Label>Benutzername</Label>
+            <Label>
+              {form.widgetType === "npm"
+                ? "E-Mail"
+                : "Benutzername"}
+            </Label>
             <Input
               value={form.username}
               onChange={(e) => onChange({ username: e.target.value })}
+              placeholder={
+                form.widgetType === "npm" ? "admin@example.com" : undefined
+              }
             />
           </div>
-          <div className="space-y-2">
-            <Label>Passwort</Label>
-            <Input
-              type="password"
-              value={form.password}
-              onChange={(e) => onChange({ password: e.target.value })}
-              placeholder={editing ? "Leer lassen = unverändert" : ""}
-            />
-          </div>
+          {form.widgetType !== "adguard" && (
+            <div className="space-y-2">
+              <Label>Passwort</Label>
+              <Input
+                type="password"
+                value={form.password}
+                onChange={(e) => onChange({ password: e.target.value })}
+                placeholder={editing ? "Leer lassen = unverändert" : ""}
+              />
+            </div>
+          )}
         </>
       )}
 
@@ -255,6 +275,70 @@ export function WidgetCredentialsForm({
         </div>
       )}
 
+      {form.widgetType === "adguard" && (
+        <p className="text-xs text-muted-foreground">
+          Admin-Passwort der AdGuard-Weboberfläche. Optional Benutzername, Standard
+          ist <code className="text-[10px]">admin</code>.
+        </p>
+      )}
+
+      {form.widgetType === "npm" && (
+        <p className="text-xs text-muted-foreground">
+          Login-Daten der NPM-Weboberfläche (Port 81). API-URL ohne{" "}
+          <code className="text-[10px]">/api</code>.
+        </p>
+      )}
+
+      {form.widgetType === "transmission" && (
+        <p className="text-xs text-muted-foreground">
+          RPC-URL zur Transmission-Instanz. Benutzername leer lassen, wenn nur
+          Passwort gesetzt ist.
+        </p>
+      )}
+
+      {form.widgetType === "deluge" && (
+        <p className="text-xs text-muted-foreground">
+          Deluge-WebUI-URL. Passwort aus den WebUI-Einstellungen (
+          <code className="text-[10px]">/json</code>-API).
+        </p>
+      )}
+
+      {form.widgetType === "audiobookshelf" && (
+        <p className="text-xs text-muted-foreground">
+          API-Token unter Benutzer → API Keys erzeugen.
+        </p>
+      )}
+
+      {form.widgetType === "n8n" && (
+        <p className="text-xs text-muted-foreground">
+          API-Key unter Einstellungen → API. Basis-URL ohne Pfad.
+        </p>
+      )}
+
+      {form.widgetType === "grafana" && (
+        <p className="text-xs text-muted-foreground">
+          Service-Account- oder API-Key mit Lesezugriff auf Organisation/Stats.
+        </p>
+      )}
+
+      {form.widgetType === "paperless" && (
+        <p className="text-xs text-muted-foreground">
+          API-Token unter Benutzerprofil → API Tokens erzeugen.
+        </p>
+      )}
+
+      {form.widgetType === "tautulli" && (
+        <p className="text-xs text-muted-foreground">
+          API-Key aus Tautulli → Einstellungen → Webinterface.
+        </p>
+      )}
+
+      {form.widgetType === "navidrome" && (
+        <p className="text-xs text-muted-foreground">
+          Navidrome-Zugangsdaten (Subsonic-API). URL zur Web-Oberfläche.
+        </p>
+      )}
+
       {form.widgetType === "fritzbox" && (
         <p className="text-xs text-muted-foreground">
           Keine Anmeldung nötig (UPnP/TR-064). URL zur Fritz!Box, z. B.{" "}
@@ -276,11 +360,17 @@ export function WidgetCredentialsForm({
 function getApiKeyLabel(widgetType: string): string {
   if (widgetType === "portainer") return "API-Token";
   if (widgetType === "pihole") return "App-Passwort / API-Key";
+  if (widgetType === "adguard") return "Passwort";
   if (widgetType === "plex") return "Plex-Token";
   if (widgetType === "nextcloud") return "NC-Token";
   if (widgetType === "immich") return "API-Key (server.statistics)";
   if (widgetType === "kavita") return "Auth-Key";
   if (widgetType === "technitium") return "API-Token";
+  if (widgetType === "audiobookshelf") return "API-Token";
+  if (widgetType === "paperless") return "API-Token";
+  if (widgetType === "tautulli") return "API-Key";
+  if (widgetType === "n8n") return "API-Key";
+  if (widgetType === "grafana") return "API-Key";
   return "API-Key";
 }
 
@@ -313,6 +403,28 @@ function getApiUrlPlaceholder(widgetType: string): string {
       return "http://guacamole.local:8080/guacamole";
     case "fritzbox":
       return "http://192.168.178.1";
+    case "npm":
+      return "http://npm.local:81";
+    case "adguard":
+      return "http://adguard.local";
+    case "transmission":
+      return "http://transmission.local:9091";
+    case "deluge":
+      return "http://deluge.local:8112";
+    case "audiobookshelf":
+      return "http://audiobookshelf.local:13378";
+    case "n8n":
+      return "http://n8n.local:5678";
+    case "grafana":
+      return "http://grafana.local:3000";
+    case "paperless":
+      return "http://paperless.local:8000";
+    case "tautulli":
+      return "http://tautulli.local:8181";
+    case "navidrome":
+      return "http://navidrome.local:4533";
+    case "bazarr":
+      return "http://bazarr.local:6767";
     default:
       return "";
   }

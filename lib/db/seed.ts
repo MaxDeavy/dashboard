@@ -118,6 +118,27 @@ export async function runMigrations() {
   ensureSchemaPatches();
   await ensurePagesData();
   ensureServiceIcons();
+  normalizeUnsortedServices();
+}
+
+function normalizeUnsortedServices() {
+  const unsorted = sqlite
+    .prepare("SELECT id, category_id FROM services WHERE sort_order < 0")
+    .all() as Array<{ id: number; category_id: number }>;
+
+  if (unsorted.length === 0) return;
+
+  const maxOrderStmt = sqlite.prepare(
+    "SELECT COALESCE(MAX(sort_order), -1) AS max_order FROM services WHERE category_id = ? AND sort_order >= 0",
+  );
+  const updateStmt = sqlite.prepare(
+    "UPDATE services SET sort_order = ? WHERE id = ?",
+  );
+
+  for (const service of unsorted) {
+    const row = maxOrderStmt.get(service.category_id) as { max_order: number };
+    updateStmt.run(row.max_order + 1, service.id);
+  }
 }
 
 export async function seedDatabase() {

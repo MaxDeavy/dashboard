@@ -31,6 +31,7 @@ import { LinkOpenModeSelect } from "@/components/admin/LinkOpenModeSelect";
 import { EnableSwitch } from "@/components/admin/EnableSwitch";
 import { ServiceIconField } from "@/components/admin/ServiceIconField";
 import { ServicesAdminBoard } from "@/components/admin/ServicesAdminBoard";
+import { DiscardChangesDialog } from "@/components/admin/DiscardChangesDialog";
 import { WIDGET_TYPES } from "@/lib/widgets/constants";
 import { WidgetCredentialsForm } from "@/components/admin/WidgetCredentialsForm";
 import {
@@ -41,7 +42,11 @@ import {
 import type { Category, Page, Service } from "@/lib/db/schema";
 import { cn } from "@/lib/utils";
 import { resolveTileColor } from "@/lib/tile-colors";
-import { UNSORTED_CATEGORY_ID } from "@/lib/service-board";
+import {
+  readStoredAdminServicesPageId,
+  writeStoredAdminServicesPageId,
+} from "@/lib/page-storage";
+import { useDiscardConfirm } from "@/hooks/useDiscardConfirm";
 
 interface ServiceWithWidget extends Service {
   widget: {
@@ -144,7 +149,7 @@ export function ServicesAdmin({
   onSuccess,
   onError,
 }: ServicesAdminProps) {
-  const [activePageId, setActivePageId] = useState(pages[0]?.id ?? 0);
+  const [activePageId, setActivePageId] = useState(0);
   const [open, setOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [editing, setEditing] = useState<ServiceWithWidget | null>(null);
@@ -154,6 +159,9 @@ export function ServicesAdmin({
   const [categoryColor, setCategoryColor] = useState("");
   const [categoryEnabled, setCategoryEnabled] = useState(true);
   const [togglingId, setTogglingId] = useState<number | null>(null);
+  const discardConfirm = useDiscardConfirm();
+  const [serviceSnapshot, setServiceSnapshot] = useState("");
+  const [categorySnapshot, setCategorySnapshot] = useState("");
 
   const pageCategories = useMemo(
     () => categories.filter((category) => category.pageId === activePageId),
@@ -165,10 +173,50 @@ export function ServicesAdmin({
       setActivePageId(0);
       return;
     }
-    if (!pages.some((page) => page.id === activePageId)) {
-      setActivePageId(pages[0]?.id ?? 0);
-    }
-  }, [pages, activePageId]);
+
+    setActivePageId((current) => {
+      if (current > 0 && pages.some((page) => page.id === current)) {
+        return current;
+      }
+
+      const stored = readStoredAdminServicesPageId();
+      if (stored && pages.some((page) => page.id === stored)) {
+        return stored;
+      }
+
+      return pages[0].id;
+    });
+  }, [pages]);
+
+  function selectActivePage(pageId: number) {
+    setActivePageId(pageId);
+    writeStoredAdminServicesPageId(pageId);
+  }
+
+  useEffect(() => {
+    if (!open) return;
+    setServiceSnapshot(JSON.stringify(form));
+  }, [open]);
+
+  useEffect(() => {
+    if (!categoryOpen) return;
+    setCategorySnapshot(
+      JSON.stringify({
+        name: categoryName,
+        color: categoryColor,
+        enabled: categoryEnabled,
+      }),
+    );
+  }, [categoryOpen]);
+
+  const isServiceDirty = open && JSON.stringify(form) !== serviceSnapshot;
+  const isCategoryDirty =
+    categoryOpen &&
+    JSON.stringify({
+      name: categoryName,
+      color: categoryColor,
+      enabled: categoryEnabled,
+    }) !== categorySnapshot;
 
   const selectedCategory = categories.find(
     (category) => category.id === form.categoryId,
@@ -261,10 +309,7 @@ export function ServicesAdmin({
     setEditing(null);
     setForm({
       ...emptyForm,
-      categoryId:
-        categoryId === UNSORTED_CATEGORY_ID
-          ? pageCategories[0]?.id ?? 0
-          : categoryId,
+      categoryId: categoryId || (pageCategories[0]?.id ?? 0),
     });
     setOpen(true);
   }
@@ -317,16 +362,10 @@ export function ServicesAdmin({
   }
 
   function resolveNewServicePlacement(categoryId: number) {
-    if (categoryId === UNSORTED_CATEGORY_ID || form.categoryId === UNSORTED_CATEGORY_ID) {
-      return {
-        categoryId: pageCategories[0]?.id ?? 0,
-        sortOrder: -1,
-      };
-    }
-
+    const resolvedCategoryId = categoryId || (pageCategories[0]?.id ?? 0);
     return {
-      categoryId: categoryId || (pageCategories[0]?.id ?? 0),
-      sortOrder: getNextSortOrder(categoryId),
+      categoryId: resolvedCategoryId,
+      sortOrder: getNextSortOrder(resolvedCategoryId),
     };
   }
 
@@ -469,8 +508,14 @@ export function ServicesAdmin({
         <Dialog
           open={categoryOpen}
           onOpenChange={(v) => {
-            setCategoryOpen(v);
-            if (!v) resetCategoryForm();
+            if (v) {
+              setCategoryOpen(true);
+              return;
+            }
+            discardConfirm.requestClose(isCategoryDirty, () => {
+              setCategoryOpen(false);
+              resetCategoryForm();
+            });
           }}
         >
           <DialogTrigger
@@ -564,8 +609,14 @@ export function ServicesAdmin({
         <Dialog
           open={open}
           onOpenChange={(v) => {
-            setOpen(v);
-            if (!v) resetForm();
+            if (v) {
+              setOpen(true);
+              return;
+            }
+            discardConfirm.requestClose(isServiceDirty, () => {
+              setOpen(false);
+              resetForm();
+            });
           }}
         >
           <DialogContent className="flex max-h-[90vh] max-w-[calc(100%-2rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-4xl lg:max-w-5xl">
@@ -779,7 +830,7 @@ export function ServicesAdmin({
               <button
                 key={page.id}
                 type="button"
-                onClick={() => setActivePageId(page.id)}
+                onClick={() => selectActivePage(page.id)}
                 className={cn(
                   "rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors",
                   activePageId === page.id
@@ -810,6 +861,11 @@ export function ServicesAdmin({
           togglingId={togglingId}
         />
       </CardContent>
+      <DiscardChangesDialog
+        open={discardConfirm.open}
+        onConfirm={discardConfirm.confirmDiscard}
+        onCancel={discardConfirm.cancelDiscard}
+      />
     </Card>
   );
 }

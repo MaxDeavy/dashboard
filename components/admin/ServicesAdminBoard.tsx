@@ -14,7 +14,6 @@ import {
   buildServiceBoard,
   filterChangedReorderUpdates,
   moveServiceInBoard,
-  UNSORTED_CATEGORY_ID,
   type ServiceBoardColumn,
 } from "@/lib/service-board";
 import type { Category, Service } from "@/lib/db/schema";
@@ -142,10 +141,6 @@ export function ServicesAdminBoard({
     setServiceDropTarget(null);
     setCategoryDropIndex(null);
   }, [services, categories, pageId, pageCategories]);
-
-  const unsortedColumn = columns.find(
-    (column) => column.categoryId === UNSORTED_CATEGORY_ID,
-  );
 
   const categoryColumns = useMemo(() => {
     const byCategoryId = new Map(
@@ -381,23 +376,16 @@ export function ServicesAdminBoard({
 
   function renderCategorySection(
     column: ServiceBoardColumn<ServiceWithWidget>,
-    options?: { isUnsorted?: boolean; categoryIndex?: number },
+    categoryIndex: number,
   ) {
-    const isUnsorted = options?.isUnsorted ?? false;
-    const categoryIndex = options?.categoryIndex;
     const category = column.category;
 
     return (
       <section
         key={column.categoryId}
         className={cn(
-          "relative flex min-h-[12rem] flex-col rounded-xl border p-3",
-          isUnsorted
-            ? "border-dashed border-amber-500/35 bg-amber-500/[0.06]"
-            : "border-border/50 bg-muted/10",
-          !isUnsorted &&
-            draggingCategoryId === category.id &&
-            "opacity-50",
+          "relative flex min-h-[12rem] flex-col rounded-xl border border-border/50 bg-muted/10 p-3",
+          draggingCategoryId === category.id && "opacity-50",
         )}
         onDragOver={(event) => {
           if (draggingServiceId == null) return;
@@ -413,79 +401,61 @@ export function ServicesAdminBoard({
           handleServiceDrop(column.categoryId, column.services.length, event);
         }}
       >
-        {!isUnsorted && categoryDropIndex === categoryIndex && (
+        {categoryDropIndex === categoryIndex && (
           <div className="absolute inset-y-2 -left-1.5 z-10 w-0.5 rounded-full bg-primary" />
         )}
 
         <div className="mb-3 flex items-center gap-2">
-          {!isUnsorted && (
-            <button
-              type="button"
-              draggable={!savingCategoryOrder && !savingServiceOrder}
-              onDragStart={(event) => {
-                setDraggingCategoryId(category.id);
-                setDraggingServiceId(null);
-                event.dataTransfer.effectAllowed = "move";
-                event.dataTransfer.setData(
-                  "text/plain",
-                  `category:${category.id}`,
-                );
-              }}
-              onDragEnd={() => {
-                setDraggingCategoryId(null);
-                setCategoryDropIndex(null);
-              }}
-              className="shrink-0 cursor-grab rounded p-0.5 text-muted-foreground/50 hover:bg-muted/40 hover:text-muted-foreground active:cursor-grabbing"
-              aria-label={`Kategorie ${category.name} verschieben`}
-            >
-              <GripVertical className="size-4" />
-            </button>
-          )}
+          <button
+            type="button"
+            draggable={!savingCategoryOrder && !savingServiceOrder}
+            onDragStart={(event) => {
+              setDraggingCategoryId(category.id);
+              setDraggingServiceId(null);
+              event.dataTransfer.effectAllowed = "move";
+              event.dataTransfer.setData(
+                "text/plain",
+                `category:${category.id}`,
+              );
+            }}
+            onDragEnd={() => {
+              setDraggingCategoryId(null);
+              setCategoryDropIndex(null);
+            }}
+            className="shrink-0 cursor-grab rounded p-0.5 text-muted-foreground/50 hover:bg-muted/40 hover:text-muted-foreground active:cursor-grabbing"
+            aria-label={`Kategorie ${category.name} verschieben`}
+          >
+            <GripVertical className="size-4" />
+          </button>
 
           <div className="flex min-w-0 flex-1 items-center gap-2">
-            {!isUnsorted && (
-              <span
-                className={cn(
-                  "size-2 shrink-0 rounded-full shadow-[0_0_8px_currentColor]",
-                  !category.color && "opacity-70",
-                )}
-                style={{
-                  backgroundColor: category.color ?? defaultCardColor,
-                  color: category.color ?? defaultCardColor,
-                }}
-              />
-            )}
+            <span
+              className={cn(
+                "size-2 shrink-0 rounded-full shadow-[0_0_8px_currentColor]",
+                !category.color && "opacity-70",
+              )}
+              style={{
+                backgroundColor: category.color ?? defaultCardColor,
+                color: category.color ?? defaultCardColor,
+              }}
+            />
             <div className="min-w-0">
-              <h3
-                className={cn(
-                  "truncate text-xs font-semibold tracking-wide uppercase",
-                  isUnsorted
-                    ? "text-amber-600 dark:text-amber-400"
-                    : "text-muted-foreground",
-                )}
-              >
+              <h3 className="truncate text-xs font-semibold tracking-wide text-muted-foreground uppercase">
                 {category.name}
               </h3>
-              {isUnsorted && (
-                <p className="text-[10px] text-muted-foreground">
-                  Noch nicht im Dashboard — in eine Kategorie ziehen
-                </p>
-              )}
             </div>
           </div>
 
-          {!isUnsorted && (
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className="size-7 shrink-0 text-muted-foreground hover:text-foreground"
-              onClick={() => onEditCategory(category)}
-              aria-label={`${category.name} Einstellungen`}
-            >
-              <Settings className="size-3.5" />
-            </Button>
-          )}
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="size-7 shrink-0 text-muted-foreground hover:text-foreground"
+            onClick={() => onEditCategory(category)}
+            aria-label={`${category.name} Einstellungen`}
+          >
+            <Settings className="size-3.5" />
+          </Button>
 
           <span className="shrink-0 text-[10px] text-muted-foreground tabular-nums">
             {column.services.length}
@@ -496,7 +466,7 @@ export function ServicesAdminBoard({
             size="sm"
             variant="outline"
             className="h-7 shrink-0 px-2 text-[11px]"
-            onClick={() => onAddService(column.categoryId === UNSORTED_CATEGORY_ID ? UNSORTED_CATEGORY_ID : column.categoryId)}
+            onClick={() => onAddService(column.categoryId)}
           >
             <Plus className="mr-1 size-3" />
             Dienst
@@ -509,15 +479,8 @@ export function ServicesAdminBoard({
           )}
 
           {column.services.length === 0 && (
-            <div
-              className={cn(
-                "flex min-h-12 items-center justify-center rounded-lg border border-dashed text-xs text-muted-foreground",
-                isUnsorted ? "border-amber-500/30" : "border-border/50",
-              )}
-            >
-              {isUnsorted
-                ? "Neue Dienste erscheinen hier"
-                : "Dienste hierher ziehen"}
+            <div className="flex min-h-12 items-center justify-center rounded-lg border border-dashed border-border/50 text-xs text-muted-foreground">
+              Dienste hierher ziehen
             </div>
           )}
         </div>
@@ -531,8 +494,6 @@ export function ServicesAdminBoard({
         Kategorien per Drag &amp; Drop anordnen. Dienste in der Liste von oben
         nach unten sortieren — diese Reihenfolge gilt später im Dashboard.
       </p>
-
-      {unsortedColumn && renderCategorySection(unsortedColumn, { isUnsorted: true })}
 
       <div
         className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3"
@@ -564,7 +525,7 @@ export function ServicesAdminBoard({
               handleCategoryDrop(index, event);
             }}
           >
-            {renderCategorySection(column, { categoryIndex: index })}
+            {renderCategorySection(column, index)}
           </div>
         ))}
 

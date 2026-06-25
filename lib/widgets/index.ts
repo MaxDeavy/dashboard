@@ -5,10 +5,14 @@ import { withWidgetFetchContext } from "@/lib/server-fetch";
 import { fetchArrWidget } from "./arr";
 import type { WidgetConfigInput, WidgetCredentials, WidgetResult } from "./base";
 import { credentialString } from "./base";
+import { fetchAdguardWidget } from "./adguard";
+import { fetchAudiobookshelfWidget } from "./audiobookshelf";
+import { fetchDelugeWidget } from "./deluge";
 import { fetchDockerWidget } from "./docker";
 import { fetchFilebrowserWidget } from "./filebrowser";
 import { fetchFritzboxWidget } from "./fritzbox";
 import { fetchGenericWidget } from "./generic";
+import { fetchGrafanaWidget } from "./grafana";
 import { fetchGuacamoleWidget } from "./guacamole";
 import { fetchHomeAssistantWidget } from "./homeassistant";
 import { fetchImmichWidget } from "./immich";
@@ -16,8 +20,12 @@ import { fetchJellyfinWidget } from "./jellyfin";
 import { fetchJellyseerrWidget } from "./jellyseerr";
 import { fetchKavitaWidget } from "./kavita";
 import { fetchMealieWidget } from "./mealie";
+import { fetchN8nWidget } from "./n8n";
+import { fetchNavidromeWidget } from "./navidrome";
 import { fetchNextcloudWidget } from "./nextcloud";
+import { fetchNpmWidget } from "./npm";
 import { fetchOverseerrWidget } from "./overseerr";
+import { fetchPaperlessWidget } from "./paperless";
 import { fetchPiholeWidget } from "./pihole";
 import { fetchPlexWidget } from "./plex";
 import { fetchPortainerWidget } from "./portainer";
@@ -25,7 +33,9 @@ import { fetchProxmoxWidget } from "./proxmox";
 import { fetchQbittorrentWidget } from "./qbittorrent";
 import { fetchQnapWidget } from "./qnap";
 import { fetchSabnzbdWidget } from "./sabnzbd";
+import { fetchTautulliWidget } from "./tautulli";
 import { fetchTechnitiumWidget } from "./technitium";
+import { fetchTransmissionWidget } from "./transmission";
 
 function normalizeCredentials(
   raw: Record<string, unknown> | null,
@@ -108,19 +118,28 @@ export async function fetchWidgetData(
     switch (config.widgetType) {
       case "qbittorrent":
         return fetchQbittorrentWidget(widgetInput);
+      case "transmission":
+        return fetchTransmissionWidget(widgetInput);
+      case "deluge":
+        return fetchDelugeWidget(widgetInput);
       case "proxmox":
         return fetchProxmoxWidget(widgetInput);
       case "sonarr":
       case "radarr":
       case "lidarr":
       case "prowlarr":
+      case "bazarr":
         return fetchArrWidget(widgetInput);
       case "docker":
         return fetchDockerWidget(widgetInput);
       case "portainer":
         return fetchPortainerWidget(widgetInput);
+      case "npm":
+        return fetchNpmWidget(widgetInput);
       case "pihole":
         return fetchPiholeWidget(widgetInput);
+      case "adguard":
+        return fetchAdguardWidget(widgetInput);
       case "jellyseerr":
         return fetchJellyseerrWidget(widgetInput);
       case "overseerr":
@@ -133,6 +152,8 @@ export async function fetchWidgetData(
         return fetchJellyfinWidget(widgetInput);
       case "plex":
         return fetchPlexWidget(widgetInput);
+      case "tautulli":
+        return fetchTautulliWidget(widgetInput);
       case "nextcloud":
         return fetchNextcloudWidget(widgetInput);
       case "immich":
@@ -141,6 +162,16 @@ export async function fetchWidgetData(
         return fetchMealieWidget(widgetInput);
       case "kavita":
         return fetchKavitaWidget(widgetInput);
+      case "audiobookshelf":
+        return fetchAudiobookshelfWidget(widgetInput);
+      case "navidrome":
+        return fetchNavidromeWidget(widgetInput);
+      case "paperless":
+        return fetchPaperlessWidget(widgetInput);
+      case "n8n":
+        return fetchN8nWidget(widgetInput);
+      case "grafana":
+        return fetchGrafanaWidget(widgetInput);
       case "technitium":
         return fetchTechnitiumWidget(widgetInput);
       case "qnap":

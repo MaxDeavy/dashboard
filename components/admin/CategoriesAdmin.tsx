@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +20,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CategoriesAdminBoard } from "@/components/admin/CategoriesAdminBoard";
+import { DiscardChangesDialog } from "@/components/admin/DiscardChangesDialog";
 import type { Category } from "@/lib/db/schema";
+import { useDiscardConfirm } from "@/hooks/useDiscardConfirm";
 
 interface CategoriesAdminProps {
   categories: Category[];
@@ -42,6 +44,16 @@ export function CategoriesAdmin({
   const [name, setName] = useState("");
   const [color, setColor] = useState("");
   const [togglingId, setTogglingId] = useState<number | null>(null);
+  const discardConfirm = useDiscardConfirm();
+  const [formSnapshot, setFormSnapshot] = useState("");
+
+  useEffect(() => {
+    if (!open) return;
+    setFormSnapshot(JSON.stringify({ name, color }));
+  }, [open]);
+
+  const isDirty =
+    open && JSON.stringify({ name, color }) !== formSnapshot;
 
   function resetForm() {
     setEditing(null);
@@ -144,8 +156,14 @@ export function CategoriesAdmin({
         <Dialog
           open={open}
           onOpenChange={(v) => {
-            setOpen(v);
-            if (!v) resetForm();
+            if (v) {
+              setOpen(true);
+              return;
+            }
+            discardConfirm.requestClose(isDirty, () => {
+              setOpen(false);
+              resetForm();
+            });
           }}
         >
           <DialogTrigger
@@ -224,6 +242,11 @@ export function CategoriesAdmin({
           togglingId={togglingId}
         />
       </CardContent>
+      <DiscardChangesDialog
+        open={discardConfirm.open}
+        onConfirm={discardConfirm.confirmDiscard}
+        onCancel={discardConfirm.cancelDiscard}
+      />
     </Card>
   );
 }

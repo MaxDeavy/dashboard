@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { LinkBarsAdminBoard } from "@/components/admin/LinkBarsAdminBoard";
+import { DiscardChangesDialog } from "@/components/admin/DiscardChangesDialog";
 import { EnableSwitch } from "@/components/admin/EnableSwitch";
 import { LinkOpenModeSelect } from "@/components/admin/LinkOpenModeSelect";
 import type { LinkBarWithLinks, LinkZone, NavLink } from "@/lib/db/schema";
@@ -28,6 +29,7 @@ import {
   parseLinkOpenMode,
   type LinkOpenMode,
 } from "@/lib/link-open-mode";
+import { useDiscardConfirm } from "@/hooks/useDiscardConfirm";
 import { cn } from "@/lib/utils";
 
 interface LinkBarsData {
@@ -187,6 +189,19 @@ function BarEditor({
   const [barTitle, setBarTitle] = useState(bar.title ?? "");
   const [togglingId, setTogglingId] = useState<number | null>(null);
   const [togglingBar, setTogglingBar] = useState(false);
+  const discardConfirm = useDiscardConfirm();
+  const [linkSnapshot, setLinkSnapshot] = useState("");
+
+  useEffect(() => {
+    if (!linkOpen) return;
+    setLinkSnapshot(
+      JSON.stringify({ label, url, icon, linkOpenMode }),
+    );
+  }, [linkOpen]);
+
+  const isLinkDirty =
+    linkOpen &&
+    JSON.stringify({ label, url, icon, linkOpenMode }) !== linkSnapshot;
 
   function resetLinkForm() {
     setEditingLink(null);
@@ -410,9 +425,15 @@ function BarEditor({
 
       <Dialog
         open={linkOpen}
-        onOpenChange={(open) => {
-          setLinkOpen(open);
-          if (!open) resetLinkForm();
+        onOpenChange={(nextOpen) => {
+          if (nextOpen) {
+            setLinkOpen(true);
+            return;
+          }
+          discardConfirm.requestClose(isLinkDirty, () => {
+            setLinkOpen(false);
+            resetLinkForm();
+          });
         }}
       >
         <DialogContent>
@@ -461,6 +482,11 @@ function BarEditor({
           </form>
         </DialogContent>
       </Dialog>
+      <DiscardChangesDialog
+        open={discardConfirm.open}
+        onConfirm={discardConfirm.confirmDiscard}
+        onCancel={discardConfirm.cancelDiscard}
+      />
     </section>
   );
 }

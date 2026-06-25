@@ -62,7 +62,6 @@ Alle Einstellungen erfolgen im Admin unter `/admin`. Der zuletzt geöffnete Tab 
 |----------|--------------|
 | **Web-URL / LAN-URL** | Externe Adresse und optionale lokale IP/Hostname |
 | **Aktiv / Inaktiv** | Deaktivierte Dienste werden ausgeblendet |
-| **Unsortiert** | Neue Dienste erscheinen zuerst im Unsortiert-Bereich |
 | **Icons** | Vorlagen aus `assets/`, eigene URL oder Upload |
 | **Kachelfarbe** | Individuelle Akzentfarbe |
 | **Health-Check** | Optional abweichende URL; TLS-Ausnahme pro Dienst |
