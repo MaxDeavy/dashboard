@@ -1,9 +1,16 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Trash2, Upload } from "lucide-react";
+import { Loader2, Pencil, Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -17,6 +24,8 @@ import { ServiceIconDisplay } from "@/components/ServiceIconDisplay";
 import {
   BUNDLED_ICON_OPTIONS,
   isCustomUploadedIcon,
+  mergeIconOptions,
+  type IconOption,
 } from "@/lib/service-icons";
 
 interface ServiceIconFieldProps {
@@ -38,6 +47,29 @@ export function ServiceIconField({
   const tc = useTranslations("common");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
+  const [customIcons, setCustomIcons] = useState<IconOption[]>([]);
+
+  const iconOptions = useMemo(
+    () => mergeIconOptions(BUNDLED_ICON_OPTIONS, customIcons),
+    [customIcons],
+  );
+
+  useEffect(() => {
+    void (async () => {
+      try {
+        const response = await fetch("/api/icons");
+        if (response.ok) {
+          const icons = (await response.json()) as Array<{
+            label: string;
+            url: string;
+          }>;
+          setCustomIcons(icons);
+        }
+      } catch {
+        // presets still work
+      }
+    })();
+  }, []);
 
   async function handleUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -93,7 +125,7 @@ export function ServiceIconField({
     }
   }
 
-  const presetValue = BUNDLED_ICON_OPTIONS.some((option) => option.url === value)
+  const presetValue = iconOptions.some((option) => option.url === value)
     ? value
     : "";
 
@@ -144,7 +176,7 @@ export function ServiceIconField({
             <SelectValue placeholder={t("presetPlaceholder")} />
           </SelectTrigger>
           <SelectContent className="max-h-64">
-            {BUNDLED_ICON_OPTIONS.map((option) => (
+            {iconOptions.map((option) => (
               <SelectItem key={option.url} value={option.url}>
                 <span className="flex items-center gap-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -168,6 +200,7 @@ export function ServiceIconField({
           onChange={(e) => onChange(e.target.value)}
           placeholder={t("urlPlaceholder")}
         />
+        <p className="text-xs text-muted-foreground">{t("urlImportHint")}</p>
       </div>
 
       <div className="space-y-2">

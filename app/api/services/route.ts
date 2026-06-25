@@ -1,7 +1,9 @@
 import { asc } from "drizzle-orm";
 import { NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/lib/auth";
 import { encrypt } from "@/lib/crypto";
+import { resolveIconForStorage } from "@/lib/custom-icons";
 import { db, schema } from "@/lib/db";
 import { invalidateWidgetCache } from "@/lib/widgets";
 
@@ -28,7 +30,15 @@ export async function POST(request: Request) {
   const authError = await requireAuth();
   if (authError) return authError;
 
+  const t = await getTranslations("api");
   const body = await request.json();
+
+  let icon: string | null = body.icon ?? null;
+  try {
+    icon = await resolveIconForStorage(icon, body.name);
+  } catch {
+    return NextResponse.json({ error: t("iconImportFailed") }, { status: 502 });
+  }
 
   const [service] = await db
     .insert(schema.services)
@@ -40,7 +50,7 @@ export async function POST(request: Request) {
       lanUrl: body.lanUrl ?? null,
       cardColor: body.cardColor ?? null,
       linkOpenMode: body.linkOpenMode ?? "same_tab",
-      icon: body.icon ?? null,
+      icon,
       sortOrder: body.sortOrder ?? 0,
       healthCheckUrl: body.healthCheckUrl ?? null,
       enabled: body.enabled ?? true,

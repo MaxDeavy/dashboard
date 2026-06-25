@@ -103,3 +103,24 @@ export function isImageIcon(icon: string | null | undefined): boolean {
 export function isCustomUploadedIcon(icon: string | null | undefined): boolean {
   return Boolean(icon?.includes("/api/uploads/icon"));
 }
+
+export type IconOption = { label: string; url: string };
+
+export function mergeIconOptions(
+  bundled: IconOption[],
+  custom: IconOption[],
+): IconOption[] {
+  const seen = new Set(bundled.map((option) => option.url));
+  const merged = [...bundled];
+
+  for (const option of custom) {
+    if (!seen.has(option.url)) {
+      merged.push(option);
+      seen.add(option.url);
+    }
+  }
+
+  return merged.sort((a, b) =>
+    a.label.localeCompare(b.label, undefined, { sensitivity: "base" }),
+  );
+}

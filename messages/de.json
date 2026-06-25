@@ -262,7 +262,33 @@
     "logoRemoveFailed": "Logo konnte nicht entfernt werden",
     "backgroundUploaded": "Hintergrundbild hochgeladen",
     "backgroundRemoved": "Hintergrundbild entfernt",
-    "backupDownloaded": "Backup heruntergeladen"
+    "backupDownloaded": "Backup heruntergeladen",
+    "language": "Sprache",
+    "languageHint": "Oberflächensprache für Dashboard und Admin-Bereich.",
+    "languageEn": "English",
+    "languageDe": "Deutsch",
+    "languageChanged": "Sprache aktualisiert",
+    "languageChangeFailed": "Sprache konnte nicht geändert werden",
+    "icons": "Icons",
+    "iconsHint": "Verwalte importierte Icons für Dienste. Anzeigenamen sind editierbar — Dateinamen bleiben unverändert.",
+    "iconsEmpty": "Noch keine eigenen Icons.",
+    "iconsLoadFailed": "Icons konnten nicht geladen werden",
+    "iconImportUrl": "Von URL importieren",
+    "iconImport": "Importieren",
+    "iconUpload": "Icon hochladen",
+    "iconChooseFile": "Datei wählen",
+    "iconDisplayName": "Anzeigename",
+    "iconFileTypes": "JPG, PNG, WebP, GIF, SVG oder ICO, maximal 5 MB.",
+    "iconRename": "Icon umbenennen",
+    "iconFilenameHint": "Datei: {filename}",
+    "iconImported": "Icon importiert",
+    "iconUploaded": "Icon hochgeladen",
+    "iconRenamed": "Icon umbenannt",
+    "iconDeleted": "Icon gelöscht",
+    "iconImportFailed": "Icon konnte nicht importiert werden",
+    "iconRenameFailed": "Icon konnte nicht umbenannt werden",
+    "iconDeleteFailed": "Icon konnte nicht gelöscht werden",
+    "iconDeleteConfirm": "Icon „{name}“ löschen? Dienste, die es nutzen, verlieren ihr Icon."
   },
   "adminIcon": {
     "label": "Icon",
@@ -275,7 +301,8 @@
     "chooseFile": "Datei wählen",
     "uploading": "Wird hochgeladen…",
     "uploadAfterSave": "Upload ist nach dem ersten Speichern des Dienstes möglich.",
-    "fileTypes": "JPG, PNG, WebP, GIF, SVG oder ICO, maximal 5 MB."
+    "fileTypes": "JPG, PNG, WebP, GIF, SVG oder ICO, maximal 5 MB.",
+    "urlImportHint": "Externe URLs werden beim Speichern des Dienstes heruntergeladen (benannt nach dem Dienst)."
   },
   "linkOpenMode": {
     "sameTab": "Gleicher Tab",
@@ -435,7 +462,10 @@
     "noWidgetConfigured": "Kein Widget konfiguriert",
     "backgroundFileType": "Nur JPG, PNG, WebP oder GIF erlaubt",
     "backgroundTooLarge": "Datei zu groß (max. 5 MB)",
-    "invalidLocale": "Ungültige Sprache"
+    "invalidLocale": "Ungültige Sprache",
+    "invalidIconUrl": "Ungültige Icon-URL",
+    "invalidImageData": "URL lieferte kein gültiges Bild",
+    "iconImportFailed": "Icon konnte nicht heruntergeladen werden"
   },
   "widgetFields": {
     "activeStreams": "Aktive Streams",

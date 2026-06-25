@@ -262,7 +262,27 @@
     "languageEn": "English",
     "languageDe": "Deutsch",
     "languageChanged": "Language updated",
-    "languageChangeFailed": "Failed to change language"
+    "languageChangeFailed": "Failed to change language",
+    "icons": "Icons",
+    "iconsHint": "Manage imported icons used across services. Display names are editable; file names stay unchanged.",
+    "iconsEmpty": "No custom icons yet.",
+    "iconsLoadFailed": "Failed to load icons",
+    "iconImportUrl": "Import from URL",
+    "iconImport": "Import",
+    "iconUpload": "Upload icon",
+    "iconChooseFile": "Choose file",
+    "iconDisplayName": "Display name",
+    "iconFileTypes": "JPG, PNG, WebP, GIF, SVG or ICO, max. 5 MB.",
+    "iconRename": "Rename icon",
+    "iconFilenameHint": "File: {filename}",
+    "iconImported": "Icon imported",
+    "iconUploaded": "Icon uploaded",
+    "iconRenamed": "Icon renamed",
+    "iconDeleted": "Icon deleted",
+    "iconImportFailed": "Failed to import icon",
+    "iconRenameFailed": "Failed to rename icon",
+    "iconDeleteFailed": "Failed to delete icon",
+    "iconDeleteConfirm": "Delete icon \"{name}\"? Services using it will lose their icon."
   },
   "adminIcon": {
     "label": "Icon",
@@ -275,7 +295,8 @@
     "chooseFile": "Choose file",
     "uploading": "Uploading…",
     "uploadAfterSave": "Upload is available after saving the service for the first time.",
-    "fileTypes": "JPG, PNG, WebP, GIF, SVG or ICO, max. 5 MB."
+    "fileTypes": "JPG, PNG, WebP, GIF, SVG or ICO, max. 5 MB.",
+    "urlImportHint": "External URLs are downloaded when you save the service (named after the service)."
   },
   "linkOpenMode": {
     "sameTab": "Same tab",
@@ -435,7 +456,10 @@
     "noWidgetConfigured": "No widget configured",
     "backgroundFileType": "Only JPG, PNG, WebP or GIF allowed",
     "backgroundTooLarge": "File too large (max. 5 MB)",
-    "invalidLocale": "Invalid language"
+    "invalidLocale": "Invalid language",
+    "invalidIconUrl": "Invalid icon URL",
+    "invalidImageData": "URL did not return a valid image",
+    "iconImportFailed": "Failed to download icon"
   },
   "widgetFields": {
     "activeStreams": "Active Streams",

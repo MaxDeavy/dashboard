@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/select";
 import { EnableSwitch } from "@/components/admin/EnableSwitch";
 import { LocaleSwitcher } from "@/components/admin/LocaleSwitcher";
+import { IconsSettingsSection } from "@/components/admin/IconsSettingsSection";
 import { ThemePresetPicker } from "@/components/admin/ThemePresetPicker";
 import { SettingSlider } from "@/components/admin/SettingSlider";
 import {
@@ -1065,51 +1066,53 @@ export function SettingsAdmin({
               onChange={setLayoutSideInset}
             />
           </div>
-
-          <div className="space-y-3 rounded-xl border border-border/50 bg-muted/10 p-4">
-            <div>
-              <Label>{t("backup")}</Label>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {t("backupHint")}
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={backupBusy}
-                onClick={handleExportBackup}
-              >
-                <Download className="mr-1.5 size-4" />
-                {t("exportBackup")}
-              </Button>
-              <input
-                ref={backupInputRef}
-                type="file"
-                accept=".zip,application/zip"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) {
-                    void handleImportBackup(file);
-                  }
-                }}
-              />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                disabled={backupBusy}
-                onClick={() => backupInputRef.current?.click()}
-              >
-                <Upload className="mr-1.5 size-4" />
-                {t("importBackup")}
-              </Button>
-            </div>
-          </div>
         </form>
+
+        <IconsSettingsSection onSuccess={onSuccess} onError={onError} />
+
+        <div className="mt-6 space-y-3 rounded-xl border border-border/50 bg-muted/10 p-4">
+          <div>
+            <Label>{t("backup")}</Label>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {t("backupHint")}
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={backupBusy}
+              onClick={handleExportBackup}
+            >
+              <Download className="mr-1.5 size-4" />
+              {t("exportBackup")}
+            </Button>
+            <input
+              ref={backupInputRef}
+              type="file"
+              accept=".zip,application/zip"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  void handleImportBackup(file);
+                }
+              }}
+            />
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              disabled={backupBusy}
+              onClick={() => backupInputRef.current?.click()}
+            >
+              <Upload className="mr-1.5 size-4" />
+              {t("importBackup")}
+            </Button>
+          </div>
+        </div>
       </CardContent>
     </Card>
 

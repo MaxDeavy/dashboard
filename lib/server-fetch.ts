@@ -140,13 +140,13 @@ export async function serverFetch(
 
   // Fetch-Spec: 204/205 dürfen keinen Body im Response-Konstruktor haben
   if (status === 204 || status === 205) {
-    await response.body.text();
+    await response.body.dump();
     return new Response(null, { status, headers: responseHeaders });
   }
 
-  const text = await response.body.text();
+  const data = await response.body.arrayBuffer();
 
-  return new Response(text, {
+  return new Response(data, {
     status,
     headers: responseHeaders,
   });
