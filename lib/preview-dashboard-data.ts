@@ -121,11 +121,11 @@ function previewService(
 
 const PREVIEW_SETTINGS: Record<string, string> = {
   dashboard_title: "Dashboard",
-  theme_preset: "ember",
+  theme_preset: "stealth",
   color_mode: "dark",
-  accent_color: "#f97316",
-  service_card_base_color: "#ea580c",
-  glow_color: "#fbbf24",
+  accent_color: "#94a3b8",
+  service_card_base_color: "#64748b",
+  glow_color: "#cbd5e1",
   icon_size: "44",
   icon_frame_style: "rounded",
   layout_max_width: "0",

@@ -107,7 +107,7 @@ Mehrere Dashboard-Seiten mit eigenen Kategorien. Im Dashboard wechseln per Tab-L
 
 ### Design (Einstellungen)
 
-- Theme-Presets (Ember, Stealth, Neon, Cobalt) oder eigene Farben
+- Theme-Presets (Stealth, Ember, Neon, Cobalt) oder eigene Farben
 - Dark / Light Mode
 - Hintergrundbild und Logo
 - Layout-Slider: Icon-Größe, Kachelform, Schrift, Spaltenabstand, maximale Breite

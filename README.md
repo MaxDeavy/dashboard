@@ -107,7 +107,7 @@ Multiple dashboard pages with their own categories. Switch in the dashboard via 
 
 ### Design (Settings)
 
-- Theme presets (Ember, Stealth, Neon, Cobalt) or custom colors
+- Theme presets (Stealth, Ember, Neon, Cobalt) or custom colors
 - Dark / light mode
 - Background image and logo
 - Layout sliders: icon size, tile shape, font, column spacing, max width

@@ -315,11 +315,11 @@
     "presets": {
       "ember": {
         "name": "Ember",
-        "description": "Orange & black — default theme"
+        "description": "Orange & black"
       },
       "stealth": {
         "name": "Stealth",
-        "description": "Grays, subtle & clean"
+        "description": "Grays, subtle & clean — default theme"
       },
       "neon": {
         "name": "Neon",

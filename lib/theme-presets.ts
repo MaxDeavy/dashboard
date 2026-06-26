@@ -1,4 +1,4 @@
-export type ThemePresetId = "ember" | "stealth" | "neon" | "cobalt" | "custom";
+export type ThemePresetId = "stealth" | "ember" | "neon" | "cobalt" | "custom";
 
 export type ColorMode = "dark" | "light";
 
@@ -11,25 +11,25 @@ export interface ThemePreset {
   glow: string;
 }
 
-export const DEFAULT_THEME_PRESET: ThemePresetId = "ember";
+export const DEFAULT_THEME_PRESET: ThemePresetId = "stealth";
 export const DEFAULT_COLOR_MODE: ColorMode = "dark";
 
 export const THEME_PRESETS: ThemePreset[] = [
   {
-    id: "ember",
-    name: "Ember",
-    description: "Orange & black — default theme",
-    accent: "#f97316",
-    cardBase: "#ea580c",
-    glow: "#fbbf24",
-  },
-  {
     id: "stealth",
     name: "Stealth",
-    description: "Grays, subtle & clean",
+    description: "Grays, subtle & clean — default theme",
     accent: "#94a3b8",
     cardBase: "#64748b",
     glow: "#cbd5e1",
+  },
+  {
+    id: "ember",
+    name: "Ember",
+    description: "Orange & black",
+    accent: "#f97316",
+    cardBase: "#ea580c",
+    glow: "#fbbf24",
   },
   {
     id: "neon",

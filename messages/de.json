@@ -321,11 +321,11 @@
     "presets": {
       "ember": {
         "name": "Ember",
-        "description": "Orange & Schwarz — Standard-Theme"
+        "description": "Orange & Schwarz"
       },
       "stealth": {
         "name": "Stealth",
-        "description": "Grautöne, zurückhaltend & clean"
+        "description": "Grautöne, zurückhaltend & clean — Standard-Theme"
       },
       "neon": {
         "name": "Neon",
