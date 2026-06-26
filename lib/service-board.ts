@@ -1,10 +1,15 @@
 import type { Category } from "@/lib/db/schema";
+import {
+  filterChangedLayoutUpdates,
+  moveServiceLinearInCategory,
+  moveServiceToOwnRowAt,
+  moveServiceToSlot,
+  sortServicesByLayout,
+  type ServiceLayoutItem,
+  type ServiceLayoutUpdate,
+} from "@/lib/service-rows";
 
-export interface ServiceBoardItem {
-  id: number;
-  categoryId: number;
-  sortOrder: number;
-}
+export interface ServiceBoardItem extends ServiceLayoutItem {}
 
 export interface ServiceBoardColumn<T extends ServiceBoardItem> {
   categoryId: number;
@@ -12,11 +17,7 @@ export interface ServiceBoardColumn<T extends ServiceBoardItem> {
   services: T[];
 }
 
-export interface ServiceReorderUpdate {
-  id: number;
-  categoryId: number;
-  sortOrder: number;
-}
+export type ServiceReorderUpdate = ServiceLayoutUpdate;
 
 export function buildServiceBoard<T extends ServiceBoardItem>(
   services: T[],
@@ -30,10 +31,68 @@ export function buildServiceBoard<T extends ServiceBoardItem>(
   return pageCategories.map((category) => ({
     categoryId: category.id,
     category,
-    services: services
-      .filter((service) => service.categoryId === category.id)
-      .sort((a, b) => a.sortOrder - b.sortOrder),
+    services: sortServicesByLayout(
+      services.filter((service) => service.categoryId === category.id),
+    ),
   }));
+}
+
+function rebuildBoardColumns<T extends ServiceBoardItem>(
+  columns: ServiceBoardColumn<T>[],
+  mergedServices: T[],
+): ServiceBoardColumn<T>[] {
+  return columns.map((column) => ({
+    ...column,
+    services: sortServicesByLayout(
+      mergedServices.filter((service) => service.categoryId === column.categoryId),
+    ),
+  }));
+}
+
+function flattenBoardServices<T extends ServiceBoardItem>(
+  columns: ServiceBoardColumn<T>[],
+): T[] {
+  return columns.flatMap((column) => column.services);
+}
+
+export function moveServiceToSlotInBoard<T extends ServiceBoardItem>(
+  columns: ServiceBoardColumn<T>[],
+  serviceId: number,
+  targetCategoryId: number,
+  targetRowOrder: number,
+  targetSlotIndex: number,
+): { columns: ServiceBoardColumn<T>[]; updates: ServiceReorderUpdate[] } {
+  const { services: merged, updates } = moveServiceToSlot(
+    flattenBoardServices(columns),
+    serviceId,
+    targetCategoryId,
+    targetRowOrder,
+    targetSlotIndex,
+  );
+
+  return {
+    columns: rebuildBoardColumns(columns, merged),
+    updates,
+  };
+}
+
+export function moveServiceToOwnRowInBoard<T extends ServiceBoardItem>(
+  columns: ServiceBoardColumn<T>[],
+  serviceId: number,
+  targetCategoryId: number,
+  beforeRowOrder: number,
+): { columns: ServiceBoardColumn<T>[]; updates: ServiceReorderUpdate[] } {
+  const { services: merged, updates } = moveServiceToOwnRowAt(
+    flattenBoardServices(columns),
+    serviceId,
+    targetCategoryId,
+    beforeRowOrder,
+  );
+
+  return {
+    columns: rebuildBoardColumns(columns, merged),
+    updates,
+  };
 }
 
 export function moveServiceInBoard<T extends ServiceBoardItem>(
@@ -42,77 +101,25 @@ export function moveServiceInBoard<T extends ServiceBoardItem>(
   targetCategoryId: number,
   targetIndex: number,
 ): { columns: ServiceBoardColumn<T>[]; updates: ServiceReorderUpdate[] } {
-  const next = columns.map((column) => ({
-    ...column,
-    services: [...column.services],
-  }));
-
-  let moved: T | null = null;
-  let sourceCategoryId: number | null = null;
-  let sourceIndex = -1;
-
-  for (const column of next) {
-    const index = column.services.findIndex((service) => service.id === serviceId);
-    if (index >= 0) {
-      sourceCategoryId = column.categoryId;
-      sourceIndex = index;
-      moved = column.services.splice(index, 1)[0] ?? null;
-      break;
-    }
-  }
-
-  if (!moved) {
-    return { columns, updates: [] };
-  }
-
-  const targetColumn = next.find(
-    (column) => column.categoryId === targetCategoryId,
-  );
-  if (!targetColumn) {
-    return { columns, updates: [] };
-  }
-
-  let insertIndex = Math.min(
-    Math.max(targetIndex, 0),
-    targetColumn.services.length,
+  const { services: merged, updates } = moveServiceLinearInCategory(
+    flattenBoardServices(columns),
+    serviceId,
+    targetCategoryId,
+    targetIndex,
   );
 
-  if (sourceCategoryId === targetCategoryId && sourceIndex < targetIndex) {
-    insertIndex = Math.max(insertIndex - 1, 0);
-  }
-
-  const updatedService = {
-    ...moved,
-    categoryId: targetCategoryId,
-    sortOrder: insertIndex,
+  return {
+    columns: rebuildBoardColumns(columns, merged),
+    updates,
   };
-
-  targetColumn.services.splice(insertIndex, 0, updatedService);
-
-  const updates: ServiceReorderUpdate[] = [];
-  for (const column of next) {
-    column.services.forEach((service, index) => {
-      updates.push({
-        id: service.id,
-        categoryId: column.categoryId,
-        sortOrder: index,
-      });
-    });
-  }
-
-  return { columns: next, updates };
 }
 
 export function filterChangedReorderUpdates(
   updates: ServiceReorderUpdate[],
-  original: Map<number, { categoryId: number; sortOrder: number }>,
+  original: Map<
+    number,
+    { categoryId: number; sortOrder: number; rowOrder: number; slotIndex: number }
+  >,
 ): ServiceReorderUpdate[] {
-  return updates.filter((update) => {
-    const before = original.get(update.id);
-    if (!before) return true;
-    return (
-      before.categoryId !== update.categoryId ||
-      before.sortOrder !== update.sortOrder
-    );
-  });
+  return filterChangedLayoutUpdates(updates, original);
 }

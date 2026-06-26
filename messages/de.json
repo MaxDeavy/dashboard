@@ -103,7 +103,7 @@
     "categoryOrderSaved": "Kategorie-Reihenfolge gespeichert",
     "categoryOrderSaveFailed": "Kategorie-Reihenfolge konnte nicht gespeichert werden",
     "dragServicesHere": "Dienste hierher ziehen",
-    "boardHint": "Kategorien per Drag & Drop anordnen. Dienste in der Liste von oben nach unten sortieren — diese Reihenfolge gilt später im Dashboard.",
+    "boardHint": "Kategorien per Drag & Drop anordnen. Dienste in Zeilen mit bis zu drei Kacheln nebeneinander ziehen — das Layout gilt im Dashboard.",
     "noCategoriesYet": "Noch keine Kategorie — „Neue Kategorie“ oben rechts anlegen",
     "moveCategory": "Kategorie {name} verschieben",
     "moveService": "{name} verschieben",

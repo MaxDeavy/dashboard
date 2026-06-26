@@ -11,7 +11,11 @@ export async function GET() {
   const services = await db
     .select()
     .from(schema.services)
-    .orderBy(asc(schema.services.sortOrder));
+    .orderBy(
+      asc(schema.services.rowOrder),
+      asc(schema.services.slotIndex),
+      asc(schema.services.sortOrder),
+    );
 
   const widgets = await db.select().from(schema.widgetConfigs);
   const widgetByService = Object.fromEntries(
@@ -52,6 +56,8 @@ export async function POST(request: Request) {
       linkOpenMode: body.linkOpenMode ?? "same_tab",
       icon,
       sortOrder: body.sortOrder ?? 0,
+      rowOrder: body.rowOrder ?? 0,
+      slotIndex: body.slotIndex ?? 0,
       healthCheckUrl: body.healthCheckUrl ?? null,
       enabled: body.enabled ?? true,
       insecureTls: body.insecureTls ?? false,

@@ -33,6 +33,8 @@ export const services = sqliteTable("services", {
   linkOpenMode: text("link_open_mode").default("same_tab"),
   icon: text("icon"),
   sortOrder: integer("sort_order").notNull().default(0),
+  rowOrder: integer("row_order").notNull().default(0),
+  slotIndex: integer("slot_index").notNull().default(0),
   healthCheckUrl: text("health_check_url"),
   enabled: integer("enabled", { mode: "boolean" }).notNull().default(true),
   insecureTls: integer("insecure_tls", { mode: "boolean" }).notNull().default(false),

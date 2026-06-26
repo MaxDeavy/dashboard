@@ -1,6 +1,8 @@
 import {
   filterChangedReorderUpdates,
   moveServiceInBoard,
+  moveServiceToOwnRowInBoard,
+  moveServiceToSlotInBoard,
   type ServiceBoardItem,
   type ServiceReorderUpdate,
 } from "@/lib/service-board";
@@ -69,6 +71,94 @@ export function moveDashboardColumn<T extends ServiceBoardItem>(
   };
 }
 
+export function moveDashboardServiceToOwnRow<T extends ServiceBoardItem>(
+  columns: DashboardColumn<T>[],
+  serviceId: number,
+  targetCategoryId: number,
+  beforeRowOrder: number,
+): { columns: DashboardColumn<T>[]; updates: ServiceReorderUpdate[] } {
+  const boardColumns = getEditableDashboardColumns(columns).map((column) => ({
+    categoryId: column.id,
+    category: {
+      id: column.id,
+      name: column.name,
+      sortOrder: column.sortOrder,
+      columnPosition: column.columnPosition,
+      enabled: column.enabled,
+      color: column.color ?? null,
+      pageId: column.pageId ?? 0,
+    },
+    services: column.services,
+  }));
+
+  const { columns: nextBoard, updates } = moveServiceToOwnRowInBoard(
+    boardColumns,
+    serviceId,
+    targetCategoryId,
+    beforeRowOrder,
+  );
+
+  return {
+    columns: nextBoard.map((column) => ({
+      id: column.categoryId,
+      name: column.category.name,
+      sortOrder: column.category.sortOrder,
+      columnPosition: column.category.columnPosition,
+      enabled: column.category.enabled,
+      color: column.category.color ?? null,
+      pageId: column.category.pageId,
+      services: column.services,
+      isEmpty: false,
+    })),
+    updates,
+  };
+}
+
+export function moveDashboardServiceToSlot<T extends ServiceBoardItem>(
+  columns: DashboardColumn<T>[],
+  serviceId: number,
+  targetCategoryId: number,
+  targetRowOrder: number,
+  targetSlotIndex: number,
+): { columns: DashboardColumn<T>[]; updates: ServiceReorderUpdate[] } {
+  const boardColumns = getEditableDashboardColumns(columns).map((column) => ({
+    categoryId: column.id,
+    category: {
+      id: column.id,
+      name: column.name,
+      sortOrder: column.sortOrder,
+      columnPosition: column.columnPosition,
+      enabled: column.enabled,
+      color: column.color ?? null,
+      pageId: column.pageId ?? 0,
+    },
+    services: column.services,
+  }));
+
+  const { columns: nextBoard, updates } = moveServiceToSlotInBoard(
+    boardColumns,
+    serviceId,
+    targetCategoryId,
+    targetRowOrder,
+    targetSlotIndex,
+  );
+
+  return {
+    columns: nextBoard.map((column) => ({
+      id: column.categoryId,
+      name: column.category.name,
+      sortOrder: column.category.sortOrder,
+      columnPosition: column.category.columnPosition,
+      enabled: column.category.enabled,
+      color: column.category.color ?? null,
+      pageId: column.category.pageId,
+      services: column.services,
+      isEmpty: false,
+    })),
+    updates,
+  };
+}
+
 export function moveDashboardService<T extends ServiceBoardItem>(
   columns: DashboardColumn<T>[],
   serviceId: number,
@@ -121,14 +211,22 @@ export function filterChangedCategoryUpdates(
 
 export function buildServicePositionMap<T extends ServiceBoardItem>(
   columns: DashboardColumn<T>[],
-): Map<number, { categoryId: number; sortOrder: number }> {
-  const map = new Map<number, { categoryId: number; sortOrder: number }>();
+): Map<
+  number,
+  { categoryId: number; sortOrder: number; rowOrder: number; slotIndex: number }
+> {
+  const map = new Map<
+    number,
+    { categoryId: number; sortOrder: number; rowOrder: number; slotIndex: number }
+  >();
 
   for (const column of columns) {
     for (const service of column.services) {
       map.set(service.id, {
         categoryId: service.categoryId,
         sortOrder: service.sortOrder,
+        rowOrder: service.rowOrder,
+        slotIndex: service.slotIndex,
       });
     }
   }

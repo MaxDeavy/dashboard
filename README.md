@@ -11,6 +11,7 @@ Self-hosted dashboard for homelab services: tiles with health checks, live API h
 - **Web / LAN** — external and local URL per service; toggle in the header
 - **Hover widgets** — live data from 35+ services (Plex, Nextcloud, Proxmox, …)
 - **Layout with Ctrl** — logged-in users reorder categories and tiles via drag & drop
+- **Service rows** — up to three services side by side per row (admin and dashboard)
 - **Admin** — services, categories, pages, header/footer links, themes, backup
 - **Internationalization** — English and German UI; language switcher in Admin → Settings
 - **Docker-ready** — SQLite volume, migrations on container start
@@ -69,8 +70,32 @@ All settings are managed in the admin at `/admin`. The last opened tab is rememb
 | **Health check** | Optional separate URL; per-service TLS exception |
 | **Hover widget** | API integration with encrypted credentials |
 | **Link target** | Same tab or new tab |
+| **Row layout** | Arrange up to three services side by side per row |
 
 Unsaved changes in service or category dialogs trigger a confirmation before closing.
+
+#### Arrange services in rows
+
+In Admin under **Services**, the default view is still **one full-width row per service**. Via drag & drop you can also place services **side by side** or **between** existing tiles — up to three per row. The layout is saved automatically and reflected on the dashboard.
+
+| Action | How |
+|--------|-----|
+| **Own row** | Drag onto the **line above** a row |
+| **Beside another** | Drag onto the **vertical line** to the right of a tile |
+| **Between two** | Drag onto the **vertical line between** two tiles |
+| **New row at bottom** | Drag below the last row in the category |
+
+Single services keep full width — only deliberately grouped tiles sit side by side.
+
+#### Display on the dashboard
+
+| Layout | Appearance |
+|--------|------------|
+| **1 per row** | Standard tile: icon left, name and subtitle |
+| **2 per row** | Compact tiles with spacing, uniform row height |
+| **3 per row** | Icon on top, subtitle below (no service name), uniform row height |
+
+Logged-in admins can also adjust layout on the dashboard with **Ctrl + drag & drop** (horizontal and vertical insertion lines, same as in admin).
 
 The selected services page in the admin is remembered in the browser.
 
@@ -101,7 +126,7 @@ The selection persists after reload (`localStorage`).
 2. Drag categories (⋮⋮ handle) and tiles to reorder
 3. Release **Ctrl** — normal navigation resumes
 
-Only for logged-in admins; disabled while a search is active.
+While dragging tiles, **insertion lines** appear: horizontal between rows, vertical between or beside tiles in a row. Only for logged-in admins; disabled while a search is active.
 
 ### Backup
 

@@ -78,14 +78,22 @@ export async function getServices() {
     .where(
       and(eq(schema.services.enabled, true), gte(schema.services.sortOrder, 0)),
     )
-    .orderBy(asc(schema.services.sortOrder));
+    .orderBy(
+      asc(schema.services.rowOrder),
+      asc(schema.services.slotIndex),
+      asc(schema.services.sortOrder),
+    );
 }
 
 export async function getAllServices() {
   return db
     .select()
     .from(schema.services)
-    .orderBy(asc(schema.services.sortOrder));
+    .orderBy(
+      asc(schema.services.rowOrder),
+      asc(schema.services.slotIndex),
+      asc(schema.services.sortOrder),
+    );
 }
 
 export async function getServiceById(id: number) {

@@ -66,6 +66,8 @@ export async function PUT(
       linkOpenMode: body.linkOpenMode ?? "same_tab",
       icon,
       sortOrder: body.sortOrder,
+      rowOrder: body.rowOrder ?? 0,
+      slotIndex: body.slotIndex ?? 0,
       healthCheckUrl: body.healthCheckUrl,
       enabled: body.enabled,
       insecureTls: body.insecureTls ?? false,

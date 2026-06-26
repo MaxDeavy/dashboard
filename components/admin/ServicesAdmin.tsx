@@ -47,6 +47,7 @@ import {
   readStoredAdminServicesPageId,
   writeStoredAdminServicesPageId,
 } from "@/lib/page-storage";
+import { getNextServiceLayout } from "@/lib/service-rows";
 import { useDiscardConfirm } from "@/hooks/useDiscardConfirm";
 
 interface ServiceWithWidget extends Service {
@@ -355,20 +356,11 @@ export function ServicesAdmin({
     setOpen(true);
   }
 
-  function getNextSortOrder(categoryId: number): number {
-    const inCategory = services.filter(
-      (service) =>
-        service.categoryId === categoryId && service.sortOrder >= 0,
-    );
-    if (inCategory.length === 0) return 0;
-    return Math.max(...inCategory.map((service) => service.sortOrder)) + 1;
-  }
-
   function resolveNewServicePlacement(categoryId: number) {
     const resolvedCategoryId = categoryId || (pageCategories[0]?.id ?? 0);
     return {
       categoryId: resolvedCategoryId,
-      sortOrder: getNextSortOrder(resolvedCategoryId),
+      ...getNextServiceLayout(services, resolvedCategoryId),
     };
   }
 
@@ -387,8 +379,13 @@ export function ServicesAdmin({
       extraConfig.insecureTls = "true";
     }
 
-    const { categoryId, sortOrder } = editing
-      ? { categoryId: editing.categoryId, sortOrder: editing.sortOrder }
+    const { categoryId, sortOrder, rowOrder, slotIndex } = editing
+      ? {
+          categoryId: editing.categoryId,
+          sortOrder: editing.sortOrder,
+          rowOrder: editing.rowOrder,
+          slotIndex: editing.slotIndex,
+        }
       : resolveNewServicePlacement(form.categoryId);
 
     const body = {
@@ -403,6 +400,8 @@ export function ServicesAdmin({
       icon: form.icon || null,
       categoryId,
       sortOrder,
+      rowOrder,
+      slotIndex,
       healthCheckUrl: form.healthCheckUrl || null,
       enabled: form.enabled,
       insecureTls: form.insecureTls,

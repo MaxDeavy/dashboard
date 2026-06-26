@@ -266,6 +266,73 @@ export function getTileMetrics(layout: DashboardLayoutSettings): TileMetrics {
   };
 }
 
+export function getStandardTileHeight(layout: DashboardLayoutSettings): number {
+  const base = getTileMetrics(layout);
+  const textBlockHeight =
+    Math.ceil(base.titleSize * 1.2) + Math.ceil(base.subtitleSize * 1.2);
+  const contentHeight = Math.max(base.iconSize, textBlockHeight);
+
+  return base.paddingY * 2 + contentHeight;
+}
+
+export type ServiceRowDensity = 1 | 2 | 3;
+
+export function getDensityTileMetrics(
+  layout: DashboardLayoutSettings,
+  density: ServiceRowDensity,
+): TileMetrics {
+  const base = getTileMetrics(layout);
+  if (density === 1) return base;
+
+  if (density === 2) {
+    const iconSize = Math.round(base.iconSize * 0.82);
+    return {
+      ...base,
+      paddingX: Math.max(6, Math.round(base.paddingX * 0.65)),
+      paddingY: Math.max(5, Math.round(base.paddingY * 0.7)),
+      gap: Math.max(4, Math.round(base.gap * 0.5)),
+      titleSize: Math.max(10, Math.round(base.titleSize * 0.9)),
+      subtitleSize: Math.max(9, Math.round(base.subtitleSize * 0.88)),
+      iconSize,
+      iconImageSize: getIconImageSize(iconSize),
+    };
+  }
+
+  const paddingY = Math.max(4, Math.round(base.paddingY * 0.5));
+  const paddingX = Math.max(4, Math.round(base.paddingX * 0.45));
+  const subtitleSize = Math.max(9, Math.round(base.subtitleSize * 0.82));
+  const gap = 2;
+  const tileHeight = getStandardTileHeight(layout);
+  const maxIconSize =
+    tileHeight -
+    paddingY * 2 -
+    Math.ceil(subtitleSize * 1.1) -
+    gap;
+  const iconSize = Math.min(base.iconSize, Math.max(20, maxIconSize));
+
+  return {
+    ...base,
+    paddingX,
+    paddingY,
+    gap,
+    titleSize: Math.max(8, Math.round(base.titleSize * 0.72)),
+    subtitleSize,
+    iconSize,
+    iconImageSize: getIconImageSize(iconSize),
+  };
+}
+
+export function getRowTileGap(
+  layout: DashboardLayoutSettings,
+  density: ServiceRowDensity,
+): number {
+  if (density === 1) return layout.tileSpacing;
+  if (density === 2) return Math.max(6, Math.round(layout.tileSpacing * 0.7));
+  return Math.max(5, Math.round(layout.tileSpacing * 0.6));
+}
+
+export const ADMIN_MULTI_ROW_GAP_PX = 6;
+
 export function getColumnGridStyle(
   layout: DashboardLayoutSettings,
   columnCount: number,

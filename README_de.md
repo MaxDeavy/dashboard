@@ -11,6 +11,7 @@ Selbst gehostetes Dashboard für Homelab-Dienste: Kacheln mit Health-Checks, Liv
 - **Web / LAN** — pro Dienst externe und lokale URL; Umschaltung im Header
 - **Hover-Widgets** — Live-Daten von 35+ Diensten (Plex, Nextcloud, Proxmox, …)
 - **Layout per Strg** — angemeldete Nutzer ordnen Kategorien und Kacheln per Drag & Drop
+- **Dienst-Zeilen** — bis zu drei Dienste nebeneinander pro Zeile (Admin und Dashboard)
 - **Admin** — Dienste, Kategorien, Seiten, Header/Footer-Links, Themes, Backup
 - **Mehrsprachigkeit** — Englisch und Deutsch; Sprachumschalter unter Admin → Einstellungen
 - **Docker-ready** — SQLite-Volume, Migrationen beim Start
@@ -69,8 +70,32 @@ Alle Einstellungen erfolgen im Admin unter `/admin`. Der zuletzt geöffnete Tab 
 | **Health-Check** | Optional abweichende URL; TLS-Ausnahme pro Dienst |
 | **Hover-Widget** | API-Anbindung mit verschlüsselten Zugangsdaten |
 | **Link-Ziel** | Gleicher Tab oder neuer Tab |
+| **Zeilen-Layout** | Bis zu drei Dienste pro Zeile nebeneinander anordnen |
 
 Ungespeicherte Änderungen in Dienst- oder Kategorie-Dialogen lösen vor dem Schließen eine Bestätigung aus.
+
+#### Dienste in Zeilen anordnen
+
+Im Admin unter **Dienste** bleibt die Standardansicht eine **volle Zeile pro Dienst**. Per Drag & Drop lassen sich Dienste zusätzlich **nebeneinander** oder **dazwischen** platzieren — bis zu drei pro Zeile. Das Layout wird automatisch gespeichert und im Dashboard übernommen.
+
+| Aktion | So geht's |
+|--------|-----------|
+| **Eigene Zeile** | Dienst auf die **Linie oberhalb** einer Zeile ziehen |
+| **Rechts daneben** | Dienst in die **vertikale Linie** rechts neben einer Kachel ziehen |
+| **Dazwischen** | Dienst in die **vertikale Linie zwischen** zwei Kacheln ziehen |
+| **Neue Zeile unten** | Dienst unter die letzte Zeile der Kategorie ziehen |
+
+Einzelne Dienste nutzen weiterhin die volle Breite — nur bewusst gruppierte Kacheln stehen nebeneinander.
+
+#### Darstellung im Dashboard
+
+| Anordnung | Darstellung |
+|-----------|-------------|
+| **1 pro Zeile** | Normale Kachel: Icon links, Name und Untertitel |
+| **2 pro Zeile** | Kompakte Kacheln mit etwas Abstand, gleiche Zeilenhöhe |
+| **3 pro Zeile** | Icon oben, Untertitel darunter (ohne Dienstname), gleiche Zeilenhöhe |
+
+Im Dashboard können angemeldete Admins das Layout zusätzlich mit **Strg + Drag & Drop** anpassen (horizontale und vertikale Einfüge-Linien wie im Admin).
 
 Die gewählte Dienste-Seite im Admin wird im Browser gemerkt.
 
@@ -101,7 +126,7 @@ Die Auswahl bleibt nach Reload erhalten (`localStorage`).
 2. Kategorien (⋮⋮-Griff) und Kacheln per Drag & Drop anordnen
 3. **Strg** loslassen — normale Navigation
 
-Nur für angemeldete Admins; während einer aktiven Suche deaktiviert.
+Beim Verschieben von Kacheln erscheinen **Einfüge-Linien**: horizontal zwischen Zeilen, vertikal zwischen oder neben Kacheln in einer Zeile. Nur für angemeldete Admins; während einer aktiven Suche deaktiviert.
 
 ### Backup
 

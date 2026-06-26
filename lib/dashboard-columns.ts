@@ -1,10 +1,13 @@
 import { MAX_DASHBOARD_COLUMNS } from "@/lib/constants";
 import type { Category } from "@/lib/db/schema";
+import { sortServicesByLayout } from "@/lib/service-rows";
 
 export interface DashboardServiceRow {
   id: number;
   categoryId: number;
   sortOrder: number;
+  rowOrder: number;
+  slotIndex: number;
   hasWidget: boolean;
   widgetType: string | null;
   [key: string]: unknown;
@@ -51,9 +54,9 @@ export function buildDashboardColumns<T extends DashboardServiceRow>(
 
     return {
       ...category,
-      services: services
-        .filter((service) => service.categoryId === category.id)
-        .sort((a, b) => a.sortOrder - b.sortOrder),
+      services: sortServicesByLayout(
+        services.filter((service) => service.categoryId === category.id),
+      ),
       isEmpty: false,
     };
   });

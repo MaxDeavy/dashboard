@@ -3,11 +3,14 @@ import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/lib/auth";
 import { db, schema } from "@/lib/db";
+import { MAX_SERVICES_PER_ROW } from "@/lib/service-rows";
 
 interface ReorderUpdate {
   id: number;
   categoryId: number;
   sortOrder: number;
+  rowOrder?: number;
+  slotIndex?: number;
 }
 
 export async function PUT(request: Request) {
@@ -32,14 +35,32 @@ export async function PUT(request: Request) {
     ) {
       return NextResponse.json({ error: t("invalidData") }, { status: 400 });
     }
+
+    const rowOrder = update.rowOrder ?? 0;
+    const slotIndex = update.slotIndex ?? 0;
+
+    if (
+      !Number.isFinite(rowOrder) ||
+      !Number.isFinite(slotIndex) ||
+      rowOrder < 0 ||
+      slotIndex < 0 ||
+      slotIndex >= MAX_SERVICES_PER_ROW
+    ) {
+      return NextResponse.json({ error: t("invalidData") }, { status: 400 });
+    }
   }
 
   for (const update of updates) {
+    const rowOrder = update.rowOrder ?? 0;
+    const slotIndex = update.slotIndex ?? 0;
+
     await db
       .update(schema.services)
       .set({
         categoryId: update.categoryId,
         sortOrder: update.sortOrder ?? 0,
+        rowOrder,
+        slotIndex,
       })
       .where(eq(schema.services.id, update.id));
   }

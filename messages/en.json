@@ -103,7 +103,7 @@
     "categoryOrderSaved": "Category order saved",
     "categoryOrderSaveFailed": "Failed to save category order",
     "dragServicesHere": "Drag services here",
-    "boardHint": "Arrange categories by drag & drop. Sort services top to bottom in the list — that order is used on the dashboard.",
+    "boardHint": "Arrange categories by drag & drop. Drag services into rows with up to three tiles side by side — that layout is used on the dashboard.",
     "noCategoriesYet": "No category yet — create one with \"New category\" at the top right",
     "moveCategory": "Move category {name}",
     "moveService": "Move {name}",

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { GripVertical } from "lucide-react";
 import { toast } from "sonner";
@@ -15,15 +15,23 @@ import {
   filterChangedReorderUpdates,
   getEditableDashboardColumns,
   moveDashboardColumn,
-  moveDashboardService,
+  moveDashboardServiceToOwnRow,
+  moveDashboardServiceToSlot,
   type DashboardColumn,
 } from "@/lib/dashboard-layout";
 import {
+  getNextAvailableSlot,
+  groupServicesIntoRows,
+  sortServicesByLayout,
+} from "@/lib/service-rows";
+import {
   DEFAULT_LAYOUT_SETTINGS,
   getColumnGridStyle,
+  getRowTileGap,
   getTileMetrics,
   usesCustomColumnWidth,
   type DashboardLayoutSettings,
+  type ServiceRowDensity,
 } from "@/lib/layout-settings";
 import type { NetworkMode } from "@/lib/network-mode";
 import type { Category } from "@/lib/db/schema";
@@ -110,7 +118,17 @@ export function ServiceGrid({
   );
   const [dropTarget, setDropTarget] = useState<
     | { type: "column"; index: number }
-    | { type: "service"; categoryId: number; index: number }
+    | {
+        type: "service-before-row";
+        categoryId: number;
+        rowOrder: number;
+      }
+    | {
+        type: "service-beside";
+        categoryId: number;
+        rowOrder: number;
+        slotIndex: number;
+      }
     | null
   >(null);
   const [savingLayout, setSavingLayout] = useState(false);
@@ -172,7 +190,7 @@ export function ServiceGrid({
 
   async function persistServiceReorder(
     nextColumns: DashboardColumn<ServiceWithWidget>[],
-    updates: ReturnType<typeof moveDashboardService>["updates"],
+    updates: ReturnType<typeof moveDashboardServiceToSlot>["updates"],
   ) {
     const changed = filterChangedReorderUpdates(updates, servicePositions);
     if (changed.length === 0) return;
@@ -231,9 +249,10 @@ export function ServiceGrid({
     void persistColumnReorder(nextColumns, updates);
   }
 
-  function handleServiceDrop(
+  function handleServiceDropBeside(
     categoryId: number,
-    index: number,
+    rowOrder: number,
+    slotIndex: number,
     event?: React.DragEvent,
   ) {
     const transferId = event?.dataTransfer.getData("text/plain");
@@ -252,14 +271,91 @@ export function ServiceGrid({
       return;
     }
 
-    const { columns: nextColumns, updates } = moveDashboardService(
+    const { columns: nextColumns, updates } = moveDashboardServiceToSlot(
       layoutColumns,
       serviceId,
       categoryId,
-      index,
+      rowOrder,
+      slotIndex,
     );
 
     void persistServiceReorder(nextColumns, updates);
+  }
+
+  function handleServiceDropBeforeRow(
+    categoryId: number,
+    beforeRowOrder: number,
+    event?: React.DragEvent,
+  ) {
+    const transferId = event?.dataTransfer.getData("text/plain");
+    const serviceId =
+      draggingServiceId ??
+      (transferId?.startsWith("service:")
+        ? Number(transferId.slice(8))
+        : null);
+
+    if (
+      serviceId == null ||
+      !Number.isFinite(serviceId) ||
+      savingLayout ||
+      !layoutEditMode
+    ) {
+      return;
+    }
+
+    const { columns: nextColumns, updates } = moveDashboardServiceToOwnRow(
+      layoutColumns,
+      serviceId,
+      categoryId,
+      beforeRowOrder,
+    );
+
+    void persistServiceReorder(nextColumns, updates);
+  }
+
+  function renderHorizontalDropDivider(
+    categoryId: number,
+    rowOrder: number,
+    slotIndex: number,
+  ) {
+    const isTarget =
+      dropTarget?.type === "service-beside" &&
+      dropTarget.categoryId === categoryId &&
+      dropTarget.rowOrder === rowOrder &&
+      dropTarget.slotIndex === slotIndex;
+
+    return (
+      <div
+        key={`drop-${categoryId}-${rowOrder}-${slotIndex}`}
+        className="relative z-30 w-2 shrink-0 self-stretch"
+        onDragEnter={(event) => {
+          if (!layoutEditMode || draggingServiceId == null) return;
+          event.preventDefault();
+          event.stopPropagation();
+        }}
+        onDragOver={(event) => {
+          if (!layoutEditMode || draggingServiceId == null) return;
+          event.preventDefault();
+          event.stopPropagation();
+          event.dataTransfer.dropEffect = "move";
+          setDropTarget({
+            type: "service-beside",
+            categoryId,
+            rowOrder,
+            slotIndex,
+          });
+        }}
+        onDrop={(event) => {
+          event.preventDefault();
+          event.stopPropagation();
+          handleServiceDropBeside(categoryId, rowOrder, slotIndex, event);
+        }}
+      >
+        {isTarget && (
+          <div className="pointer-events-none absolute inset-y-2 left-1/2 z-10 w-0.5 -translate-x-1/2 rounded-full bg-primary" />
+        )}
+      </div>
+    );
   }
 
   if (
@@ -412,87 +508,127 @@ export function ServiceGrid({
             )}
 
             <div
-              className="dashboard-service-list grid grid-cols-1"
+              className="dashboard-service-list flex flex-col"
               style={
                 {
                   "--dashboard-tile-spacing": `${layout.tileSpacing}px`,
+                  gap: `${layout.tileSpacing}px`,
                 } as React.CSSProperties
               }
               onDragOver={(event) => {
                 if (!layoutEditMode || draggingServiceId == null) return;
                 event.preventDefault();
+                const rows = groupServicesIntoRows(column.services);
                 setDropTarget({
-                  type: "service",
+                  type: "service-before-row",
                   categoryId: column.id,
-                  index: column.services.length,
+                  rowOrder: rows.length,
                 });
               }}
               onDrop={(event) => {
                 event.preventDefault();
                 event.stopPropagation();
-                handleServiceDrop(column.id, column.services.length, event);
+                const rows = groupServicesIntoRows(column.services);
+                handleServiceDropBeforeRow(column.id, rows.length, event);
               }}
             >
-              {column.services.map((service, serviceIndex) => (
-                <div
-                  key={service.id}
-                  className="relative"
-                  onDragOver={(event) => {
-                    if (!layoutEditMode || draggingServiceId == null) return;
-                    event.preventDefault();
-                    event.stopPropagation();
-                    setDropTarget({
-                      type: "service",
-                      categoryId: column.id,
-                      index: serviceIndex,
-                    });
-                  }}
-                  onDrop={(event) => {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    handleServiceDrop(column.id, serviceIndex, event);
-                  }}
-                >
-                  {dropTarget?.type === "service" &&
-                    dropTarget.categoryId === column.id &&
-                    dropTarget.index === serviceIndex && (
-                      <div className="absolute inset-x-0 -top-1 z-10 h-0.5 rounded-full bg-primary" />
-                    )}
+              {groupServicesIntoRows(column.services).map((row, rowOrder) => {
+                const sorted = sortServicesByLayout(row);
+                const nextSlot = getNextAvailableSlot(row);
+                const rowDensity = Math.min(row.length, 3) as ServiceRowDensity;
+                const rowGap =
+                  rowDensity > 1 ? getRowTileGap(layout, rowDensity) : 0;
+                const isDragging = layoutEditMode && draggingServiceId != null;
 
+                return (
                   <div
-                    draggable={layoutEditMode && !savingLayout}
-                    onDragStart={(event) => {
-                      if (!event.ctrlKey && !ctrlHeld) {
-                        event.preventDefault();
-                        return;
-                      }
-                      setDraggingServiceId(service.id);
-                      setDraggingColumnId(null);
-                      event.dataTransfer.effectAllowed = "move";
-                      event.dataTransfer.setData(
-                        "text/plain",
-                        `service:${service.id}`,
-                      );
+                    key={rowOrder}
+                    className="relative"
+                    onDragOver={(event) => {
+                      if (!layoutEditMode || draggingServiceId == null) return;
+                      event.preventDefault();
+                      event.stopPropagation();
+                      setDropTarget({
+                        type: "service-before-row",
+                        categoryId: column.id,
+                        rowOrder,
+                      });
                     }}
-                    onDragEnd={() => {
-                      setDraggingServiceId(null);
-                      setDropTarget(null);
+                    onDrop={(event) => {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      handleServiceDropBeforeRow(column.id, rowOrder, event);
                     }}
                   >
-                    <ServiceCard
-                      service={service}
-                      healthStatus={healthMap[service.id] ?? "unknown"}
-                      accentColor={accentColor}
-                      baseCardColor={baseCardColor}
-                      categoryColor={column.color}
-                      networkMode={networkMode}
-                      layout={layout}
-                      layoutEditMode={layoutEditMode}
-                      dragging={draggingServiceId === service.id}
-                    />
+                    {dropTarget?.type === "service-before-row" &&
+                      dropTarget.categoryId === column.id &&
+                      dropTarget.rowOrder === rowOrder && (
+                        <div className="absolute inset-x-0 -top-1 z-10 h-0.5 rounded-full bg-primary" />
+                      )}
+
+                    <div
+                      className="relative flex w-full items-stretch"
+                      style={{ gap: isDragging ? 0 : rowGap }}
+                    >
+                      {sorted.map((service, index) => (
+                        <Fragment key={service.id}>
+                          {isDragging &&
+                            renderHorizontalDropDivider(
+                              column.id,
+                              rowOrder,
+                              index,
+                            )}
+                          <div className="relative flex min-w-0 flex-1">
+                            <div
+                              className="flex h-full min-w-0 flex-1"
+                              draggable={layoutEditMode && !savingLayout}
+                              onDragStart={(event) => {
+                                if (!event.ctrlKey && !ctrlHeld) {
+                                  event.preventDefault();
+                                  return;
+                                }
+                                setDraggingServiceId(service.id);
+                                setDraggingColumnId(null);
+                                event.dataTransfer.effectAllowed = "move";
+                                event.dataTransfer.setData(
+                                  "text/plain",
+                                  `service:${service.id}`,
+                                );
+                              }}
+                              onDragEnd={() => {
+                                setDraggingServiceId(null);
+                                setDropTarget(null);
+                              }}
+                            >
+                              <ServiceCard
+                                service={service}
+                                healthStatus={
+                                  healthMap[service.id] ?? "unknown"
+                                }
+                                accentColor={accentColor}
+                                baseCardColor={baseCardColor}
+                                categoryColor={column.color}
+                                networkMode={networkMode}
+                                layout={layout}
+                                layoutEditMode={layoutEditMode}
+                                dragging={draggingServiceId === service.id}
+                                rowDensity={rowDensity}
+                              />
+                            </div>
+                          </div>
+                        </Fragment>
+                      ))}
+                      {isDragging &&
+                        nextSlot != null &&
+                        renderHorizontalDropDivider(
+                          column.id,
+                          rowOrder,
+                          nextSlot,
+                        )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </section>
           );

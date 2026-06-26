@@ -26,6 +26,18 @@ function ensureSchemaPatches() {
     );
   }
 
+  if (!columns.some((column) => column.name === "row_order")) {
+    sqlite.exec(
+      "ALTER TABLE `services` ADD COLUMN `row_order` integer DEFAULT 0 NOT NULL",
+    );
+    sqlite.exec(
+      "ALTER TABLE `services` ADD COLUMN `slot_index` integer DEFAULT 0 NOT NULL",
+    );
+    sqlite.exec(
+      "UPDATE `services` SET `row_order` = `sort_order`, `slot_index` = 0",
+    );
+  }
+
   const navLinkColumns = sqlite
     .prepare("PRAGMA table_info(nav_links)")
     .all() as Array<{ name: string }>;
