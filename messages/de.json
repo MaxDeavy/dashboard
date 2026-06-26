@@ -192,6 +192,9 @@
     "languageDe": "Deutsch",
     "languageChanged": "Sprache aktualisiert",
     "languageChangeFailed": "Sprache konnte nicht geändert werden",
+    "screenshotPreview": "Beispiel",
+    "screenshotPreviewHint": "Beispiel-Dashboard mit Platzhalter-Diensten — Inspiration für Layout, Kategorien und Kachel-Anordnung.",
+    "openScreenshotPreview": "Beispiel öffnen",
     "dashboardTitle": "Dashboard-Titel",
     "dashboardSubtitle": "Untertitel",
     "subtitlePlaceholder": "z. B. Homelab",
@@ -574,5 +577,70 @@
     "usernamePasswordRequired": "Benutzername und Passwort erforderlich",
     "credentialsDecryptFailed": "Zugangsdaten in DB, aber Entschlüsselung fehlgeschlagen (SESSION_SECRET unverändert lassen und Token neu speichern)",
     "unreachable": "Nicht erreichbar"
+  },
+  "previewExample": {
+    "pageTitle": "Beispiel-Dashboard",
+    "dashboardSubtitle": "homelab",
+    "pages": {
+      "main": "Hauptseite",
+      "remote": "Remote"
+    },
+    "categories": {
+      "media": "Media",
+      "arrStack": "ARR-Stack",
+      "infrastructure": "Infrastruktur",
+      "network": "Netzwerk",
+      "smarthome": "Smarthome",
+      "remote": "Remote"
+    },
+    "headerBarTitle": "Hauptleiste",
+    "footerBarTitle": "Shortcuts",
+    "footer": {
+      "docs": "Docs",
+      "status": "Status",
+      "wiki": "Wiki"
+    },
+    "services": {
+      "calendar": "Kalender",
+      "helpdesk": "Helpdesk",
+      "monitoring": "Monitoring"
+    },
+    "subtitles": {
+      "smarthome": "Smarthome",
+      "photos": "Fotos",
+      "video": "Video",
+      "media": "Media",
+      "cloud": "Cloud",
+      "ebooks": "eBooks",
+      "musicServer": "Musik-Server",
+      "arrStack": "ARR-Stack",
+      "requests": "Anfragen",
+      "movies": "Filme",
+      "series": "Serien",
+      "downloads": "Downloads",
+      "indexer": "Indexer",
+      "usenet": "Usenet",
+      "music": "Musik",
+      "dashboard": "Dashboard",
+      "virtualization": "Virtualisierung",
+      "container": "Container",
+      "nas": "NAS",
+      "automation": "Automation",
+      "local": "Lokal",
+      "remote": "Remote",
+      "monitoring": "Monitoring",
+      "checks": "Checks",
+      "devops": "DevOps",
+      "dns": "DNS",
+      "reverseProxy": "Reverse Proxy",
+      "cdn": "CDN",
+      "status": "Status",
+      "support": "Support",
+      "planning": "Planung",
+      "recipes": "Rezepte",
+      "remoteDesktop": "Remote Desktop",
+      "files": "Dateien",
+      "router": "Router"
+    }
   }
 }

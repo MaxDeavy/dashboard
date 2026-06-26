@@ -21,7 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { EnableSwitch } from "@/components/admin/EnableSwitch";
-import { LocaleSwitcher } from "@/components/admin/LocaleSwitcher";
+import { SettingsLocaleSection } from "@/components/admin/SettingsLocaleSection";
 import { IconsSettingsSection } from "@/components/admin/IconsSettingsSection";
 import { ThemePresetPicker } from "@/components/admin/ThemePresetPicker";
 import { SettingSlider } from "@/components/admin/SettingSlider";
@@ -426,8 +426,8 @@ export function SettingsAdmin({
 
   return (
     <>
-    <Card className="glass-panel-strong w-full min-w-0 rounded-2xl bg-transparent">
-      <CardHeader className="sticky top-[7.25rem] z-30 rounded-t-2xl border-b border-border/40 bg-background/85 px-6 py-4 backdrop-blur-md">
+    <Card className="glass-panel-strong w-full min-w-0 overflow-visible rounded-2xl bg-transparent">
+      <CardHeader className="rounded-t-2xl border-b border-border/40 bg-background/85 px-6 py-4">
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
@@ -438,7 +438,7 @@ export function SettingsAdmin({
           className="w-full min-w-0 space-y-6 pb-24"
         >
           <div className="space-y-3 rounded-xl border border-border/50 bg-muted/10 p-4">
-            <LocaleSwitcher onSuccess={onSuccess} onError={onError} />
+            <SettingsLocaleSection onSuccess={onSuccess} onError={onError} />
           </div>
 
           <div className="space-y-2">

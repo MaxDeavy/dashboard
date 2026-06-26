@@ -4,7 +4,11 @@ import { getIronSession } from "iron-session";
 import { sessionOptions, type SessionData } from "@/lib/auth";
 
 export async function middleware(request: NextRequest) {
-  if (!request.nextUrl.pathname.startsWith("/admin")) {
+  const pathname = request.nextUrl.pathname;
+  const requiresAuth =
+    pathname.startsWith("/admin") || pathname === "/preview";
+
+  if (!requiresAuth) {
     return NextResponse.next();
   }
 
@@ -26,5 +30,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin", "/admin/:path*"],
+  matcher: ["/admin", "/admin/:path*", "/preview"],
 };

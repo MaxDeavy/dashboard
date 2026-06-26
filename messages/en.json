@@ -263,6 +263,9 @@
     "languageDe": "Deutsch",
     "languageChanged": "Language updated",
     "languageChangeFailed": "Failed to change language",
+    "screenshotPreview": "Example",
+    "screenshotPreviewHint": "Sample dashboard with placeholder services — inspiration for layout, categories, and tile arrangement.",
+    "openScreenshotPreview": "Open example",
     "icons": "Icons",
     "iconsHint": "Manage imported icons used across services. Display names are editable; file names stay unchanged.",
     "iconsEmpty": "No custom icons yet.",
@@ -568,5 +571,70 @@
     "usernamePasswordRequired": "Username and password required",
     "credentialsDecryptFailed": "Credentials in DB, but decryption failed (keep SESSION_SECRET unchanged and re-save token)",
     "unreachable": "Unreachable"
+  },
+  "previewExample": {
+    "pageTitle": "Example dashboard",
+    "dashboardSubtitle": "homelab",
+    "pages": {
+      "main": "Main page",
+      "remote": "Remote"
+    },
+    "categories": {
+      "media": "Media",
+      "arrStack": "ARR stack",
+      "infrastructure": "Infrastructure",
+      "network": "Network",
+      "smarthome": "Smart home",
+      "remote": "Remote"
+    },
+    "headerBarTitle": "Main bar",
+    "footerBarTitle": "Shortcuts",
+    "footer": {
+      "docs": "Docs",
+      "status": "Status",
+      "wiki": "Wiki"
+    },
+    "services": {
+      "calendar": "Calendar",
+      "helpdesk": "Helpdesk",
+      "monitoring": "Monitoring"
+    },
+    "subtitles": {
+      "smarthome": "Smart home",
+      "photos": "Photos",
+      "video": "Video",
+      "media": "Media",
+      "cloud": "Cloud",
+      "ebooks": "eBooks",
+      "musicServer": "Music server",
+      "arrStack": "ARR stack",
+      "requests": "Requests",
+      "movies": "Movies",
+      "series": "TV shows",
+      "downloads": "Downloads",
+      "indexer": "Indexer",
+      "usenet": "Usenet",
+      "music": "Music",
+      "dashboard": "Dashboard",
+      "virtualization": "Virtualization",
+      "container": "Container",
+      "nas": "NAS",
+      "automation": "Automation",
+      "local": "Local",
+      "remote": "Remote",
+      "monitoring": "Monitoring",
+      "checks": "Checks",
+      "devops": "DevOps",
+      "dns": "DNS",
+      "reverseProxy": "Reverse proxy",
+      "cdn": "CDN",
+      "status": "Status",
+      "support": "Support",
+      "planning": "Planning",
+      "recipes": "Recipes",
+      "remoteDesktop": "Remote desktop",
+      "files": "Files",
+      "router": "Router"
+    }
   }
 }

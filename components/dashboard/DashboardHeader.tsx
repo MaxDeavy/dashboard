@@ -33,6 +33,7 @@ interface DashboardHeaderProps {
   showPageSwitcher?: boolean;
   pageKeyboardShortcutsEnabled?: boolean;
   lanEnabled?: boolean;
+  previewMode?: boolean;
 }
 
 export function DashboardHeader({
@@ -54,6 +55,7 @@ export function DashboardHeader({
   showPageSwitcher = true,
   pageKeyboardShortcutsEnabled = true,
   lanEnabled = true,
+  previewMode = false,
 }: DashboardHeaderProps) {
   const t = useTranslations("dashboard");
   const resolvedTitle = dashboardTitle ?? t("defaultTitle");
@@ -87,44 +89,95 @@ export function DashboardHeader({
         <div className="relative px-4 py-3 sm:px-5">
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="flex min-w-0 shrink-0 items-center gap-3">
-              <div
-                className={cn(
-                  "relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-lg ring-1 ring-foreground/15",
-                  !hasLogoImage && !hasLogoText && "text-white",
-                )}
-                style={
-                  !hasLogoImage && !hasLogoText
-                    ? {
-                        background: `linear-gradient(145deg, color-mix(in srgb, ${accentColor} 80%, white 10%), ${accentColor})`,
-                      }
-                    : {
-                        background: "color-mix(in srgb, var(--foreground) 6%, transparent)",
-                      }
-                }
-              >
-                {hasLogoImage ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={logoValue}
-                    alt=""
-                    className="size-7 object-contain"
-                  />
-                ) : hasLogoText ? (
-                  <span className="text-lg leading-none">{logoValue}</span>
-                ) : (
-                  <LayoutGrid className="size-[18px] drop-shadow-sm" />
-                )}
-              </div>
-              <div className="hidden min-w-0 sm:block">
-                <p className="truncate text-[15px] font-semibold tracking-tight text-foreground">
-                  {resolvedTitle}
-                </p>
-                {resolvedSubtitle && (
-                  <p className="truncate text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
-                    {resolvedSubtitle}
-                  </p>
-                )}
-              </div>
+              {previewMode ? (
+                <Link
+                  href="/"
+                  className="flex min-w-0 items-center gap-3 rounded-lg transition-colors hover:opacity-90"
+                  title={t("defaultTitle")}
+                >
+                  <div
+                    className={cn(
+                      "relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-lg ring-1 ring-foreground/15",
+                      !hasLogoImage && !hasLogoText && "text-white",
+                    )}
+                    style={
+                      !hasLogoImage && !hasLogoText
+                        ? {
+                            background: `linear-gradient(145deg, color-mix(in srgb, ${accentColor} 80%, white 10%), ${accentColor})`,
+                          }
+                        : {
+                            background:
+                              "color-mix(in srgb, var(--foreground) 6%, transparent)",
+                          }
+                    }
+                  >
+                    {hasLogoImage ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={logoValue}
+                        alt=""
+                        className="size-7 object-contain"
+                      />
+                    ) : hasLogoText ? (
+                      <span className="text-lg leading-none">{logoValue}</span>
+                    ) : (
+                      <LayoutGrid className="size-[18px] drop-shadow-sm" />
+                    )}
+                  </div>
+                  <div className="hidden min-w-0 sm:block">
+                    <p className="truncate text-[15px] font-semibold tracking-tight text-foreground">
+                      {resolvedTitle}
+                    </p>
+                    {resolvedSubtitle && (
+                      <p className="truncate text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+                        {resolvedSubtitle}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              ) : (
+                <>
+                  <div
+                    className={cn(
+                      "relative flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-xl shadow-lg ring-1 ring-foreground/15",
+                      !hasLogoImage && !hasLogoText && "text-white",
+                    )}
+                    style={
+                      !hasLogoImage && !hasLogoText
+                        ? {
+                            background: `linear-gradient(145deg, color-mix(in srgb, ${accentColor} 80%, white 10%), ${accentColor})`,
+                          }
+                        : {
+                            background:
+                              "color-mix(in srgb, var(--foreground) 6%, transparent)",
+                          }
+                    }
+                  >
+                    {hasLogoImage ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={logoValue}
+                        alt=""
+                        className="size-7 object-contain"
+                      />
+                    ) : hasLogoText ? (
+                      <span className="text-lg leading-none">{logoValue}</span>
+                    ) : (
+                      <LayoutGrid className="size-[18px] drop-shadow-sm" />
+                    )}
+                  </div>
+                  <div className="hidden min-w-0 sm:block">
+                    <p className="truncate text-[15px] font-semibold tracking-tight text-foreground">
+                      {resolvedTitle}
+                    </p>
+                    {resolvedSubtitle && (
+                      <p className="truncate text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
+                        {resolvedSubtitle}
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
 
             {showPageSwitcher && pages.length > 1 && onPageChange && (
@@ -144,7 +197,12 @@ export function DashboardHeader({
             {hasBars && (
               <>
                 <div className="hidden h-8 w-px shrink-0 bg-foreground/10 lg:block" />
-                <div className="flex min-w-0 flex-1 items-center">
+                <div
+                  className={cn(
+                    "flex min-w-0 flex-1 items-center",
+                    previewMode && "[&_a]:pointer-events-none",
+                  )}
+                >
                   <LinkBarRow
                     links={visibleBars[0]?.links ?? []}
                     layoutEditable={layoutEditable}
@@ -172,7 +230,7 @@ export function DashboardHeader({
                 />
               </div>
               <Link
-                href="/admin"
+                href={previewMode ? "/admin?tab=settings" : "/admin"}
                 className={cn(
                   "flex size-9 items-center justify-center rounded-xl border border-foreground/10",
                   "bg-foreground/[0.04] text-foreground/75 transition-all",
@@ -200,7 +258,10 @@ export function DashboardHeader({
           {visibleBars.slice(1).map((bar) => (
             <div
               key={bar.id}
-              className="mt-3 border-t border-foreground/[0.06] pt-3"
+              className={cn(
+                "mt-3 border-t border-foreground/[0.06] pt-3",
+                previewMode && "[&_a]:pointer-events-none",
+              )}
             >
               {bar.title && (
                 <p className="mb-2 text-[10px] font-semibold tracking-[0.14em] text-muted-foreground uppercase">
