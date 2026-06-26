@@ -39,7 +39,10 @@ export function LoginForm() {
       });
 
       if (!response.ok) {
-        setError(t("invalidPassword"));
+        const data = await response.json().catch(() => ({}));
+        setError(
+          typeof data.error === "string" ? data.error : t("invalidPassword"),
+        );
         return;
       }
 

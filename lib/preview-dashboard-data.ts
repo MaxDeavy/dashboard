@@ -142,7 +142,6 @@ const PREVIEW_SETTINGS: Record<string, string> = {
   column_max_width: "0",
   search_enabled: "true",
   show_page_switcher: "true",
-  page_keyboard_shortcuts: "true",
   lan_enabled: "true",
 };
 

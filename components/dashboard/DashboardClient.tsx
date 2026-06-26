@@ -7,7 +7,6 @@ import type { Category, LinkBarWithLinks, Page } from "@/lib/db/schema";
 import { applyColorMode, resolveTheme } from "@/lib/theme-presets";
 import { resolveLayoutSettings } from "@/lib/layout-settings";
 import {
-  PAGE_KEYBOARD_SHORTCUTS_SETTING,
   SHOW_PAGE_SWITCHER_SETTING,
   readStoredActivePageId,
   writeStoredActivePageId,
@@ -132,8 +131,6 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
   const dashboardSubtitle = data.settings.dashboard_subtitle ?? t("defaultSubtitle");
   const showPageSwitcher =
     data.settings[SHOW_PAGE_SWITCHER_SETTING] !== "false";
-  const pageKeyboardShortcutsEnabled =
-    data.settings[PAGE_KEYBOARD_SHORTCUTS_SETTING] !== "false";
   const lanEnabled = isLanEnabled(data.settings);
   const effectiveNetworkMode = lanEnabled ? networkMode : "web";
 
@@ -146,7 +143,7 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
     data.pages,
     activePageId,
     handlePageChange,
-    pageKeyboardShortcutsEnabled,
+    true,
   );
 
   useAppNavigationShortcuts();
@@ -187,7 +184,7 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
         layoutEditable={isLoggedIn}
         onLayoutSaved={refreshDashboard}
         showPageSwitcher={showPageSwitcher}
-        pageKeyboardShortcutsEnabled={pageKeyboardShortcutsEnabled}
+        pageKeyboardShortcutsEnabled={true}
         lanEnabled={lanEnabled}
       />
 

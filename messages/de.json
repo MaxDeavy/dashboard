@@ -213,8 +213,6 @@
     "dashboardPagesHint": "Steuert die Seiten-Auswahl oben im Header (bei mehreren Seiten).",
     "showPageSwitcher": "Seiten-Umschalter anzeigen",
     "showPageSwitcherHint": "Ausblenden spart Platz im Header. Seitenwechsel per Tastatur bleibt möglich.",
-    "keyboardShortcuts": "Tastenkürzel 1–9",
-    "keyboardShortcutsHint": "Erste neun Seiten per Zahlentaste wechseln. D = Dashboard, S/E = Einstellungen.",
     "lanToggle": "LAN-Umschalter",
     "lanToggleHint": "Web/LAN-Schalter im Dashboard und LAN-URL-Felder bei Diensten.",
     "appearance": "Erscheinungsbild",
@@ -451,6 +449,7 @@
   "api": {
     "invalidData": "Ungültige Daten",
     "invalidPassword": "Ungültiges Passwort",
+    "tooManyLoginAttempts": "Zu viele Anmeldeversuche. Bitte später erneut versuchen.",
     "invalidServiceId": "Ungültige Dienst-ID",
     "serviceNotFound": "Dienst nicht gefunden",
     "noFile": "Keine Datei übermittelt",

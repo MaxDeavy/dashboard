@@ -192,7 +192,7 @@ Template: `.env.example` — read via `lib/env.ts`.
 
 | Variable | Description | Default (dev) |
 |----------|-------------|---------------|
-| `ADMIN_PASSWORD` | Admin login | `admin` |
+| `ADMIN_PASSWORD` | Admin login (plain text or bcrypt hash) | `admin` |
 | `SESSION_SECRET` | Session + auth (min. 32 chars) | Dev fallback |
 | `CREDENTIALS_ENCRYPTION_SECRET` | Widget key encryption | = `SESSION_SECRET` |
 | `CREDENTIALS_ENCRYPTION_SALT` | Salt for AES key | `homelab-dashboard-salt` |
@@ -208,6 +208,18 @@ Template: `.env.example` — read via `lib/env.ts`.
 | `MAX_ICON_UPLOAD_MB` | Icon limit | `1` |
 
 In **production**, `ADMIN_PASSWORD` and `SESSION_SECRET` must be set.
+
+For a bcrypt hash instead of plain text:
+
+```bash
+npm run hash-password -- "your-strong-password"
+```
+
+Put the output into `ADMIN_PASSWORD` in `.env`.
+
+Migrations run automatically when the server starts (`instrumentation.ts`). `npm run db:migrate` is optional for manual runs.
+
+See [SECURITY.md](SECURITY.md) for deployment guidance.
 
 Self-signed TLS certificates: enable per service in Admin under *Health check*.
 
@@ -234,8 +246,9 @@ Bundled icons live in `assets/` and are copied to `public/assets/` on build (`np
 | `npm run dev` | Development server |
 | `npm run build` | Production build |
 | `npm run start` | Production server |
-| `npm run db:migrate` | Database migrations |
+| `npm run db:migrate` | Run database migrations manually |
 | `npm run db:generate` | Generate Drizzle migration |
+| `npm run hash-password` | Generate bcrypt hash for `ADMIN_PASSWORD` |
 | `npm run lint` | ESLint |
 
 ---
@@ -243,9 +256,13 @@ Bundled icons live in `assets/` and are copied to `public/assets/` on build (`np
 ## Security
 
 - Set strong values for `ADMIN_PASSWORD` and `SESSION_SECRET` in production.
-- This repo is intended for private homelab use — adjust firewall and reverse proxy accordingly.
+- Prefer a bcrypt hash for `ADMIN_PASSWORD` (`npm run hash-password`).
+- Set `COOKIE_SECURE=true` behind HTTPS.
+- Login attempts are rate-limited per IP.
 - Widget credentials are encrypted in the DB; still grant only minimal API permissions.
 - Mounting the Docker socket directly is convenient but risky — use a socket proxy.
+
+Details: [SECURITY.md](SECURITY.md)
 
 ---
 

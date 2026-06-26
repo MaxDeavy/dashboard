@@ -5,7 +5,6 @@ const prefix = getAppStoragePrefix();
 export const ACTIVE_PAGE_STORAGE_KEY = `${prefix}-active-page`;
 export const ADMIN_SERVICES_PAGE_STORAGE_KEY = `${prefix}-admin-services-page`;
 export const SHOW_PAGE_SWITCHER_SETTING = "show_page_switcher";
-export const PAGE_KEYBOARD_SHORTCUTS_SETTING = "page_keyboard_shortcuts";
 export const MAX_PAGE_KEYBOARD_SHORTCUTS = 9;
 
 export function readStoredActivePageId(): number | null {

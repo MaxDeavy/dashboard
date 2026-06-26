@@ -1,6 +1,7 @@
 import { getIronSession, type SessionOptions } from "iron-session";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 import {
   getAdminPassword,
   getCookieSecure,
@@ -42,5 +43,15 @@ export async function requireAuth() {
 }
 
 export async function verifyPassword(password: string): Promise<boolean> {
-  return password === getAdminPassword();
+  const stored = getAdminPassword();
+
+  if (isBcryptHash(stored)) {
+    return bcrypt.compare(password, stored);
+  }
+
+  return password === stored;
+}
+
+function isBcryptHash(value: string): boolean {
+  return /^\$2[aby]\$/.test(value);
 }

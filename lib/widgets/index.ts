@@ -112,9 +112,8 @@ export async function fetchWidgetData(
       : {}),
   };
   const widgetInput = { ...input, extraConfig };
-  let result: WidgetResult;
 
-  result = await withWidgetFetchContext(extraConfig, async () => {
+  const result = await withWidgetFetchContext(extraConfig, async () => {
     switch (config.widgetType) {
       case "qbittorrent":
         return fetchQbittorrentWidget(widgetInput);

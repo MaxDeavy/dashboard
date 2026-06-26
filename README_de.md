@@ -192,7 +192,7 @@ Vorlage: `.env.example` — gelesen über `lib/env.ts`.
 
 | Variable | Beschreibung | Standard (Dev) |
 |----------|--------------|----------------|
-| `ADMIN_PASSWORD` | Admin-Login | `admin` |
+| `ADMIN_PASSWORD` | Admin-Login (Klartext oder bcrypt-Hash) | `admin` |
 | `SESSION_SECRET` | Session + Auth (min. 32 Zeichen) | Dev-Fallback |
 | `CREDENTIALS_ENCRYPTION_SECRET` | Widget-Key-Verschlüsselung | = `SESSION_SECRET` |
 | `CREDENTIALS_ENCRYPTION_SALT` | Salt für AES-Key | `homelab-dashboard-salt` |
@@ -208,6 +208,18 @@ Vorlage: `.env.example` — gelesen über `lib/env.ts`.
 | `MAX_ICON_UPLOAD_MB` | Icon-Limit | `1` |
 
 In **Production** müssen `ADMIN_PASSWORD` und `SESSION_SECRET` gesetzt sein.
+
+Bcrypt-Hash statt Klartext:
+
+```bash
+npm run hash-password -- "dein-starkes-passwort"
+```
+
+Ausgabe als `ADMIN_PASSWORD` in `.env` eintragen.
+
+Migrationen laufen beim Serverstart automatisch (`instrumentation.ts`). `npm run db:migrate` ist optional für manuelle Läufe.
+
+Siehe [SECURITY.md](SECURITY.md) für Deployment-Hinweise.
 
 Selbstsignierte TLS-Zertifikate: pro Dienst im Admin unter *Health-Check* aktivieren.
 
@@ -234,8 +246,9 @@ Mitgelieferte Icons liegen in `assets/` und werden beim Build nach `public/asset
 | `npm run dev` | Entwicklungsserver |
 | `npm run build` | Production-Build |
 | `npm run start` | Production-Server |
-| `npm run db:migrate` | Datenbank-Migrationen |
+| `npm run db:migrate` | Datenbank-Migrationen manuell ausführen |
 | `npm run db:generate` | Drizzle-Migration erzeugen |
+| `npm run hash-password` | bcrypt-Hash für `ADMIN_PASSWORD` erzeugen |
 | `npm run lint` | ESLint |
 
 ---
@@ -243,9 +256,13 @@ Mitgelieferte Icons liegen in `assets/` und werden beim Build nach `public/asset
 ## Sicherheit
 
 - Setze starke Werte für `ADMIN_PASSWORD` und `SESSION_SECRET` in Production.
-- Das Repo ist für den privaten Homelab-Einsatz gedacht — passe Firewall und Reverse-Proxy an.
+- Bevorzuge einen bcrypt-Hash für `ADMIN_PASSWORD` (`npm run hash-password`).
+- Setze `COOKIE_SECURE=true` hinter HTTPS.
+- Login-Versuche werden pro IP rate-limitiert.
 - Widget-Zugangsdaten liegen verschlüsselt in der DB; trotzdem nur minimal nötige API-Rechte vergeben.
 - Docker-Socket direkt zu mounten ist bequem, aber riskant — nutze einen Socket-Proxy.
+
+Details: [SECURITY.md](SECURITY.md)
 
 ---
 

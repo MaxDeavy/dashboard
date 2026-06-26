@@ -11,7 +11,12 @@
     "start": "next start",
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx scripts/migrate.ts"
+    "db:migrate": "tsx scripts/migrate.ts",
+    "hash-password": "tsx scripts/hash-password.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/MaxDeavy/dashboard.git"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

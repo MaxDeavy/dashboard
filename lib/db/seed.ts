@@ -185,7 +185,6 @@ export async function seedDatabase() {
     { key: "column_max_width", value: "0" },
     { key: "search_enabled", value: "true" },
     { key: "show_page_switcher", value: "true" },
-    { key: "page_keyboard_shortcuts", value: "true" },
     { key: "lan_enabled", value: "true" },
   ];
 

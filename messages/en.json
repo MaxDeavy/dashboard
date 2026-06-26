@@ -198,8 +198,6 @@
     "dashboardPagesHint": "Controls page selection in the header (when multiple pages exist).",
     "showPageSwitcher": "Show page switcher",
     "showPageSwitcherHint": "Hiding saves header space. Keyboard page switching still works.",
-    "keyboardShortcuts": "Keyboard shortcuts 1–9",
-    "keyboardShortcutsHint": "Switch to the first nine pages with number keys. D = dashboard, S/E = settings.",
     "lanToggle": "LAN toggle",
     "lanToggleHint": "Web/LAN switch on the dashboard and LAN URL fields on services.",
     "appearance": "Appearance",
@@ -445,6 +443,7 @@
   "api": {
     "invalidData": "Invalid data",
     "invalidPassword": "Invalid password",
+    "tooManyLoginAttempts": "Too many login attempts. Please try again later.",
     "invalidServiceId": "Invalid service ID",
     "serviceNotFound": "Service not found",
     "noFile": "No file submitted",
