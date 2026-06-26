@@ -26,6 +26,13 @@ export async function getSession() {
   return getIronSession<SessionData>(await cookies(), sessionOptions);
 }
 
+export function getSessionFromRequest(
+  request: Request,
+  response: NextResponse,
+) {
+  return getIronSession<SessionData>(request, response, sessionOptions);
+}
+
 export async function requireAuth() {
   const session = await getSession();
   if (!session.isLoggedIn) {

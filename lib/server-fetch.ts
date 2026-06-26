@@ -1,5 +1,5 @@
 import { AsyncLocalStorage } from "node:async_hooks";
-import { Agent, request as undiciRequest } from "undici";
+import { Agent, type Dispatcher, interceptors, request as undiciRequest } from "undici";
 import { shouldSkipTlsVerification } from "@/lib/tls-settings";
 
 export interface ServerFetchOptions extends RequestInit {
@@ -8,7 +8,29 @@ export interface ServerFetchOptions extends RequestInit {
 
 const widgetTlsContext = new AsyncLocalStorage<{ insecureTls: boolean }>();
 
-let insecureDispatcher: Agent | undefined;
+let insecureDispatcher: Dispatcher | undefined;
+let defaultDispatcher: Dispatcher | undefined;
+
+function getDispatcher(skipTls: boolean): Dispatcher {
+  if (skipTls) {
+    if (!insecureDispatcher) {
+      insecureDispatcher = new Agent({
+        connect: {
+          rejectUnauthorized: false,
+        },
+      }).compose(interceptors.redirect({ maxRedirections: 5 }));
+    }
+    return insecureDispatcher;
+  }
+
+  if (!defaultDispatcher) {
+    defaultDispatcher = new Agent().compose(
+      interceptors.redirect({ maxRedirections: 5 }),
+    );
+  }
+
+  return defaultDispatcher;
+}
 
 export function withWidgetFetchContext<T>(
   extraConfig: Record<string, string> | undefined,
@@ -18,18 +40,6 @@ export function withWidgetFetchContext<T>(
     { insecureTls: extraConfig?.insecureTls === "true" },
     fn,
   );
-}
-
-function getInsecureDispatcher(): Agent {
-  if (!insecureDispatcher) {
-    insecureDispatcher = new Agent({
-      connect: {
-        rejectUnauthorized: false,
-      },
-    });
-  }
-
-  return insecureDispatcher;
 }
 
 function isURLSearchParams(body: unknown): body is URLSearchParams {
@@ -121,7 +131,7 @@ export async function serverFetch(
   const { insecureTls, ...init } = options;
   const widgetContext = widgetTlsContext.getStore()?.insecureTls;
   const skipTls = shouldSkipTlsVerification(insecureTls, widgetContext);
-  const dispatcher = skipTls ? getInsecureDispatcher() : undefined;
+  const dispatcher = getDispatcher(skipTls);
   const method = (init.method ?? "GET").toUpperCase();
   const headers = normalizeOutgoingHeaders(init.headers);
   const hasBody = init.body != null && method !== "GET" && method !== "HEAD";

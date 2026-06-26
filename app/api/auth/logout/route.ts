@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
+import { getSessionFromRequest } from "@/lib/auth";
 
-export async function POST() {
-  const session = await getSession();
+export async function POST(request: Request) {
+  const response = NextResponse.json({ success: true });
+  const session = await getSessionFromRequest(request, response);
   session.destroy();
-  return NextResponse.json({ success: true });
+  return response;
 }

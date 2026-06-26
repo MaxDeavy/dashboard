@@ -2,6 +2,7 @@ import {
   fetchWithTimeout,
   formatBytes,
   normalizeApiUrl,
+  readApiError,
   type WidgetConfigInput,
   type WidgetResult,
 } from "./base";
@@ -17,35 +18,75 @@ async function loginFilebrowser(
   password: string,
   extraConfig?: Record<string, string>,
 ): Promise<string> {
-  const response = await fetchWithTimeout(
-    `${base}/api/login`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    },
-    extraConfig,
-  );
+  const loginUrls = [`${base}/api/login`, `${base}/api/login/`];
+  let lastError: Error | null = null;
 
-  if (!response.ok) {
-    throw new Error(`Login: ${response.status}`);
-  }
+  for (const url of loginUrls) {
+    const response = await fetchWithTimeout(
+      url,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      },
+      extraConfig,
+    );
 
-  const text = (await response.text()).trim();
-  if (!text) {
-    throw new Error("Login: No token received");
-  }
-
-  try {
-    const json = JSON.parse(text) as { token?: string };
-    if (json.token) {
-      return json.token;
+    if (!response.ok) {
+      lastError = new Error(`Login: ${response.status}`);
+      continue;
     }
-  } catch {
-    // plain JWT string
+
+    const text = (await response.text()).trim();
+    if (!text) {
+      lastError = new Error("Login: No token received");
+      continue;
+    }
+
+    try {
+      const json = JSON.parse(text) as { token?: string };
+      if (json.token) {
+        return json.token;
+      }
+    } catch {
+      // plain JWT string
+    }
+
+    return text.replace(/^"|"$/g, "");
   }
 
-  return text.replace(/^"|"$/g, "");
+  throw lastError ?? new Error("Login failed");
+}
+
+async function fetchFilebrowserUsage(
+  base: string,
+  token: string,
+  extraConfig?: Record<string, string>,
+): Promise<FilebrowserUsage> {
+  const usageUrls = [`${base}/api/usage/`, `${base}/api/usage`];
+  let lastError: Error | null = null;
+
+  for (const url of usageUrls) {
+    const response = await fetchWithTimeout(
+      url,
+      {
+        headers: { "X-Auth": token },
+      },
+      extraConfig,
+    );
+
+    if (response.ok) {
+      return (await response.json()) as FilebrowserUsage;
+    }
+
+    lastError = new Error(await readApiError(response));
+    if (response.status === 404) {
+      continue;
+    }
+    throw lastError;
+  }
+
+  throw lastError ?? new Error("API: usage unavailable");
 }
 
 export async function fetchFilebrowserWidget(
@@ -72,19 +113,11 @@ export async function fetchFilebrowserWidget(
       config.extraConfig,
     );
 
-    const response = await fetchWithTimeout(
-      `${base}/api/usage`,
-      {
-        headers: { "X-Auth": token },
-      },
+    const usage = await fetchFilebrowserUsage(
+      base,
+      token,
       config.extraConfig,
     );
-
-    if (!response.ok) {
-      throw new Error(`API: ${response.status}`);
-    }
-
-    const usage = (await response.json()) as FilebrowserUsage;
     const total = usage.total ?? 0;
     const used = usage.used ?? 0;
     const free = Math.max(total - used, 0);

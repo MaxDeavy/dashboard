@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
-import { getSession, verifyPassword } from "@/lib/auth";
+import { getSessionFromRequest, verifyPassword } from "@/lib/auth";
 
 export async function POST(request: Request) {
   const t = await getTranslations("api");
@@ -10,9 +10,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: t("invalidPassword") }, { status: 401 });
   }
 
-  const session = await getSession();
+  const response = NextResponse.json({ success: true });
+  const session = await getSessionFromRequest(request, response);
   session.isLoggedIn = true;
   await session.save();
 
-  return NextResponse.json({ success: true });
+  return response;
 }

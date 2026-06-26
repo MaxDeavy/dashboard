@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { LayoutGrid } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -17,7 +17,6 @@ function sanitizeNextPath(next: string | null): string {
 
 export function LoginForm() {
   const t = useTranslations("login");
-  const router = useRouter();
   const searchParams = useSearchParams();
   const next = sanitizeNextPath(searchParams.get("next"));
   const [error, setError] = useState<string | null>(null);
@@ -35,6 +34,7 @@ export function LoginForm() {
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
         body: JSON.stringify({ password }),
       });
 
@@ -43,8 +43,7 @@ export function LoginForm() {
         return;
       }
 
-      router.push(next);
-      router.refresh();
+      window.location.assign(next);
     } catch {
       setError(t("failed"));
     } finally {
