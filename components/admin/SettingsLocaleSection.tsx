@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { buttonVariants } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { LocaleSwitcher } from "@/components/admin/LocaleSwitcher";
+import { KeyboardBindingsReference } from "@/components/admin/KeyboardBindingsReference";
 import { cn } from "@/lib/utils";
 
 interface SettingsLocaleSectionProps {
@@ -19,8 +20,10 @@ export function SettingsLocaleSection({
   const t = useTranslations("adminSettings");
 
   return (
-    <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-2 md:gap-8">
+    <div className="grid grid-cols-1 items-start gap-6 md:grid-cols-3 md:gap-8">
       <LocaleSwitcher onSuccess={onSuccess} onError={onError} />
+
+      <KeyboardBindingsReference />
 
       <div className="space-y-2">
         <Label>{t("screenshotPreview")}</Label>

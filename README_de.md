@@ -1,5 +1,7 @@
 # Homelab Dashboard
 
+![Homelab Dashboard](screen.png)
+
 Selbst gehostetes Dashboard für Homelab-Dienste: Kacheln mit Health-Checks, Live-API-Widgets, mehrere Seiten, Web/LAN-Umschaltung und vollständige Browser-Konfiguration — ohne YAML oder Config-Dateien.
 
 **English version:** [README.md](README.md)

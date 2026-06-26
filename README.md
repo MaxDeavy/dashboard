@@ -1,5 +1,7 @@
 # Homelab Dashboard
 
+![Homelab Dashboard](screen.png)
+
 Self-hosted dashboard for homelab services: tiles with health checks, live API hover widgets, multiple pages, Web/LAN switching, and full browser-based configuration — no YAML or config files required.
 
 **Deutsche Version:** [README_de.md](README_de.md)
