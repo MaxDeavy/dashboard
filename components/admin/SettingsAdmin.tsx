@@ -56,7 +56,9 @@ import {
 } from "@/lib/layout-settings";
 import {
   applyColorMode,
-  getThemePreset,
+  FALLBACK_ACCENT_COLOR,
+  FALLBACK_CARD_BASE_COLOR,
+  FALLBACK_GLOW_COLOR,
   parseColorMode,
   parseThemePreset,
   type ColorMode,
@@ -64,7 +66,6 @@ import {
 } from "@/lib/theme-presets";
 import { isImageIcon } from "@/lib/service-icons";
 import {
-  PAGE_KEYBOARD_SHORTCUTS_SETTING,
   SHOW_PAGE_SWITCHER_SETTING,
 } from "@/lib/page-storage";
 import { LAN_ENABLED_SETTING } from "@/lib/network-mode";
@@ -97,14 +98,14 @@ export function SettingsAdmin({
   const [colorMode, setColorMode] = useState<ColorMode>(
     parseColorMode(settings.color_mode),
   );
-  const [accentColor, setAccentColor] = useState(
-    settings.accent_color ?? "#f97316",
+  const [customAccentColor, setCustomAccentColor] = useState(
+    settings.accent_color ?? FALLBACK_ACCENT_COLOR,
   );
-  const [serviceCardBaseColor, setServiceCardBaseColor] = useState(
-    settings.service_card_base_color ?? "#ea580c",
+  const [customCardBaseColor, setCustomCardBaseColor] = useState(
+    settings.service_card_base_color ?? FALLBACK_CARD_BASE_COLOR,
   );
-  const [glowColor, setGlowColor] = useState(
-    settings.glow_color ?? "#fbbf24",
+  const [customGlowColor, setCustomGlowColor] = useState(
+    settings.glow_color ?? FALLBACK_GLOW_COLOR,
   );
   const [backgroundImageUrl, setBackgroundImageUrl] = useState(
     settings.background_image ?? "",
@@ -143,9 +144,6 @@ export function SettingsAdmin({
   );
   const [showPageSwitcher, setShowPageSwitcher] = useState(
     settings[SHOW_PAGE_SWITCHER_SETTING] !== "false",
-  );
-  const [pageKeyboardShortcuts, setPageKeyboardShortcuts] = useState(
-    settings[PAGE_KEYBOARD_SHORTCUTS_SETTING] !== "false",
   );
   const [lanEnabled, setLanEnabled] = useState(
     settings[LAN_ENABLED_SETTING] !== "false",
@@ -309,12 +307,6 @@ export function SettingsAdmin({
 
   function handlePresetChange(presetId: ThemePresetId) {
     setThemePreset(presetId);
-    if (presetId !== "custom") {
-      const preset = getThemePreset(presetId);
-      setAccentColor(preset.accent);
-      setServiceCardBaseColor(preset.cardBase);
-      setGlowColor(preset.glow);
-    }
   }
 
   async function handleExportBackup() {
@@ -387,9 +379,9 @@ export function SettingsAdmin({
         dashboard_logo: logoImageUrl || logoText.trim() || "",
         theme_preset: themePreset,
         color_mode: colorMode,
-        accent_color: accentColor,
-        service_card_base_color: serviceCardBaseColor,
-        glow_color: glowColor,
+        accent_color: customAccentColor,
+        service_card_base_color: customCardBaseColor,
+        glow_color: customGlowColor,
         icon_size: iconSize,
         icon_frame_style: iconFrameStyle,
         layout_max_width:
@@ -398,9 +390,6 @@ export function SettingsAdmin({
         layout_header_follows_width: headerFollowsLayout ? "true" : "false",
         layout_footer_follows_width: footerFollowsLayout ? "true" : "false",
         [SHOW_PAGE_SWITCHER_SETTING]: showPageSwitcher ? "true" : "false",
-        [PAGE_KEYBOARD_SHORTCUTS_SETTING]: pageKeyboardShortcuts
-          ? "true"
-          : "false",
         [LAN_ENABLED_SETTING]: lanEnabled ? "true" : "false",
         tile_border_radius: tileBorderRadius,
         tile_scale: tileScale,
@@ -559,20 +548,6 @@ export function SettingsAdmin({
 
             <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 bg-background/40 p-3">
               <div className="space-y-1">
-                <Label>{t("keyboardShortcuts")}</Label>
-                <p className="text-xs text-muted-foreground">
-                  {t("keyboardShortcutsHint")}
-                </p>
-              </div>
-              <EnableSwitch
-                enabled={pageKeyboardShortcuts}
-                onChange={setPageKeyboardShortcuts}
-                compact
-              />
-            </div>
-
-            <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 bg-background/40 p-3">
-              <div className="space-y-1">
                 <Label>{t("lanToggle")}</Label>
                 <p className="text-xs text-muted-foreground">
                   {t("lanToggleHint")}
@@ -666,9 +641,9 @@ export function SettingsAdmin({
               value={themePreset}
               onChange={handlePresetChange}
               customColors={{
-                accent: accentColor,
-                cardBase: serviceCardBaseColor,
-                glow: glowColor,
+                accent: customAccentColor,
+                cardBase: customCardBaseColor,
+                glow: customGlowColor,
               }}
             />
           </div>
@@ -683,14 +658,14 @@ export function SettingsAdmin({
                 <div className="flex gap-2">
                   <Input
                     type="color"
-                    value={accentColor}
-                    onChange={(e) => setAccentColor(e.target.value)}
+                    value={customAccentColor}
+                    onChange={(e) => setCustomAccentColor(e.target.value)}
                     className="h-10 w-16 cursor-pointer p-1"
                   />
                   <Input
-                    value={accentColor}
-                    onChange={(e) => setAccentColor(e.target.value)}
-                    placeholder="#f97316"
+                    value={customAccentColor}
+                    onChange={(e) => setCustomAccentColor(e.target.value)}
+                    placeholder={FALLBACK_ACCENT_COLOR}
                   />
                 </div>
               </div>
@@ -702,14 +677,14 @@ export function SettingsAdmin({
                 <div className="flex gap-2">
                   <Input
                     type="color"
-                    value={glowColor}
-                    onChange={(e) => setGlowColor(e.target.value)}
+                    value={customGlowColor}
+                    onChange={(e) => setCustomGlowColor(e.target.value)}
                     className="h-10 w-16 cursor-pointer p-1"
                   />
                   <Input
-                    value={glowColor}
-                    onChange={(e) => setGlowColor(e.target.value)}
-                    placeholder="#fbbf24"
+                    value={customGlowColor}
+                    onChange={(e) => setCustomGlowColor(e.target.value)}
+                    placeholder={FALLBACK_GLOW_COLOR}
                   />
                 </div>
               </div>
@@ -721,14 +696,14 @@ export function SettingsAdmin({
                 <div className="flex gap-2">
                   <Input
                     type="color"
-                    value={serviceCardBaseColor}
-                    onChange={(e) => setServiceCardBaseColor(e.target.value)}
+                    value={customCardBaseColor}
+                    onChange={(e) => setCustomCardBaseColor(e.target.value)}
                     className="h-10 w-16 cursor-pointer p-1"
                   />
                   <Input
-                    value={serviceCardBaseColor}
-                    onChange={(e) => setServiceCardBaseColor(e.target.value)}
-                    placeholder="#ea580c"
+                    value={customCardBaseColor}
+                    onChange={(e) => setCustomCardBaseColor(e.target.value)}
+                    placeholder={FALLBACK_CARD_BASE_COLOR}
                   />
                 </div>
               </div>

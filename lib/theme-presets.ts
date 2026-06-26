@@ -51,9 +51,9 @@ export const THEME_PRESETS: ThemePreset[] = [
     id: "custom",
     name: "Custom",
     description: "Your own accent, tile and glow colors",
-    accent: "#f97316",
-    cardBase: "#ea580c",
-    glow: "#fbbf24",
+    accent: "#94a3b8",
+    cardBase: "#64748b",
+    glow: "#cbd5e1",
   },
 ];
 
