@@ -72,15 +72,17 @@ export function DashboardHeader({
       )}
     >
       <LayoutWidthShell layout={layout} constrained={layout.headerFollowsLayout}>
-      <div className="glass-panel-strong relative w-full overflow-hidden rounded-2xl">
-        <div
-          className="pointer-events-none absolute -top-12 -left-8 size-40 rounded-full opacity-40 blur-3xl"
-          style={{ background: accentColor }}
-        />
-        <div
-          className="pointer-events-none absolute -top-8 right-0 size-32 rounded-full opacity-25 blur-3xl"
-          style={{ background: accentColor }}
-        />
+      <div className="glass-panel-strong relative w-full rounded-2xl">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-2xl">
+          <div
+            className="absolute -top-12 -left-8 size-40 rounded-full opacity-40 blur-3xl"
+            style={{ background: accentColor }}
+          />
+          <div
+            className="absolute -top-8 right-0 size-32 rounded-full opacity-25 blur-3xl"
+            style={{ background: accentColor }}
+          />
+        </div>
 
         <div className="relative px-4 py-3 sm:px-5">
           <div className="flex items-center gap-3 sm:gap-4">
@@ -142,7 +144,7 @@ export function DashboardHeader({
             {hasBars && (
               <>
                 <div className="hidden h-8 w-px shrink-0 bg-foreground/10 lg:block" />
-                <div className="min-w-0 flex-1">
+                <div className="flex min-w-0 flex-1 items-center">
                   <LinkBarRow
                     links={visibleBars[0]?.links ?? []}
                     layoutEditable={layoutEditable}

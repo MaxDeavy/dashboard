@@ -59,6 +59,13 @@ export function LinkBarRow({
 
   const isHeader = variant === "header";
 
+  const buttonClassName = cn(
+    "inline-flex shrink-0 items-center leading-none transition-colors duration-200",
+    isHeader
+      ? "rounded-xl border border-foreground/[0.06] bg-foreground/[0.03] px-2 py-0.5 text-xs font-medium text-muted-foreground hover:bg-foreground/[0.04] hover:text-foreground"
+      : "rounded-lg border px-3 py-1.5 text-xs font-medium border-foreground/[0.08] bg-foreground/[0.03] text-muted-foreground hover:border-foreground/15 hover:bg-foreground/[0.06] hover:text-foreground",
+  );
+
   async function persistReorder(
     nextLinks: NavLink[],
     updates: ReturnType<typeof moveNavLinkInBar>["updates"],
@@ -119,17 +126,12 @@ export function LinkBarRow({
     void persistReorder(nextLinks, updates);
   }
 
-  const buttonClassName = cn(
-    "shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all duration-200",
-    isHeader
-      ? "border-foreground/10 bg-foreground/[0.05] text-foreground/85 hover:border-foreground/20 hover:bg-foreground/[0.09] hover:text-foreground hover:shadow-[0_4px_20px_rgba(0,0,0,0.12)]"
-      : "border-foreground/[0.08] bg-foreground/[0.03] text-muted-foreground hover:border-foreground/15 hover:bg-foreground/[0.06] hover:text-foreground",
-  );
-
   return (
     <nav
       className={cn(
-        "flex flex-wrap items-center gap-1.5 overflow-x-auto py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+        isHeader
+          ? "inline-flex w-fit max-w-full shrink-0 flex-wrap items-center gap-1.5"
+          : "flex flex-wrap items-center gap-1.5 overflow-x-auto py-0.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
         layoutEditMode && "rounded-lg ring-1 ring-primary/20",
         className,
       )}

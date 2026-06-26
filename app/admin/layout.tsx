@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
+import { AppNavigationShortcuts } from "@/components/AppNavigationShortcuts";
 
 async function AdminLoading() {
   const t = await getTranslations("common");
@@ -16,6 +17,7 @@ export default function AdminLayout({
 }) {
   return (
     <div className="relative min-h-screen bg-background">
+      <AppNavigationShortcuts />
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="animate-aurora-drift absolute -top-1/4 left-1/3 size-[500px] rounded-full bg-orange-500/10 blur-[100px] dark:bg-orange-600/15" />
         <div

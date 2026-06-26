@@ -2,15 +2,8 @@
 
 import { useEffect } from "react";
 import type { Page } from "@/lib/db/schema";
+import { isTypingTarget } from "@/lib/keyboard";
 import { MAX_PAGE_KEYBOARD_SHORTCUTS } from "@/lib/page-storage";
-
-function isTypingTarget(target: EventTarget | null): boolean {
-  if (!(target instanceof HTMLElement)) return false;
-  if (target.isContentEditable) return true;
-
-  const tag = target.tagName;
-  return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
-}
 
 export function usePageKeyboardShortcuts(
   pages: Page[],

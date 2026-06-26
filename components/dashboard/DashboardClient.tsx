@@ -13,6 +13,7 @@ import {
   writeStoredActivePageId,
 } from "@/lib/page-storage";
 import { usePageKeyboardShortcuts } from "@/hooks/usePageKeyboardShortcuts";
+import { useAppNavigationShortcuts } from "@/hooks/useAppNavigationShortcuts";
 import { DashboardBackground } from "./DashboardBackground";
 import { DashboardFooter } from "./DashboardFooter";
 import { DashboardHeader } from "./DashboardHeader";
@@ -147,6 +148,8 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
     handlePageChange,
     pageKeyboardShortcutsEnabled,
   );
+
+  useAppNavigationShortcuts();
 
   useEffect(() => {
     applyColorMode(colorMode);

@@ -110,6 +110,9 @@ export function ServiceCard({
     ...getServiceTileSurfaceStyle(tileColor),
   };
 
+  const showLanBadge = networkMode === "lan" && hasLanUrl(service);
+  const lanStatusDotBesideBadge = showLanBadge && rowDensity === 3;
+
   const badges = (
     <>
       {service.hasWidget && (
@@ -118,7 +121,7 @@ export function ServiceCard({
             "absolute flex items-center justify-center rounded-full border border-emerald-500/20 bg-emerald-500/[0.07] p-0.5 transition-opacity duration-300 group-hover:opacity-35",
             rowDensity === 3 ? "right-1 bottom-1" : "right-2 bottom-2",
           )}
-          title={t("liveDataAvailable")}
+          title={t("widgetTouchHoldHint")}
         >
           <Activity
             className="size-2 text-emerald-400/50"
@@ -128,15 +131,18 @@ export function ServiceCard({
         </span>
       )}
 
-      {networkMode === "lan" && hasLanUrl(service) && (
+      {showLanBadge && (
         <span
           title={t("lanUrlActive")}
           className={cn(
-            "absolute",
+            "absolute flex items-center gap-1",
             rowDensity === 3 ? "top-1 right-1" : "top-2 right-2",
           )}
         >
-          <Wifi className="size-2.5 text-emerald-400/80" />
+          {lanStatusDotBesideBadge && (
+            <StatusDot status={healthStatus} className="!static shrink-0" />
+          )}
+          <Wifi className="size-2.5 shrink-0 text-emerald-400/80" />
         </span>
       )}
     </>
@@ -196,7 +202,18 @@ export function ServiceCard({
           imageSize={metrics.iconImageSize}
         />
       </div>
-      <StatusDot status={healthStatus} />
+      {!lanStatusDotBesideBadge && (
+        <StatusDot
+          status={healthStatus}
+          className={
+            rowDensity === 3
+              ? "top-0.5 -right-4"
+              : rowDensity === 2
+                ? "top-0 -right-0.5"
+                : undefined
+          }
+        />
+      )}
     </div>
   );
 
