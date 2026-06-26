@@ -5,7 +5,18 @@ import {
   LEGACY_EMOJI_ICONS,
 } from "@/lib/service-icons";
 
+function tableExists(name: string): boolean {
+  const row = sqlite
+    .prepare(
+      "SELECT name FROM sqlite_master WHERE type = 'table' AND name = ?",
+    )
+    .get(name);
+  return Boolean(row);
+}
+
 function ensureSchemaPatches() {
+  if (!tableExists("services")) return;
+
   const columns = sqlite
     .prepare("PRAGMA table_info(services)")
     .all() as Array<{ name: string }>;
@@ -77,13 +88,36 @@ function ensureSchemaPatches() {
   if (!categoryColumns.some((column) => column.name === "color")) {
     sqlite.exec("ALTER TABLE `categories` ADD COLUMN `color` text");
   }
+}
+
+function ensurePagesTable() {
+  if (!tableExists("pages")) {
+    sqlite.exec(`
+      CREATE TABLE \`pages\` (
+        \`id\` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+        \`name\` text NOT NULL,
+        \`sort_order\` integer DEFAULT 0 NOT NULL,
+        \`enabled\` integer DEFAULT 1 NOT NULL
+      );
+    `);
+  }
+
+  if (!tableExists("categories")) return;
+
+  const categoryColumns = sqlite
+    .prepare("PRAGMA table_info(categories)")
+    .all() as Array<{ name: string }>;
 
   if (!categoryColumns.some((column) => column.name === "page_id")) {
-    sqlite.exec("ALTER TABLE `categories` ADD COLUMN `page_id` integer");
+    sqlite.exec(
+      "ALTER TABLE `categories` ADD COLUMN `page_id` integer REFERENCES `pages`(`id`) ON UPDATE no action ON DELETE cascade",
+    );
   }
 }
 
 async function ensurePagesData() {
+  if (!tableExists("pages")) return;
+
   const pageCount = await db.select({ value: count() }).from(schema.pages);
 
   if (pageCount[0]?.value === 0) {
@@ -127,6 +161,7 @@ export async function runMigrations() {
   const { migrate } = await import("drizzle-orm/better-sqlite3/migrator");
   const path = await import("path");
   migrate(db, { migrationsFolder: path.join(process.cwd(), "drizzle") });
+  ensurePagesTable();
   ensureSchemaPatches();
   await ensurePagesData();
   ensureServiceIcons();
@@ -157,7 +192,9 @@ export async function seedDatabase() {
   await runMigrations();
 
   const [categoryCount] = await db.select({ value: count() }).from(schema.categories);
-  if (categoryCount.value > 0) {
+  const [settingsCount] = await db.select({ value: count() }).from(schema.settings);
+
+  if (categoryCount.value > 0 || settingsCount.value > 0) {
     return;
   }
 
