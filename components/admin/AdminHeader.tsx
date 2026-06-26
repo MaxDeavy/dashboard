@@ -14,7 +14,7 @@ export function AdminHeader() {
   }
 
   return (
-    <header className="sticky top-0 z-50 px-4 pt-4 sm:px-6">
+    <header className="sticky top-0 z-50 bg-background/80 px-4 pt-4 backdrop-blur-md sm:px-6">
       <div className="glass-panel-strong mx-auto flex h-14 max-w-5xl items-center justify-between rounded-2xl px-4 sm:px-5">
         <div className="flex items-center gap-4">
           <Link

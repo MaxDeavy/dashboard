@@ -15,8 +15,8 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background">
-      <div className="pointer-events-none absolute inset-0">
+    <div className="relative min-h-screen bg-background">
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="animate-aurora-drift absolute -top-1/4 left-1/3 size-[500px] rounded-full bg-orange-500/10 blur-[100px] dark:bg-orange-600/15" />
         <div
           className="absolute inset-0 opacity-[0.25] dark:opacity-[0.25]"

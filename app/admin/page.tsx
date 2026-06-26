@@ -110,7 +110,7 @@ export default function AdminPage() {
 
   return (
     <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full min-w-0">
-      <TabsList className="glass-panel mb-6 h-auto w-full justify-start gap-1 rounded-xl p-1 sm:w-auto">
+      <TabsList className="glass-panel sticky top-[4.5rem] z-40 mb-6 h-auto w-full justify-start gap-1 rounded-xl p-1 backdrop-blur-md sm:w-auto">
         <TabsTrigger value="services" className="rounded-lg px-4 py-2">
           {t("tabs.services")}
         </TabsTrigger>

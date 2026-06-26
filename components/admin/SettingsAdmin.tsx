@@ -427,7 +427,7 @@ export function SettingsAdmin({
   return (
     <>
     <Card className="glass-panel-strong w-full min-w-0 rounded-2xl bg-transparent">
-      <CardHeader>
+      <CardHeader className="sticky top-[7.25rem] z-30 rounded-t-2xl border-b border-border/40 bg-background/85 px-6 py-4 backdrop-blur-md">
         <CardTitle>{t("title")}</CardTitle>
         <CardDescription>{t("description")}</CardDescription>
       </CardHeader>
