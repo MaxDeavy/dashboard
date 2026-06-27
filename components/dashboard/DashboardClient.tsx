@@ -211,7 +211,6 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
           columns={activeColumns}
           searchQuery={searchQuery}
           healthMap={healthMap}
-          accentColor={accentColor}
           baseCardColor={baseCardColor}
           networkMode={effectiveNetworkMode}
           layout={layout}

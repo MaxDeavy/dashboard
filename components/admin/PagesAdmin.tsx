@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -49,11 +49,6 @@ export function PagesAdmin({
   const discardConfirm = useDiscardConfirm();
   const [formSnapshot, setFormSnapshot] = useState("");
 
-  useEffect(() => {
-    if (!open) return;
-    setFormSnapshot(JSON.stringify({ name, enabled }));
-  }, [open]);
-
   const isDirty =
     open && JSON.stringify({ name, enabled }) !== formSnapshot;
 
@@ -67,11 +62,15 @@ export function PagesAdmin({
     setEditing(page);
     setName(page.name);
     setEnabled(page.enabled);
+    setFormSnapshot(
+      JSON.stringify({ name: page.name, enabled: page.enabled }),
+    );
     setOpen(true);
   }
 
   function openNew() {
     resetForm();
+    setFormSnapshot(JSON.stringify({ name: "", enabled: true }));
     setOpen(true);
   }
 

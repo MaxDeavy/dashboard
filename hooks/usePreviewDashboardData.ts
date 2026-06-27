@@ -1,14 +1,13 @@
 "use client";
 
 import { useMemo } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import {
   buildPreviewDashboardData,
   type PreviewExampleLabels,
 } from "@/lib/preview-dashboard-data";
 
 export function usePreviewDashboardData() {
-  const locale = useLocale();
   const t = useTranslations("previewExample");
 
   return useMemo(() => {
@@ -78,5 +77,5 @@ export function usePreviewDashboardData() {
     };
 
     return buildPreviewDashboardData(labels);
-  }, [locale, t]);
+  }, [t]);
 }

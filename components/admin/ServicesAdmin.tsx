@@ -197,22 +197,6 @@ export function ServicesAdmin({
     writeStoredAdminServicesPageId(pageId);
   }
 
-  useEffect(() => {
-    if (!open) return;
-    setServiceSnapshot(JSON.stringify(form));
-  }, [open]);
-
-  useEffect(() => {
-    if (!categoryOpen) return;
-    setCategorySnapshot(
-      JSON.stringify({
-        name: categoryName,
-        color: categoryColor,
-        enabled: categoryEnabled,
-      }),
-    );
-  }, [categoryOpen]);
-
   const isServiceDirty = open && JSON.stringify(form) !== serviceSnapshot;
   const isCategoryDirty =
     categoryOpen &&
@@ -240,6 +224,9 @@ export function ServicesAdmin({
 
   function openNewCategory() {
     resetCategoryForm();
+    setCategorySnapshot(
+      JSON.stringify({ name: "", color: "", enabled: true }),
+    );
     setCategoryOpen(true);
   }
 
@@ -248,6 +235,13 @@ export function ServicesAdmin({
     setCategoryName(category.name);
     setCategoryColor(category.color ?? "");
     setCategoryEnabled(category.enabled);
+    setCategorySnapshot(
+      JSON.stringify({
+        name: category.name,
+        color: category.color ?? "",
+        enabled: category.enabled,
+      }),
+    );
     setCategoryOpen(true);
   }
 
@@ -310,11 +304,13 @@ export function ServicesAdmin({
   }
 
   function openNewForCategory(categoryId: number) {
-    setEditing(null);
-    setForm({
+    const nextForm = {
       ...emptyForm,
       categoryId: categoryId || (pageCategories[0]?.id ?? 0),
-    });
+    };
+    setEditing(null);
+    setForm(nextForm);
+    setServiceSnapshot(JSON.stringify(nextForm));
     setOpen(true);
   }
 
@@ -323,7 +319,7 @@ export function ServicesAdmin({
     const extra = service.widget?.extraConfig
       ? JSON.parse(service.widget.extraConfig)
       : {};
-    setForm({
+    const nextForm = {
       name: service.name,
       subtitle: service.subtitle ?? "",
       url: service.url,
@@ -352,7 +348,9 @@ export function ServicesAdmin({
         extra,
       ),
       insecureTls: service.insecureTls || extra.insecureTls === "true",
-    });
+    };
+    setForm(nextForm);
+    setServiceSnapshot(JSON.stringify(nextForm));
     setOpen(true);
   }
 

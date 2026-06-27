@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -50,11 +50,6 @@ export function CategoriesAdmin({
   const discardConfirm = useDiscardConfirm();
   const [formSnapshot, setFormSnapshot] = useState("");
 
-  useEffect(() => {
-    if (!open) return;
-    setFormSnapshot(JSON.stringify({ name, color }));
-  }, [open]);
-
   const isDirty =
     open && JSON.stringify({ name, color }) !== formSnapshot;
 
@@ -68,11 +63,15 @@ export function CategoriesAdmin({
     setEditing(category);
     setName(category.name);
     setColor(category.color ?? "");
+    setFormSnapshot(
+      JSON.stringify({ name: category.name, color: category.color ?? "" }),
+    );
     setOpen(true);
   }
 
   function openNew() {
     resetForm();
+    setFormSnapshot(JSON.stringify({ name: "", color: "" }));
     setOpen(true);
   }
 

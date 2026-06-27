@@ -93,7 +93,6 @@ export function PreviewDashboard() {
             columns={activeColumns}
             searchQuery={searchQuery}
             healthMap={data.healthMap}
-            accentColor={theme.accentColor}
             baseCardColor={theme.cardBaseColor}
             networkMode={effectiveNetworkMode}
             layout={layout}

@@ -1,4 +1,3 @@
-import fs from "fs";
 import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
 import path from "path";

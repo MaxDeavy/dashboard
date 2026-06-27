@@ -14,7 +14,6 @@ import {
   type ServiceRowDensity,
 } from "@/lib/layout-settings";
 import {
-  FALLBACK_ACCENT_COLOR,
   FALLBACK_CARD_BASE_COLOR,
 } from "@/lib/theme-presets";
 import {
@@ -46,7 +45,6 @@ export interface ServiceWithWidget {
 interface ServiceCardProps {
   service: ServiceWithWidget;
   healthStatus?: HealthStatus;
-  accentColor?: string;
   baseCardColor?: string;
   categoryColor?: string | null;
   networkMode?: NetworkMode;
@@ -79,7 +77,6 @@ function getCardShellClass(
 export function ServiceCard({
   service,
   healthStatus = "unknown",
-  accentColor = FALLBACK_ACCENT_COLOR,
   baseCardColor = FALLBACK_CARD_BASE_COLOR,
   categoryColor = null,
   networkMode = "web",

@@ -39,7 +39,6 @@ import { useCtrlKeyHeld } from "@/hooks/useCtrlKeyHeld";
 import { cn } from "@/lib/utils";
 import { getCategoryAccentColor } from "@/lib/tile-colors";
 import {
-  FALLBACK_ACCENT_COLOR,
   FALLBACK_CARD_BASE_COLOR,
 } from "@/lib/theme-presets";
 import { ServiceCard, type ServiceWithWidget } from "./ServiceCard";
@@ -53,7 +52,6 @@ interface ServiceGridProps {
   columns: ColumnData[];
   searchQuery: string;
   healthMap: Record<number, HealthStatus>;
-  accentColor?: string;
   baseCardColor?: string;
   networkMode?: NetworkMode;
   layout?: DashboardLayoutSettings;
@@ -95,7 +93,6 @@ export function ServiceGrid({
   columns,
   searchQuery,
   healthMap,
-  accentColor = FALLBACK_ACCENT_COLOR,
   baseCardColor = FALLBACK_CARD_BASE_COLOR,
   networkMode = "web",
   layout = DEFAULT_LAYOUT_SETTINGS,
@@ -605,7 +602,6 @@ export function ServiceGrid({
                                 healthStatus={
                                   healthMap[service.id] ?? "unknown"
                                 }
-                                accentColor={accentColor}
                                 baseCardColor={baseCardColor}
                                 categoryColor={column.color}
                                 networkMode={networkMode}

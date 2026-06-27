@@ -161,16 +161,6 @@ function insertWithOverflow<T>(
   return next.filter((row) => row.some((cell) => cell != null));
 }
 
-function flattenRows<T>(rows: Array<Array<T | null>>): T[] {
-  const result: T[] = [];
-  for (const row of rows) {
-    for (const service of row) {
-      if (service) result.push(service);
-    }
-  }
-  return result;
-}
-
 export function moveServiceToSlot<T extends ServiceLayoutItem>(
   services: T[],
   serviceId: number,

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -189,13 +189,6 @@ function BarEditor({
   const discardConfirm = useDiscardConfirm();
   const [linkSnapshot, setLinkSnapshot] = useState("");
 
-  useEffect(() => {
-    if (!linkOpen) return;
-    setLinkSnapshot(
-      JSON.stringify({ label, url, icon, linkOpenMode }),
-    );
-  }, [linkOpen]);
-
   const isLinkDirty =
     linkOpen &&
     JSON.stringify({ label, url, icon, linkOpenMode }) !== linkSnapshot;
@@ -210,6 +203,14 @@ function BarEditor({
 
   function openNewLink() {
     resetLinkForm();
+    setLinkSnapshot(
+      JSON.stringify({
+        label: "",
+        url: "",
+        icon: "",
+        linkOpenMode: DEFAULT_LINK_OPEN_MODE,
+      }),
+    );
     setLinkOpen(true);
   }
 
@@ -219,6 +220,14 @@ function BarEditor({
     setUrl(link.url);
     setIcon(link.icon ?? "");
     setLinkOpenMode(parseLinkOpenMode(link.linkOpenMode));
+    setLinkSnapshot(
+      JSON.stringify({
+        label: link.label,
+        url: link.url,
+        icon: link.icon ?? "",
+        linkOpenMode: parseLinkOpenMode(link.linkOpenMode),
+      }),
+    );
     setLinkOpen(true);
   }
 
