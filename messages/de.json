@@ -38,7 +38,9 @@
     "submit": "Anmelden",
     "submitting": "Anmelden…",
     "invalidPassword": "Ungültiges Passwort",
-    "failed": "Anmeldung fehlgeschlagen"
+    "failed": "Anmeldung fehlgeschlagen",
+    "titleDashboard": "Dashboard-Anmeldung",
+    "subtitleDashboard": "Passwort eingeben, um das Dashboard zu öffnen"
   },
   "admin": {
     "title": "Administration",
@@ -213,6 +215,10 @@
     "dashboardPagesHint": "Steuert die Seiten-Auswahl oben im Header (bei mehreren Seiten).",
     "showPageSwitcher": "Seiten-Umschalter anzeigen",
     "showPageSwitcherHint": "Ausblenden spart Platz im Header. Seitenwechsel per Tastatur bleibt möglich.",
+    "security": "Sicherheit",
+    "securityHint": "Zugriff auf das Dashboard und den Admin-Bereich.",
+    "dashboardAuthRequired": "Dashboard nur angemeldet",
+    "dashboardAuthRequiredHint": "Besucher müssen sich mit dem Admin-Passwort anmelden, bevor das Dashboard sichtbar ist.",
     "lanToggle": "LAN-Umschalter",
     "lanToggleHint": "Web/LAN-Schalter im Dashboard und LAN-URL-Felder bei Diensten.",
     "appearance": "Erscheinungsbild",

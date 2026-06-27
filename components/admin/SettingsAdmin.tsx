@@ -69,6 +69,7 @@ import {
   SHOW_PAGE_SWITCHER_SETTING,
 } from "@/lib/page-storage";
 import { LAN_ENABLED_SETTING } from "@/lib/network-mode";
+import { DASHBOARD_AUTH_REQUIRED_SETTING } from "@/lib/dashboard-auth-constants";
 
 interface SettingsAdminProps {
   settings: Record<string, string>;
@@ -147,6 +148,9 @@ export function SettingsAdmin({
   );
   const [lanEnabled, setLanEnabled] = useState(
     settings[LAN_ENABLED_SETTING] !== "false",
+  );
+  const [dashboardAuthRequired, setDashboardAuthRequired] = useState(
+    settings[DASHBOARD_AUTH_REQUIRED_SETTING] === "true",
   );
   const [tileBorderRadius, setTileBorderRadius] = useState(
     Number(settings.tile_border_radius) || 12,
@@ -391,6 +395,9 @@ export function SettingsAdmin({
         layout_footer_follows_width: footerFollowsLayout ? "true" : "false",
         [SHOW_PAGE_SWITCHER_SETTING]: showPageSwitcher ? "true" : "false",
         [LAN_ENABLED_SETTING]: lanEnabled ? "true" : "false",
+        [DASHBOARD_AUTH_REQUIRED_SETTING]: dashboardAuthRequired
+          ? "true"
+          : "false",
         tile_border_radius: tileBorderRadius,
         tile_scale: tileScale,
         font_scale: fontScale,
@@ -522,6 +529,29 @@ export function SettingsAdmin({
               className="hidden"
               onChange={handleLogoUpload}
             />
+          </div>
+
+          <div className="space-y-3 rounded-xl border border-border/50 bg-muted/10 p-4">
+            <div>
+              <Label>{t("security")}</Label>
+              <p className="mt-1 text-xs text-muted-foreground">
+                {t("securityHint")}
+              </p>
+            </div>
+
+            <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 bg-background/40 p-3">
+              <div className="space-y-1">
+                <Label>{t("dashboardAuthRequired")}</Label>
+                <p className="text-xs text-muted-foreground">
+                  {t("dashboardAuthRequiredHint")}
+                </p>
+              </div>
+              <EnableSwitch
+                enabled={dashboardAuthRequired}
+                onChange={setDashboardAuthRequired}
+                compact
+              />
+            </div>
           </div>
 
           <div className="space-y-3 rounded-xl border border-border/50 bg-muted/10 p-4">

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
 import path from "path";
 import { getCustomIconFilePath } from "@/lib/custom-icons";
+import { requireDashboardAccess } from "@/lib/dashboard-auth";
 
 const MIME_TYPES: Record<string, string> = {
   ".jpg": "image/jpeg",
@@ -15,6 +16,9 @@ const MIME_TYPES: Record<string, string> = {
 };
 
 export async function GET(request: Request) {
+  const authError = await requireDashboardAccess();
+  if (authError) return authError;
+
   const t = await getTranslations("api");
   const { searchParams } = new URL(request.url);
   const filename = searchParams.get("file");

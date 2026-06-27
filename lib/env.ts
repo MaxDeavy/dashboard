@@ -8,6 +8,10 @@ function isBuildTime(): boolean {
   );
 }
 
+export function isAppBuildTime(): boolean {
+  return isBuildTime();
+}
+
 function readOptional(name: string): string | undefined {
   const value = process.env[name]?.trim();
   return value || undefined;
@@ -68,6 +72,10 @@ export function getCredentialsEncryptionSalt(): string {
 
 export function getSessionCookieName(): string {
   return readString("SESSION_COOKIE_NAME", "homelab-dashboard-session");
+}
+
+export function getSessionMaxAgeSeconds(): number {
+  return readInt("SESSION_MAX_AGE_DAYS", 7) * 24 * 60 * 60;
 }
 
 export function getCookieSecure(): boolean {

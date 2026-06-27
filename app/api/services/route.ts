@@ -1,13 +1,21 @@
 import { asc } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
-import { requireAuth } from "@/lib/auth";
+import { getSession, requireAuth } from "@/lib/auth";
+import { requireDashboardAccess } from "@/lib/dashboard-auth";
 import { encrypt } from "@/lib/crypto";
 import { resolveIconForStorage } from "@/lib/custom-icons";
 import { db, schema } from "@/lib/db";
+import { sanitizeWidgetConfigForClient } from "@/lib/widget-response";
 import { invalidateWidgetCache } from "@/lib/widgets";
 
 export async function GET() {
+  const authError = await requireDashboardAccess();
+  if (authError) return authError;
+
+  const session = await getSession();
+  const includeCredentials = session.isLoggedIn;
+
   const services = await db
     .select()
     .from(schema.services)
@@ -25,7 +33,10 @@ export async function GET() {
   return NextResponse.json(
     services.map((s) => ({
       ...s,
-      widget: widgetByService[s.id] ?? null,
+      widget: sanitizeWidgetConfigForClient(
+        widgetByService[s.id] ?? null,
+        includeCredentials,
+      ),
     })),
   );
 }

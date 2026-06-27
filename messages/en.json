@@ -38,7 +38,9 @@
     "submit": "Sign in",
     "submitting": "Signing in…",
     "invalidPassword": "Invalid password",
-    "failed": "Sign-in failed"
+    "failed": "Sign-in failed",
+    "titleDashboard": "Dashboard sign-in",
+    "subtitleDashboard": "Enter your password to open the dashboard"
   },
   "admin": {
     "title": "Administration",
@@ -198,6 +200,10 @@
     "dashboardPagesHint": "Controls page selection in the header (when multiple pages exist).",
     "showPageSwitcher": "Show page switcher",
     "showPageSwitcherHint": "Hiding saves header space. Keyboard page switching still works.",
+    "security": "Security",
+    "securityHint": "Access to the dashboard and admin area.",
+    "dashboardAuthRequired": "Dashboard requires sign-in",
+    "dashboardAuthRequiredHint": "Visitors must sign in with the admin password before the dashboard is visible.",
     "lanToggle": "LAN toggle",
     "lanToggleHint": "Web/LAN switch on the dashboard and LAN URL fields on services.",
     "appearance": "Appearance",

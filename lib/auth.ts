@@ -6,8 +6,10 @@ import {
   getAdminPassword,
   getCookieSecure,
   getSessionCookieName,
+  getSessionMaxAgeSeconds,
   getSessionSecret,
 } from "@/lib/env";
+import { getSessionOptionsForRequest } from "@/lib/session-config";
 
 export interface SessionData {
   isLoggedIn: boolean;
@@ -20,6 +22,7 @@ export const sessionOptions: SessionOptions = {
     secure: getCookieSecure(),
     httpOnly: true,
     sameSite: "lax",
+    maxAge: getSessionMaxAgeSeconds(),
   },
 };
 
@@ -31,7 +34,11 @@ export function getSessionFromRequest(
   request: Request,
   response: NextResponse,
 ) {
-  return getIronSession<SessionData>(request, response, sessionOptions);
+  return getIronSession<SessionData>(
+    request,
+    response,
+    getSessionOptionsForRequest(request),
+  );
 }
 
 export async function requireAuth() {

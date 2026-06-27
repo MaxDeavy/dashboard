@@ -143,6 +143,7 @@ const PREVIEW_SETTINGS: Record<string, string> = {
   search_enabled: "true",
   show_page_switcher: "true",
   lan_enabled: "true",
+  dashboard_requires_auth: "false",
 };
 
 export function buildPreviewDashboardData(

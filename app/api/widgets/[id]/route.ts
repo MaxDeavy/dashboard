@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
+import { requireDashboardAccess } from "@/lib/dashboard-auth";
 import { getServiceById, getWidgetConfigByServiceId } from "@/lib/db/queries";
 import { fetchWidgetData } from "@/lib/widgets";
 import { localizeWidgetResult } from "@/lib/widgets/i18n";
@@ -8,6 +9,9 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const authError = await requireDashboardAccess();
+  if (authError) return authError;
+
   const tApi = await getTranslations("api");
   const tFields = await getTranslations("widgetFields");
   const tErrors = await getTranslations("widgetErrors");

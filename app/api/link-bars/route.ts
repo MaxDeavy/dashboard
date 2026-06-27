@@ -1,10 +1,14 @@
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { requireAuth } from "@/lib/auth";
+import { requireDashboardAccess } from "@/lib/dashboard-auth";
 import { getLinkBarsWithLinks } from "@/lib/db/queries";
 import { db, schema } from "@/lib/db";
 
 export async function GET() {
+  const authError = await requireDashboardAccess();
+  if (authError) return authError;
+
   const data = await getLinkBarsWithLinks();
   return NextResponse.json(data);
 }

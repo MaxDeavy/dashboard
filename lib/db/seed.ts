@@ -223,6 +223,7 @@ export async function seedDatabase() {
     { key: "search_enabled", value: "true" },
     { key: "show_page_switcher", value: "true" },
     { key: "lan_enabled", value: "true" },
+    { key: "dashboard_requires_auth", value: "false" },
   ];
 
   await db.insert(schema.settings).values(defaultSettings);

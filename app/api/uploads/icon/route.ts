@@ -2,6 +2,7 @@ import fs from "fs";
 import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
 import path from "path";
+import { requireDashboardAccess } from "@/lib/dashboard-auth";
 import { getServiceIconFilePath } from "@/lib/uploads";
 
 const MIME_TYPES: Record<string, string> = {
@@ -15,6 +16,9 @@ const MIME_TYPES: Record<string, string> = {
 };
 
 export async function GET(request: Request) {
+  const authError = await requireDashboardAccess();
+  if (authError) return authError;
+
   const t = await getTranslations("api");
   const { searchParams } = new URL(request.url);
   const serviceId = Number(searchParams.get("serviceId"));

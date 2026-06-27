@@ -1,6 +1,7 @@
 import fs from "fs";
 import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
+import { requireDashboardAccess } from "@/lib/dashboard-auth";
 import { getSetting } from "@/lib/db/queries";
 import {
   DASHBOARD_LOGO_SETTING_KEY,
@@ -19,6 +20,9 @@ const MIME_TYPES: Record<string, string> = {
 };
 
 export async function GET() {
+  const authError = await requireDashboardAccess();
+  if (authError) return authError;
+
   const t = await getTranslations("api");
   const storedUrl = await getSetting(DASHBOARD_LOGO_SETTING_KEY);
   const filename =

@@ -2,9 +2,13 @@ import { asc } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { getTranslations } from "next-intl/server";
 import { requireAuth } from "@/lib/auth";
+import { requireDashboardAccess } from "@/lib/dashboard-auth";
 import { db, schema } from "@/lib/db";
 
 export async function GET() {
+  const authError = await requireDashboardAccess();
+  if (authError) return authError;
+
   const links = await db
     .select()
     .from(schema.navLinks)
