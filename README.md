@@ -123,6 +123,8 @@ docker run -d \
 Available versions: [GitHub Releases](https://github.com/MaxDeavy/dashboard/releases)  
 Image tag matches the release version (`v1.0.0` → `ghcr.io/maxdeavy/dashboard:1.0.0`).
 
+> **Pull fails with `unauthorized`?** A public repository is not enough — the **GHCR container package** has its own visibility and defaults to private. Set it once under [Package settings → Change package visibility → Public](https://github.com/users/MaxDeavy/packages/container/package/dashboard/settings) (cannot be reverted). After that, `docker compose pull` works without login.
+
 #### Build from source (development)
 
 ```bash
