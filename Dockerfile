@@ -12,6 +12,10 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN mkdir -p public/assets && cp -r assets/. public/assets/
 ENV NEXT_TELEMETRY_DISABLED=1
+ARG ADMIN_PASSWORD=build-placeholder
+ARG SESSION_SECRET=ci-build-secret-minimum-32-characters-long
+ENV ADMIN_PASSWORD=$ADMIN_PASSWORD
+ENV SESSION_SECRET=$SESSION_SECRET
 RUN npm run build
 
 FROM node:20-bookworm-slim AS runner

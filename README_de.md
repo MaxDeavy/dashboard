@@ -16,7 +16,7 @@ Selbst gehostetes Dashboard für Homelab-Dienste: Kacheln mit Health-Checks, Liv
 - **Dienst-Zeilen** — bis zu drei Dienste nebeneinander pro Zeile (Admin und Dashboard)
 - **Admin** — Dienste, Kategorien, Seiten, Header/Footer-Links, Themes, Backup
 - **Mehrsprachigkeit** — Englisch und Deutsch; Sprachumschalter unter Admin → Einstellungen
-- **Docker-ready** — SQLite-Volume, Migrationen beim Start
+- **Docker-ready** — SQLite-Volume, Migrationen beim Start, fertige Images auf GHCR
 
 ## Schnellstart
 
@@ -44,14 +44,58 @@ npm run dev
 
 ### Docker
 
+#### Vorgefertigtes Image (empfohlen)
+
+Kein lokaler Build nötig — Image von GitHub Container Registry:
+
+```bash
+mkdir homelab-dashboard && cd homelab-dashboard
+
+curl -fsSL -o docker-compose.yml \
+  https://raw.githubusercontent.com/MaxDeavy/dashboard/v1.0.0/docker-compose.image.yml
+curl -fsSL -o .env.example \
+  https://raw.githubusercontent.com/MaxDeavy/dashboard/v1.0.0/.env.example
+cp .env.example .env
+# ADMIN_PASSWORD, SESSION_SECRET und ggf. APP_URL in .env setzen
+
+docker compose pull
+docker compose up -d
+```
+
+Dashboard: **http://localhost:3333** (oder der in `.env` gesetzte `PORT`)
+
+**Nur Docker CLI** (ohne Compose-Datei im Repo):
+
+```bash
+mkdir homelab-dashboard && cd homelab-dashboard
+curl -fsSL -o .env.example \
+  https://raw.githubusercontent.com/MaxDeavy/dashboard/v1.0.0/.env.example
+cp .env.example .env
+# .env bearbeiten
+
+docker pull ghcr.io/maxdeavy/dashboard:1.0.0
+docker run -d \
+  --name homelab-dashboard \
+  --restart unless-stopped \
+  -p 3333:3333 \
+  --env-file .env \
+  -e PORT=3333 \
+  -e HOSTNAME=0.0.0.0 \
+  -v "$(pwd)/data:/app/data" \
+  ghcr.io/maxdeavy/dashboard:1.0.0
+```
+
+Verfügbare Versionen: [GitHub Releases](https://github.com/MaxDeavy/dashboard/releases)  
+Image-Tag entspricht der Versionsnummer (`v1.0.0` → `ghcr.io/maxdeavy/dashboard:1.0.0`).
+
+#### Aus Quellcode bauen (Entwicklung)
+
 ```bash
 cp .env.example .env
 # PORT=3333 und Production-Secrets setzen
 
 docker compose up -d --build
 ```
-
-Dashboard: **http://localhost:3333** (oder der in `.env` gesetzte `PORT`)
 
 Die SQLite-Datenbank liegt im Volume `./data`. Migrationen laufen beim Container-Start automatisch.
 

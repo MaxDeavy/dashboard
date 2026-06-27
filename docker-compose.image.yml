@@ -1,0 +1,15 @@
+# Fertiges Image von GitHub Container Registry (ohne lokalen Build).
+# Version anpassen: Image-Tag = Release-Version (z. B. 1.0.0 für v1.0.0).
+services:
+  dashboard:
+    image: ghcr.io/maxdeavy/dashboard:1.0.0
+    ports:
+      - "${PORT:-3333}:${PORT:-3333}"
+    env_file:
+      - .env
+    environment:
+      PORT: ${PORT:-3333}
+      HOSTNAME: 0.0.0.0
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

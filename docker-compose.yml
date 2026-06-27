@@ -1,6 +1,7 @@
 services:
   dashboard:
     build: .
+    # Für Nutzer ohne lokalen Build: docker-compose.image.yml (GHCR-Image)
     ports:
       - "${PORT:-3333}:${PORT:-3333}"
     env_file:

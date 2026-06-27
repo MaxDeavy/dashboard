@@ -16,7 +16,7 @@ Self-hosted dashboard for homelab services: tiles with health checks, live API h
 - **Service rows** — up to three services side by side per row (admin and dashboard)
 - **Admin** — services, categories, pages, header/footer links, themes, backup
 - **Internationalization** — English and German UI; language switcher in Admin → Settings
-- **Docker-ready** — SQLite volume, migrations on container start
+- **Docker-ready** — SQLite volume, migrations on container start, pre-built images on GHCR
 
 ## Quick start
 
@@ -44,14 +44,58 @@ npm run dev
 
 ### Docker
 
+#### Pre-built image (recommended)
+
+No local build required — pull from GitHub Container Registry:
+
+```bash
+mkdir homelab-dashboard && cd homelab-dashboard
+
+curl -fsSL -o docker-compose.yml \
+  https://raw.githubusercontent.com/MaxDeavy/dashboard/v1.0.0/docker-compose.image.yml
+curl -fsSL -o .env.example \
+  https://raw.githubusercontent.com/MaxDeavy/dashboard/v1.0.0/.env.example
+cp .env.example .env
+# Set ADMIN_PASSWORD, SESSION_SECRET, and APP_URL in .env if needed
+
+docker compose pull
+docker compose up -d
+```
+
+Dashboard: **http://localhost:3333** (or the `PORT` set in `.env`)
+
+**Docker CLI only** (without a compose file from the repo):
+
+```bash
+mkdir homelab-dashboard && cd homelab-dashboard
+curl -fsSL -o .env.example \
+  https://raw.githubusercontent.com/MaxDeavy/dashboard/v1.0.0/.env.example
+cp .env.example .env
+# Edit .env
+
+docker pull ghcr.io/maxdeavy/dashboard:1.0.0
+docker run -d \
+  --name homelab-dashboard \
+  --restart unless-stopped \
+  -p 3333:3333 \
+  --env-file .env \
+  -e PORT=3333 \
+  -e HOSTNAME=0.0.0.0 \
+  -v "$(pwd)/data:/app/data" \
+  ghcr.io/maxdeavy/dashboard:1.0.0
+```
+
+Available versions: [GitHub Releases](https://github.com/MaxDeavy/dashboard/releases)  
+Image tag matches the release version (`v1.0.0` → `ghcr.io/maxdeavy/dashboard:1.0.0`).
+
+#### Build from source (development)
+
 ```bash
 cp .env.example .env
 # Set PORT=3333 and production secrets
 
 docker compose up -d --build
 ```
-
-Dashboard: **http://localhost:3333** (or the `PORT` set in `.env`)
 
 The SQLite database lives in the `./data` volume. Migrations run automatically on container start.
 
