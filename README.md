@@ -67,7 +67,6 @@ services:
       - .env
     environment:
       PORT: ${PORT:-3333}
-      HOSTNAME: 0.0.0.0
     volumes:
       - ./data:/app/data
 ```
@@ -77,20 +76,10 @@ Create `.env` (adjust values before starting):
 ```env
 ADMIN_PASSWORD=change-me
 SESSION_SECRET=change-me-to-a-random-string-at-least-32-characters
-CREDENTIALS_ENCRYPTION_SALT=homelab-dashboard-salt
-SESSION_COOKIE_NAME=homelab-dashboard-session
-COOKIE_SECURE=false
-SESSION_MAX_AGE_DAYS=7
-DATABASE_URL=file:./data/dashboard.db
-APP_URL=https://dashboard.example.com
 PORT=3333
-HOSTNAME=0.0.0.0
-NODE_ENV=production
-APP_STORAGE_PREFIX=homelab-dashboard
-NEXT_PUBLIC_APP_STORAGE_PREFIX=homelab-dashboard
-MAX_BACKGROUND_UPLOAD_MB=5
-MAX_LOGO_UPLOAD_MB=1
-MAX_ICON_UPLOAD_MB=1
+# Behind a reverse proxy (HTTPS):
+# APP_URL=https://dashboard.example.com
+# COOKIE_SECURE=true
 ```
 
 ```bash
@@ -115,8 +104,6 @@ docker run -d \
   --restart unless-stopped \
   -p 3333:3333 \
   --env-file .env \
-  -e PORT=3333 \
-  -e HOSTNAME=0.0.0.0 \
   -v "$(pwd)/data:/app/data" \
   ghcr.io/maxdeavy/dashboard:1.0.0
 ```
@@ -268,26 +255,42 @@ Talks to the Docker Engine API. `docker-compose.yml` includes an optional socket
 
 ## Environment variables
 
-Template: `.env.example` — read via `lib/env.ts`.
+Copy `.env.example` to `.env`. Only a few values are required for a typical deployment.
 
-| Variable | Description | Default (dev) |
-|----------|-------------|---------------|
-| `ADMIN_PASSWORD` | Admin login (plain text or bcrypt hash) | `admin` |
-| `SESSION_SECRET` | Session + auth (min. 32 chars) | Dev fallback |
-| `CREDENTIALS_ENCRYPTION_SECRET` | Widget key encryption | = `SESSION_SECRET` |
-| `CREDENTIALS_ENCRYPTION_SALT` | Salt for AES key | `homelab-dashboard-salt` |
-| `SESSION_COOKIE_NAME` | Cookie name | `homelab-dashboard-session` |
-| `COOKIE_SECURE` | Cookie over HTTPS only | `false` |
-| `SESSION_MAX_AGE_DAYS` | Session lifetime in days | `7` |
-| `DATABASE_URL` | SQLite path | `file:./data/dashboard.db` |
-| `APP_URL` | Public URL for redirects behind a reverse proxy | — |
+### Required (production)
+
+| Variable | Description |
+|----------|-------------|
+| `ADMIN_PASSWORD` | Admin login (plain text or bcrypt hash via `npm run hash-password`) |
+| `SESSION_SECRET` | Session encryption (min. 32 characters) |
+
+### Common
+
+| Variable | Description | Default |
+|----------|-------------|---------|
 | `PORT` | HTTP port | `3000` (Docker: `3333`) |
-| `HOSTNAME` | Bind address | `0.0.0.0` |
-| `APP_STORAGE_PREFIX` | localStorage prefix (server) | `homelab-dashboard` |
-| `NEXT_PUBLIC_APP_STORAGE_PREFIX` | localStorage prefix (browser) | `homelab-dashboard` |
-| `MAX_BACKGROUND_UPLOAD_MB` | Background limit | `5` |
-| `MAX_LOGO_UPLOAD_MB` | Logo limit | `1` |
-| `MAX_ICON_UPLOAD_MB` | Icon limit | `1` |
+| `APP_URL` | Public URL for redirects behind a reverse proxy | from request headers |
+| `COOKIE_SECURE` | Send session cookie only over HTTPS | `false` |
+
+`HOSTNAME` (bind address inside the container) defaults to `0.0.0.0` in the Docker image — you do not need to set it in `.env`. In Compose, `environment:` overrides `.env` for the same key anyway.
+
+`APP_URL` is **not** the same as `HOSTNAME`: the app listens on `0.0.0.0:PORT` inside Docker, while `APP_URL` is the address users type in the browser (e.g. `https://dashboard.example.com`). Set `APP_URL` only when redirects after login go to the wrong host (typical behind nginx, Traefik, etc.).
+
+### Optional (defaults are fine)
+
+| Variable | Default |
+|----------|---------|
+| `CREDENTIALS_ENCRYPTION_SECRET` | = `SESSION_SECRET` |
+| `CREDENTIALS_ENCRYPTION_SALT` | `homelab-dashboard-salt` |
+| `SESSION_COOKIE_NAME` | `homelab-dashboard-session` |
+| `SESSION_MAX_AGE_DAYS` | `7` |
+| `DATABASE_URL` | `file:./data/dashboard.db` |
+| `APP_STORAGE_PREFIX` / `NEXT_PUBLIC_APP_STORAGE_PREFIX` | `homelab-dashboard` |
+| `MAX_BACKGROUND_UPLOAD_MB` | `5` |
+| `MAX_LOGO_UPLOAD_MB` | `1` |
+| `MAX_ICON_UPLOAD_MB` | `1` |
+
+Cookie name and storage prefix only matter if you run multiple instances on the same browser origin or need to migrate sessions — not for a normal single install.
 
 In **production**, `ADMIN_PASSWORD` and `SESSION_SECRET` must be set.
 

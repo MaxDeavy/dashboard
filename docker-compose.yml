@@ -9,7 +9,6 @@ services:
     environment:
       # Überschreibt PORT aus .env – App muss auf demselben Port lauschen wie das Mapping
       PORT: ${PORT:-3333}
-      HOSTNAME: 0.0.0.0
     volumes:
       - ./data:/app/data
     #  - /var/run/docker.sock:/var/run/docker.sock:ro
