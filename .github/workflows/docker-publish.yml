@@ -1,0 +1,74 @@
+name: Docker
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Image tag without v prefix (e.g. 1.0.0)
+        required: true
+        default: "1.0.0"
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve image tag
+        id: meta
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${{ github.event.release.tag_name }}"
+            VERSION="${VERSION#v}"
+          fi
+          IMAGE="ghcr.io/$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "image=${IMAGE}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.image }}:${{ steps.meta.outputs.version }}
+          build-args: |
+            ADMIN_PASSWORD=build-placeholder
+            SESSION_SECRET=ci-build-secret-minimum-32-characters-long
+
+      - name: Make GHCR package public
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
+          PACKAGE: dashboard
+        run: |
+          owner_type="$(gh api "/users/${OWNER}" --jq .type)"
+          if [[ "${owner_type}" == "Organization" ]]; then
+            package_endpoint="/orgs/${OWNER}/packages/container/${PACKAGE}"
+          else
+            package_endpoint="/user/packages/container/${PACKAGE}"
+          fi
+
+          visibility="$(gh api "${package_endpoint}" --jq .visibility 2>/dev/null || echo unknown)"
+          if [[ "${visibility}" == "public" ]]; then
+            echo "GHCR package is already public."
+            exit 0
+          fi
+
+          gh api --method PATCH "${package_endpoint}" -f visibility=public
+          echo "GHCR package visibility set to public."
