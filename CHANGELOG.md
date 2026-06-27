@@ -24,6 +24,7 @@ All notable changes to this project are documented in this file.
 
 ### Changed
 
+- Fresh installs start with an empty dashboard and show the login page until services are configured
 - Stealth is the default theme preset
 - Custom theme colors stay independent when switching presets
 - Page keyboard shortcuts are always enabled (setting removed from UI)
