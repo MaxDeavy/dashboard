@@ -2,7 +2,9 @@
 # Version anpassen: Image-Tag = Release-Version (z. B. 1.0.0 für v1.0.0).
 services:
   dashboard:
+    container_name: homelab-dashboard
     image: ghcr.io/maxdeavy/dashboard:1.0.0
+    restart: unless-stopped
     ports:
       - "${PORT:-3333}:${PORT:-3333}"
     env_file:
@@ -12,4 +14,3 @@ services:
       HOSTNAME: 0.0.0.0
     volumes:
       - ./data:/app/data
-    restart: unless-stopped

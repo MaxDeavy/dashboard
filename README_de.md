@@ -46,33 +46,68 @@ npm run dev
 
 #### Vorgefertigtes Image (empfohlen)
 
-Kein lokaler Build nötig — Image von GitHub Container Registry:
+Kein lokaler Build nötig — Image von GitHub Container Registry.
 
 ```bash
 mkdir homelab-dashboard && cd homelab-dashboard
+```
 
-curl -fsSL -o docker-compose.yml \
-  https://raw.githubusercontent.com/MaxDeavy/dashboard/v1.0.0/docker-compose.image.yml
-curl -fsSL -o .env.example \
-  https://raw.githubusercontent.com/MaxDeavy/dashboard/v1.0.0/.env.example
-cp .env.example .env
-# ADMIN_PASSWORD, SESSION_SECRET und ggf. APP_URL in .env setzen
+`docker-compose.yml` anlegen:
 
+```yaml
+services:
+  dashboard:
+    container_name: homelab-dashboard
+    image: ghcr.io/maxdeavy/dashboard:1.0.0
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3333}:${PORT:-3333}"
+    env_file:
+      - .env
+    environment:
+      PORT: ${PORT:-3333}
+      HOSTNAME: 0.0.0.0
+    volumes:
+      - ./data:/app/data
+```
+
+`.env` anlegen (Werte vor dem Start anpassen):
+
+```env
+ADMIN_PASSWORD=change-me
+SESSION_SECRET=change-me-to-a-random-string-at-least-32-characters
+CREDENTIALS_ENCRYPTION_SALT=homelab-dashboard-salt
+SESSION_COOKIE_NAME=homelab-dashboard-session
+COOKIE_SECURE=false
+SESSION_MAX_AGE_DAYS=7
+DATABASE_URL=file:./data/dashboard.db
+APP_URL=https://dashboard.example.com
+PORT=3333
+HOSTNAME=0.0.0.0
+NODE_ENV=production
+APP_STORAGE_PREFIX=homelab-dashboard
+NEXT_PUBLIC_APP_STORAGE_PREFIX=homelab-dashboard
+MAX_BACKGROUND_UPLOAD_MB=5
+MAX_LOGO_UPLOAD_MB=1
+MAX_ICON_UPLOAD_MB=1
+```
+
+```bash
 docker compose pull
 docker compose up -d
 ```
 
 Dashboard: **http://localhost:3333** (oder der in `.env` gesetzte `PORT`)
 
-**Nur Docker CLI** (ohne Compose-Datei im Repo):
+**Nur Docker CLI** (ohne Compose):
 
 ```bash
 mkdir homelab-dashboard && cd homelab-dashboard
-curl -fsSL -o .env.example \
-  https://raw.githubusercontent.com/MaxDeavy/dashboard/v1.0.0/.env.example
-cp .env.example .env
-# .env bearbeiten
+```
 
+`.env` wie oben anlegen, dann:
+
+```bash
 docker pull ghcr.io/maxdeavy/dashboard:1.0.0
 docker run -d \
   --name homelab-dashboard \
