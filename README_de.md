@@ -16,6 +16,7 @@ Selbst gehostetes Dashboard für Homelab-Dienste: Kacheln mit Health-Checks, Liv
 - **Dienst-Zeilen** — bis zu drei Dienste nebeneinander pro Zeile (Admin und Dashboard)
 - **Admin** — Dienste, Kategorien, Seiten, Header/Footer-Links, Themes, Backup
 - **Mehrsprachigkeit** — Englisch und Deutsch; Sprachumschalter unter Admin → Einstellungen
+- **Optionale Dashboard-Anmeldung** — Login vor dem Dashboard erzwingen (Admin → Einstellungen)
 - **Docker-ready** — SQLite-Volume, Migrationen beim Start, fertige Images auf GHCR
 
 ## Schnellstart
@@ -122,8 +123,6 @@ docker run -d \
 
 Verfügbare Versionen: [GitHub Releases](https://github.com/MaxDeavy/dashboard/releases)  
 Image-Tag entspricht der Versionsnummer (`v1.0.0` → `ghcr.io/maxdeavy/dashboard:1.0.0`).
-
-> **Pull schlägt mit `unauthorized` fehl?** Ein öffentliches Repository reicht nicht — das **Container-Package auf GHCR** hat eigene Sichtbarkeit und ist standardmäßig privat. Einmalig unter [Package-Einstellungen → Change package visibility → Public](https://github.com/users/MaxDeavy/packages/container/package/dashboard/settings) stellen (nicht rückgängig machbar). Danach funktioniert `docker compose pull` ohne Login.
 
 #### Aus Quellcode bauen (Entwicklung)
 
@@ -279,7 +278,9 @@ Vorlage: `.env.example` — gelesen über `lib/env.ts`.
 | `CREDENTIALS_ENCRYPTION_SALT` | Salt für AES-Key | `homelab-dashboard-salt` |
 | `SESSION_COOKIE_NAME` | Cookie-Name | `homelab-dashboard-session` |
 | `COOKIE_SECURE` | Cookie nur über HTTPS | `false` |
+| `SESSION_MAX_AGE_DAYS` | Session-Gültigkeit in Tagen | `7` |
 | `DATABASE_URL` | SQLite-Pfad | `file:./data/dashboard.db` |
+| `APP_URL` | Öffentliche URL für Redirects hinter Reverse Proxy | — |
 | `PORT` | HTTP-Port | `3000` (Docker: `3333`) |
 | `HOSTNAME` | Bind-Adresse | `0.0.0.0` |
 | `APP_STORAGE_PREFIX` | localStorage-Präfix (Server) | `homelab-dashboard` |

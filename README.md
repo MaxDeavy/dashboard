@@ -16,6 +16,7 @@ Self-hosted dashboard for homelab services: tiles with health checks, live API h
 - **Service rows** — up to three services side by side per row (admin and dashboard)
 - **Admin** — services, categories, pages, header/footer links, themes, backup
 - **Internationalization** — English and German UI; language switcher in Admin → Settings
+- **Optional dashboard sign-in** — require login before viewing the dashboard (Admin → Settings)
 - **Docker-ready** — SQLite volume, migrations on container start, pre-built images on GHCR
 
 ## Quick start
@@ -122,8 +123,6 @@ docker run -d \
 
 Available versions: [GitHub Releases](https://github.com/MaxDeavy/dashboard/releases)  
 Image tag matches the release version (`v1.0.0` → `ghcr.io/maxdeavy/dashboard:1.0.0`).
-
-> **Pull fails with `unauthorized`?** A public repository is not enough — the **GHCR container package** has its own visibility and defaults to private. Set it once under [Package settings → Change package visibility → Public](https://github.com/users/MaxDeavy/packages/container/package/dashboard/settings) (cannot be reverted). After that, `docker compose pull` works without login.
 
 #### Build from source (development)
 
@@ -279,7 +278,9 @@ Template: `.env.example` — read via `lib/env.ts`.
 | `CREDENTIALS_ENCRYPTION_SALT` | Salt for AES key | `homelab-dashboard-salt` |
 | `SESSION_COOKIE_NAME` | Cookie name | `homelab-dashboard-session` |
 | `COOKIE_SECURE` | Cookie over HTTPS only | `false` |
+| `SESSION_MAX_AGE_DAYS` | Session lifetime in days | `7` |
 | `DATABASE_URL` | SQLite path | `file:./data/dashboard.db` |
+| `APP_URL` | Public URL for redirects behind a reverse proxy | — |
 | `PORT` | HTTP port | `3000` (Docker: `3333`) |
 | `HOSTNAME` | Bind address | `0.0.0.0` |
 | `APP_STORAGE_PREFIX` | localStorage prefix (server) | `homelab-dashboard` |

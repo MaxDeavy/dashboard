@@ -18,8 +18,6 @@ All notable changes to this project are documented in this file.
 - Custom icon library
 - Admin example dashboard preview (`/preview`)
 - Keyboard shortcuts reference in settings
-- CI workflow (build + lint)
-- Docker publish workflow on GitHub Releases
 - Login rate limiting
 - Bcrypt support for `ADMIN_PASSWORD`
 - Reverse-proxy support via `APP_URL`
