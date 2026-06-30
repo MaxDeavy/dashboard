@@ -13,7 +13,7 @@ import {
   parseLinkOpenMode,
 } from "@/lib/link-open-mode";
 import { useShiftKeyHeld } from "@/hooks/useShiftKeyHeld";
-import { useWidgetPanel } from "./WidgetPanelContext";
+import { useDashboardLayoutEditMode } from "./WidgetPanelContext";
 import { cn } from "@/lib/utils";
 
 interface LinkBarRowProps {
@@ -33,8 +33,7 @@ export function LinkBarRow({
 }: LinkBarRowProps) {
   const t = useTranslations("dashboard");
   const shiftHeld = useShiftKeyHeld();
-  const { isAnyPanelOpen } = useWidgetPanel();
-  const layoutEditMode = shiftHeld && layoutEditable && !isAnyPanelOpen;
+  const layoutEditMode = useDashboardLayoutEditMode(shiftHeld, layoutEditable);
 
   const visibleLinks = useMemo(
     () => links.filter((link) => link.enabled),
@@ -171,10 +170,6 @@ export function LinkBarRow({
             <div
               draggable={!saving}
               onDragStart={(event) => {
-                if (!event.shiftKey && !shiftHeld) {
-                  event.preventDefault();
-                  return;
-                }
                 setDraggingId(link.id);
                 event.dataTransfer.effectAllowed = "move";
                 event.dataTransfer.setData(
@@ -188,7 +183,7 @@ export function LinkBarRow({
               }}
               className={cn(
                 buttonClassName,
-                "cursor-grab active:cursor-grabbing ring-1 ring-primary/25",
+                "cursor-grab select-none active:cursor-grabbing ring-1 ring-primary/25",
                 draggingId === link.id && "opacity-45",
               )}
             >

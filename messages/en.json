@@ -383,8 +383,8 @@
     "widgetConfig": "Configuration",
     "widgetWarning": "Warning",
     "widgetFieldEditHint": "Shift held: click fields to hide or show them",
-    "widgetFieldEditHintEnd": "Release Shift to apply.",
-    "widgetFieldsAllHidden": "All fields hidden. Hold Shift to restore fields.",
+    "widgetFieldsAllHidden": "All fields hidden. Hold Shift and click fields to restore them.",
+    "widgetFieldsAllHiddenView": "All fields hidden.",
     "widgetError": "Error"
   },
   "enableSwitch": {

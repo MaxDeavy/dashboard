@@ -36,7 +36,7 @@ import {
 import type { NetworkMode } from "@/lib/network-mode";
 import type { Category } from "@/lib/db/schema";
 import { useShiftKeyHeld } from "@/hooks/useShiftKeyHeld";
-import { useWidgetPanel } from "./WidgetPanelContext";
+import { useDashboardLayoutEditMode } from "./WidgetPanelContext";
 import { cn } from "@/lib/utils";
 import { getCategoryAccentColor } from "@/lib/tile-colors";
 import {
@@ -102,8 +102,11 @@ export function ServiceGrid({
 }: ServiceGridProps) {
   const t = useTranslations("dashboard");
   const shiftHeld = useShiftKeyHeld();
-  const { isAnyPanelOpen } = useWidgetPanel();
-  const layoutEditMode = shiftHeld && !searchQuery && layoutEditable && !isAnyPanelOpen;
+  const layoutEditMode = useDashboardLayoutEditMode(
+    shiftHeld,
+    layoutEditable,
+    searchQuery,
+  );
 
   const filteredColumns = useMemo(
     () => filterColumnsForDisplay(columns, searchQuery),
@@ -440,10 +443,6 @@ export function ServiceGrid({
                 draggable={layoutEditMode && !savingLayout}
                 onDragStart={(event) => {
                   if (!layoutEditMode) return;
-                  if (!event.shiftKey && !shiftHeld) {
-                    event.preventDefault();
-                    return;
-                  }
                   setDraggingColumnId(column.id);
                   setDraggingServiceId(null);
                   event.dataTransfer.effectAllowed = "move";
@@ -459,7 +458,7 @@ export function ServiceGrid({
                 className={cn(
                   "mb-3.5 flex items-center gap-2 px-0.5",
                   layoutEditMode &&
-                    "cursor-grab rounded-lg bg-primary/5 py-1.5 active:cursor-grabbing",
+                    "cursor-grab select-none rounded-lg bg-primary/5 py-1.5 active:cursor-grabbing",
                   draggingColumnId === column.id && "opacity-50",
                 )}
                 aria-label={
@@ -578,41 +577,37 @@ export function ServiceGrid({
                               index,
                             )}
                           <div className="relative flex min-w-0 flex-1">
-                            <div
-                              className="flex h-full min-w-0 flex-1"
-                              draggable={layoutEditMode && !savingLayout}
-                              onDragStart={(event) => {
-                                if (!event.shiftKey && !shiftHeld) {
-                                  event.preventDefault();
-                                  return;
-                                }
-                                setDraggingServiceId(service.id);
-                                setDraggingColumnId(null);
-                                event.dataTransfer.effectAllowed = "move";
-                                event.dataTransfer.setData(
-                                  "text/plain",
-                                  `service:${service.id}`,
-                                );
-                              }}
-                              onDragEnd={() => {
-                                setDraggingServiceId(null);
-                                setDropTarget(null);
-                              }}
-                            >
-                              <ServiceCard
-                                service={service}
-                                healthStatus={
-                                  healthMap[service.id] ?? "unknown"
-                                }
-                                baseCardColor={baseCardColor}
-                                categoryColor={column.color}
-                                networkMode={networkMode}
-                                layout={layout}
-                                layoutEditMode={layoutEditMode}
-                                dragging={draggingServiceId === service.id}
-                                rowDensity={rowDensity}
-                              />
-                            </div>
+                            <ServiceCard
+                              service={service}
+                              healthStatus={healthMap[service.id] ?? "unknown"}
+                              baseCardColor={baseCardColor}
+                              categoryColor={column.color}
+                              networkMode={networkMode}
+                              layout={layout}
+                              layoutEditMode={layoutEditMode}
+                              layoutDrag={
+                                layoutEditMode && !savingLayout
+                                  ? {
+                                      onDragStart: (event) => {
+                                        setDraggingServiceId(service.id);
+                                        setDraggingColumnId(null);
+                                        event.dataTransfer.effectAllowed =
+                                          "move";
+                                        event.dataTransfer.setData(
+                                          "text/plain",
+                                          `service:${service.id}`,
+                                        );
+                                      },
+                                      onDragEnd: () => {
+                                        setDraggingServiceId(null);
+                                        setDropTarget(null);
+                                      },
+                                    }
+                                  : undefined
+                              }
+                              dragging={draggingServiceId === service.id}
+                              rowDensity={rowDensity}
+                            />
                           </div>
                         </Fragment>
                       ))}

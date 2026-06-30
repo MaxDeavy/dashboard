@@ -20,7 +20,7 @@ import {
   getServiceTileSurfaceStyle,
   resolveTileColor,
 } from "@/lib/tile-colors";
-import { ServiceHoverCard } from "./ServiceHoverCard";
+import { ServiceHoverCard, type LayoutDragHandlers } from "./ServiceHoverCard";
 import { StatusDot } from "./StatusDot";
 import { ServiceIconDisplay } from "@/components/ServiceIconDisplay";
 import { cn } from "@/lib/utils";
@@ -50,6 +50,7 @@ interface ServiceCardProps {
   networkMode?: NetworkMode;
   layout?: DashboardLayoutSettings;
   layoutEditMode?: boolean;
+  layoutDrag?: LayoutDragHandlers;
   dragging?: boolean;
   rowDensity?: ServiceRowDensity;
 }
@@ -67,7 +68,7 @@ function getCardShellClass(
       "hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.95),0_6px_18px_rgba(0,0,0,0.08)]",
     !layoutEditMode &&
       "dark:hover:border-foreground/20 dark:hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_8px_24px_rgba(0,0,0,0.28)]",
-    layoutEditMode && "cursor-grab active:cursor-grabbing",
+    layoutEditMode && "cursor-grab select-none active:cursor-grabbing",
     layoutEditMode && "ring-1 ring-primary/25",
     dragging && "opacity-45",
     lanMissing && "opacity-55",
@@ -82,6 +83,7 @@ export function ServiceCard({
   networkMode = "web",
   layout = DEFAULT_LAYOUT_SETTINGS,
   layoutEditMode = false,
+  layoutDrag,
   dragging = false,
   rowDensity = 1,
 }: ServiceCardProps) {
@@ -213,6 +215,7 @@ export function ServiceCard({
         url={href}
         linkOpenMode={linkOpenMode}
         layoutEditMode={layoutEditMode}
+        layoutDrag={layoutDrag}
         className={cn(
           getCardShellClass(layoutEditMode, dragging, lanMissing),
           "flex h-full w-full flex-col items-center justify-center",
@@ -250,6 +253,7 @@ export function ServiceCard({
       url={href}
       linkOpenMode={linkOpenMode}
       layoutEditMode={layoutEditMode}
+      layoutDrag={layoutDrag}
         className={cn(
           getCardShellClass(layoutEditMode, dragging, lanMissing),
           "flex h-full w-full items-center",

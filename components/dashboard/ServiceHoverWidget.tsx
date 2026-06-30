@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
 import { useShiftKeyHeld } from "@/hooks/useShiftKeyHeld";
@@ -31,11 +31,6 @@ export function ServiceHoverWidget({
   const [hiddenFieldIds, setHiddenFieldIds] = useState<Set<string>>(
     () => new Set(),
   );
-  const [stagedHiddenIds, setStagedHiddenIds] = useState<Set<string>>(
-    () => new Set(),
-  );
-  const [isStaging, setIsStaging] = useState(false);
-  const prevShiftHeld = useRef(false);
 
   useEffect(() => {
     setHiddenFieldIds(readHiddenWidgetFields(serviceId));
@@ -78,60 +73,22 @@ export function ServiceHoverWidget({
     };
   }, [serviceId, t]);
 
-  const beginStaging = useCallback(() => {
-    setStagedHiddenIds(new Set(hiddenFieldIds));
-    setIsStaging(true);
-  }, [hiddenFieldIds]);
-
-  const commitStaging = useCallback(() => {
-    setHiddenFieldIds(new Set(stagedHiddenIds));
-    writeHiddenWidgetFields(serviceId, stagedHiddenIds);
-    setIsStaging(false);
-  }, [serviceId, stagedHiddenIds]);
-
-  useEffect(() => {
-    if (!panelOpen) {
-      setIsStaging(false);
-      prevShiftHeld.current = shiftHeld;
-      return;
-    }
-
-    if (shiftHeld && !prevShiftHeld.current) {
-      beginStaging();
-    }
-
-    if (!shiftHeld && prevShiftHeld.current && isStaging) {
-      commitStaging();
-    }
-
-    if (shiftHeld && !isStaging) {
-      beginStaging();
-    }
-
-    prevShiftHeld.current = shiftHeld;
-  }, [
-    panelOpen,
-    shiftHeld,
-    isStaging,
-    beginStaging,
-    commitStaging,
-  ]);
-
-  const toggleStagedField = useCallback(
+  const toggleFieldVisibility = useCallback(
     (id: string) => {
       if (!panelOpen || !shiftHeld) return;
 
-      setStagedHiddenIds((prev) => {
+      setHiddenFieldIds((prev) => {
         const next = new Set(prev);
         if (next.has(id)) {
           next.delete(id);
         } else {
           next.add(id);
         }
+        writeHiddenWidgetFields(serviceId, next);
         return next;
       });
     },
-    [panelOpen, shiftHeld],
+    [panelOpen, shiftHeld, serviceId],
   );
 
   if (loading) {
@@ -151,9 +108,8 @@ export function ServiceHoverWidget({
     warning: "text-amber-400",
   }[data.status];
 
-  const isFieldEditMode = panelOpen && shiftHeld && isStaging;
-  const activeHiddenIds = isFieldEditMode ? stagedHiddenIds : hiddenFieldIds;
-  const visibleFields = isFieldEditMode
+  const isFieldEditMode = panelOpen && shiftHeld;
+  const fields = isFieldEditMode
     ? data.fields
     : data.fields.filter((field) => !hiddenFieldIds.has(fieldKey(field)));
 
@@ -185,18 +141,20 @@ export function ServiceHoverWidget({
         />
       ) : (
         <div className="space-y-2.5">
-          {isFieldEditMode ? (
+          {isFieldEditMode && data.fields.length > 0 ? (
             <p className="text-xs text-primary/80">{t("widgetFieldEditHint")}</p>
           ) : null}
 
-          {visibleFields.length === 0 ? (
+          {fields.length === 0 ? (
             <p className="text-sm text-muted-foreground">
-              {t("widgetFieldsAllHidden")}
+              {isFieldEditMode
+                ? t("widgetFieldsAllHidden")
+                : t("widgetFieldsAllHiddenView")}
             </p>
           ) : (
-            visibleFields.map((field) => {
+            fields.map((field) => {
               const id = fieldKey(field);
-              const markedHidden = isFieldEditMode && activeHiddenIds.has(id);
+              const isHidden = isFieldEditMode && hiddenFieldIds.has(id);
 
               return (
                 <div
@@ -211,26 +169,26 @@ export function ServiceHoverWidget({
                     if (!isFieldEditMode) return;
                     event.preventDefault();
                     event.stopPropagation();
-                    toggleStagedField(id);
+                    toggleFieldVisibility(id);
                   }}
                   onKeyDown={(event) => {
                     if (!isFieldEditMode) return;
                     if (event.key === "Enter" || event.key === " ") {
                       event.preventDefault();
-                      toggleStagedField(id);
+                      toggleFieldVisibility(id);
                     }
                   }}
                   className={cn(
                     "flex items-start justify-between gap-3 rounded-md text-sm transition-colors",
                     isFieldEditMode &&
                       "cursor-pointer select-none px-1.5 py-1 hover:bg-white/5",
-                    markedHidden && "opacity-45",
+                    isHidden && "opacity-45",
                   )}
                 >
                   <span
                     className={cn(
                       "shrink-0 text-muted-foreground",
-                      markedHidden && "line-through",
+                      isHidden && "line-through",
                     )}
                   >
                     {field.label}
@@ -238,10 +196,10 @@ export function ServiceHoverWidget({
                   <span
                     className={cn(
                       "max-w-[58%] whitespace-pre-line text-right leading-snug",
-                      field.highlight && !markedHidden
+                      field.highlight && !isHidden
                         ? "font-semibold text-primary"
                         : "font-medium",
-                      markedHidden && "line-through text-muted-foreground",
+                      isHidden && "line-through text-muted-foreground",
                     )}
                   >
                     {field.value}
@@ -250,12 +208,6 @@ export function ServiceHoverWidget({
               );
             })
           )}
-
-          {isFieldEditMode ? (
-            <p className="text-xs text-muted-foreground">
-              {t("widgetFieldEditHintEnd")}
-            </p>
-          ) : null}
         </div>
       )}
     </div>

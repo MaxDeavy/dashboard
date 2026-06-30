@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, type DragEvent } from "react";
 import {
   HoverCard,
   HoverCardContent,
@@ -8,9 +8,15 @@ import {
 } from "@/components/ui/hover-card";
 import { useLongPress } from "@/hooks/useLongPress";
 import { usePrefersTouch } from "@/hooks/usePrefersTouch";
+import { useShiftKeyHeld } from "@/hooks/useShiftKeyHeld";
 import { getLinkAnchorProps, type LinkOpenMode } from "@/lib/link-open-mode";
 import { ServiceHoverWidget } from "./ServiceHoverWidget";
 import { useWidgetPanel } from "./WidgetPanelContext";
+
+export interface LayoutDragHandlers {
+  onDragStart: (event: DragEvent<HTMLElement>) => void;
+  onDragEnd: (event: DragEvent<HTMLElement>) => void;
+}
 
 interface ServiceHoverCardProps {
   serviceId: number;
@@ -22,6 +28,7 @@ interface ServiceHoverCardProps {
   style?: React.CSSProperties;
   children: React.ReactNode;
   layoutEditMode?: boolean;
+  layoutDrag?: LayoutDragHandlers;
 }
 
 const widgetPanelClassName = (widgetType?: string | null) =>
@@ -39,17 +46,22 @@ export function ServiceHoverCard({
   style,
   children,
   layoutEditMode = false,
+  layoutDrag,
 }: ServiceHoverCardProps) {
   const prefersTouch = usePrefersTouch();
+  const shiftHeld = useShiftKeyHeld();
   const { setPanelOpen } = useWidgetPanel();
   const [open, setOpen] = useState(false);
 
   const handleOpenChange = useCallback(
     (nextOpen: boolean) => {
+      if (!nextOpen && shiftHeld) {
+        return;
+      }
       setOpen(nextOpen);
       setPanelOpen(serviceId, nextOpen);
     },
-    [serviceId, setPanelOpen],
+    [serviceId, setPanelOpen, shiftHeld],
   );
 
   useEffect(() => {
@@ -70,7 +82,13 @@ export function ServiceHoverCard({
 
   if (layoutEditMode) {
     return (
-      <div className={className} style={style}>
+      <div
+        draggable
+        onDragStart={layoutDrag?.onDragStart}
+        onDragEnd={layoutDrag?.onDragEnd}
+        className={className}
+        style={style}
+      >
         {children}
       </div>
     );
