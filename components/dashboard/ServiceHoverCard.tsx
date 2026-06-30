@@ -14,6 +14,7 @@ import { ServiceHoverWidget } from "./ServiceHoverWidget";
 interface ServiceHoverCardProps {
   serviceId: number;
   hasWidget: boolean;
+  widgetType?: string | null;
   url: string;
   linkOpenMode?: LinkOpenMode;
   className: string;
@@ -22,12 +23,15 @@ interface ServiceHoverCardProps {
   layoutEditMode?: boolean;
 }
 
-const widgetPanelClassName =
-  "w-72 border-white/10 bg-[#12121a]/95 shadow-2xl backdrop-blur-xl";
+const widgetPanelClassName = (widgetType?: string | null) =>
+  widgetType === "iframe"
+    ? "w-[28rem] border-white/10 bg-[#12121a]/95 shadow-2xl backdrop-blur-xl"
+    : "w-80 border-white/10 bg-[#12121a]/95 shadow-2xl backdrop-blur-xl";
 
 export function ServiceHoverCard({
   serviceId,
   hasWidget,
+  widgetType,
   url,
   linkOpenMode = "same_tab",
   className,
@@ -92,7 +96,7 @@ export function ServiceHoverCard({
         {children}
       </HoverCardTrigger>
       <HoverCardContent
-        className={widgetPanelClassName}
+        className={widgetPanelClassName(widgetType)}
         side="top"
         align="start"
       >

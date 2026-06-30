@@ -1,9 +1,9 @@
 # Fertiges Image von GitHub Container Registry (ohne lokalen Build).
-# Version anpassen: Image-Tag = Release-Version (z. B. 1.0.0 für v1.0.0).
+# Version anpassen: Image-Tag = Release-Version (z. B. 1.0.1 für v1.0.1) oder `latest`.
 services:
   dashboard:
     container_name: homelab-dashboard
-    image: ghcr.io/maxdeavy/dashboard:1.0.0
+    image: ghcr.io/maxdeavy/dashboard:1.0.1
     restart: unless-stopped
     ports:
       - "${PORT:-3333}:${PORT:-3333}"

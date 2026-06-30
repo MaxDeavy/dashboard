@@ -69,34 +69,45 @@ export function ServiceHoverWidget({ serviceId }: ServiceHoverWidgetProps) {
   }[data.status];
 
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h4 className="text-sm font-semibold">{data.title}</h4>
-        <span className={`text-xs font-medium ${statusColor}`}>
+    <div className="space-y-3.5">
+      <div className="flex items-center justify-between gap-3">
+        <h4 className="text-base font-semibold leading-tight">{data.title}</h4>
+        <span className={`shrink-0 text-xs font-medium ${statusColor}`}>
           {data.status === "ok"
             ? t("widgetOnline")
             : data.status === "warning"
-              ? t("widgetConfig")
+              ? data.error
+                ? t("widgetConfig")
+                : t("widgetWarning")
               : t("widgetError")}
         </span>
       </div>
 
       {data.error ? (
-        <p className="text-xs text-muted-foreground">{data.error}</p>
+        <p className="text-sm text-muted-foreground">{data.error}</p>
+      ) : data.displayMode === "iframe" && data.iframeUrl ? (
+        <iframe
+          src={data.iframeUrl}
+          title={data.title}
+          className="h-56 w-full rounded-md border border-white/10 bg-black/20"
+          loading="lazy"
+          referrerPolicy="no-referrer"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+        />
       ) : (
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {data.fields.map((field) => (
             <div
               key={field.label}
-              className="flex items-center justify-between text-sm"
+              className="flex items-start justify-between gap-3 text-sm"
             >
-              <span className="text-muted-foreground">{field.label}</span>
+              <span className="shrink-0 text-muted-foreground">{field.label}</span>
               <span
-                className={
+                className={`max-w-[58%] text-right leading-snug ${
                   field.highlight
                     ? "font-semibold text-primary"
                     : "font-medium"
-                }
+                }`}
               >
                 {field.value}
               </span>

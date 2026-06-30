@@ -10,7 +10,7 @@ export function useAppNavigationShortcuts() {
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.ctrlKey || event.metaKey || event.altKey) return;
+      if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
       if (isTypingTarget(event.target)) return;
       if (event.key.length !== 1) return;
 

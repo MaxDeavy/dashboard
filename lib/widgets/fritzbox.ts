@@ -1,5 +1,6 @@
 import {
   fetchWithTimeout,
+  formatBytes,
   formatBytesPerSec,
   normalizeApiUrl,
   type WidgetConfigInput,
@@ -82,15 +83,39 @@ export async function fetchFritzboxWidget(
   try {
     const apiBase = getFritzApiBase(base);
 
-    const [statusInfo, addonInfos] = await Promise.all([
-      fritzSoapRequest(apiBase, "WANIPConnection", "GetStatusInfo", config.extraConfig),
-      fritzSoapRequest(
-        apiBase,
-        "WANCommonInterfaceConfig",
-        "GetAddonInfos",
-        config.extraConfig,
-      ),
-    ]);
+    const [statusInfo, addonInfos, externalIp, totalReceived, totalSent] =
+      await Promise.all([
+        fritzSoapRequest(
+          apiBase,
+          "WANIPConnection",
+          "GetStatusInfo",
+          config.extraConfig,
+        ),
+        fritzSoapRequest(
+          apiBase,
+          "WANCommonInterfaceConfig",
+          "GetAddonInfos",
+          config.extraConfig,
+        ),
+        fritzSoapRequest(
+          apiBase,
+          "WANIPConnection",
+          "GetExternalIPAddress",
+          config.extraConfig,
+        ).catch((): Record<string, string> => ({})),
+        fritzSoapRequest(
+          apiBase,
+          "WANCommonInterfaceConfig",
+          "GetTotalBytesReceived",
+          config.extraConfig,
+        ).catch((): Record<string, string> => ({})),
+        fritzSoapRequest(
+          apiBase,
+          "WANCommonInterfaceConfig",
+          "GetTotalBytesSent",
+          config.extraConfig,
+        ).catch((): Record<string, string> => ({})),
+      ]);
 
     const connectionStatus =
       FRITZ_CONNECTION_STATUS[statusInfo.NewConnectionStatus ?? ""] ??
@@ -100,16 +125,27 @@ export async function fetchFritzboxWidget(
     const downRate = Number(addonInfos.NewByteReceiveRate ?? 0);
     const upRate = Number(addonInfos.NewByteSendRate ?? 0);
     const isConnected = statusInfo.NewConnectionStatus === "Connected";
+    const externalAddress = externalIp.NewExternalIPAddress;
+    const received = Number(totalReceived.NewTotalBytesReceived ?? 0);
+    const sent = Number(totalSent.NewTotalBytesSent ?? 0);
 
     return {
       title: "FRITZ!Box",
-      status: isConnected ? "ok" : "warning",
+      status: "ok",
       fields: [
         {
           label: "Status",
           value: connectionStatus,
           highlight: isConnected,
         },
+        ...(externalAddress
+          ? [
+              {
+                label: "External IP",
+                value: externalAddress,
+              },
+            ]
+          : []),
         {
           label: "Uptime",
           value: formatUptime(uptime),
@@ -117,11 +153,29 @@ export async function fetchFritzboxWidget(
         {
           label: "Download",
           value: formatBytesPerSec(downRate),
+          highlight: downRate > 0,
         },
         {
           label: "Upload",
           value: formatBytesPerSec(upRate),
+          highlight: upRate > 0,
         },
+        ...(received > 0
+          ? [
+              {
+                label: "Total Download",
+                value: formatBytes(received),
+              },
+            ]
+          : []),
+        ...(sent > 0
+          ? [
+              {
+                label: "Total Upload",
+                value: formatBytes(sent),
+              },
+            ]
+          : []),
       ],
     };
   } catch (error) {

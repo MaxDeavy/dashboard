@@ -126,6 +126,7 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
   const baseCardColor = theme.cardBaseColor;
   const glowColor = theme.glowColor;
   const colorMode = theme.colorMode;
+  const backgroundColor = theme.backgroundColor;
   const dashboardTitle =
     data.settings.dashboard_title ?? t("defaultTitle");
   const dashboardSubtitle = data.settings.dashboard_subtitle ?? t("defaultSubtitle");
@@ -164,6 +165,7 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
         accentColor={accentColor}
         glowColor={glowColor}
         colorMode={colorMode}
+        backgroundColor={backgroundColor}
         backgroundImageUrl={data.settings.background_image || null}
       />
 

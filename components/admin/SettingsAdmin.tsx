@@ -57,6 +57,7 @@ import {
 import {
   applyColorMode,
   FALLBACK_ACCENT_COLOR,
+  FALLBACK_BACKGROUND_COLOR,
   FALLBACK_CARD_BASE_COLOR,
   FALLBACK_GLOW_COLOR,
   parseColorMode,
@@ -110,6 +111,9 @@ export function SettingsAdmin({
   );
   const [backgroundImageUrl, setBackgroundImageUrl] = useState(
     settings.background_image ?? "",
+  );
+  const [backgroundColor, setBackgroundColor] = useState(
+    settings.background_color ?? "",
   );
   const [backgroundUploading, setBackgroundUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -197,6 +201,10 @@ export function SettingsAdmin({
   useEffect(() => {
     setBackgroundImageUrl(settings.background_image ?? "");
   }, [settings.background_image]);
+
+  useEffect(() => {
+    setBackgroundColor(settings.background_color ?? "");
+  }, [settings.background_color]);
 
   useEffect(() => {
     const logo = settings.dashboard_logo ?? "";
@@ -386,6 +394,7 @@ export function SettingsAdmin({
         accent_color: customAccentColor,
         service_card_base_color: customCardBaseColor,
         glow_color: customGlowColor,
+        background_color: backgroundColor.trim(),
         icon_size: iconSize,
         icon_frame_style: iconFrameStyle,
         layout_max_width:
@@ -615,7 +624,12 @@ export function SettingsAdmin({
               <div className="relative overflow-hidden rounded-xl border border-border/50">
                 <div
                   className="aspect-[21/9] w-full bg-cover bg-center bg-no-repeat"
-                  style={{ backgroundImage: `url(${backgroundImageUrl})` }}
+                  style={{
+                    backgroundImage: `url(${backgroundImageUrl})`,
+                    backgroundColor:
+                      backgroundColor.trim() ||
+                      FALLBACK_BACKGROUND_COLOR[colorMode],
+                  }}
                 />
                 <div className="absolute inset-0 bg-black/40" />
                 <div className="absolute bottom-3 right-3 flex gap-2">
@@ -663,6 +677,38 @@ export function SettingsAdmin({
               className="hidden"
               onChange={handleBackgroundUpload}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label>{t("backgroundColor")}</Label>
+            <p className="text-sm text-muted-foreground">
+              {t("backgroundColorHint")}
+            </p>
+            <div className="flex gap-2">
+              <Input
+                type="color"
+                value={
+                  backgroundColor.trim() ||
+                  FALLBACK_BACKGROUND_COLOR[colorMode]
+                }
+                onChange={(e) => setBackgroundColor(e.target.value)}
+                className="h-10 w-16 cursor-pointer p-1"
+              />
+              <Input
+                value={backgroundColor}
+                onChange={(e) => setBackgroundColor(e.target.value)}
+                placeholder={FALLBACK_BACKGROUND_COLOR[colorMode]}
+              />
+              {backgroundColor.trim() ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setBackgroundColor("")}
+                >
+                  {t("backgroundColorReset")}
+                </Button>
+              ) : null}
+            </div>
           </div>
 
           <div className="space-y-3">

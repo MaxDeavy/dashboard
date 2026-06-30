@@ -17,7 +17,7 @@ export function usePageKeyboardShortcuts(
     const shortcutPages = pages.slice(0, MAX_PAGE_KEYBOARD_SHORTCUTS);
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.ctrlKey || event.metaKey || event.altKey) return;
+      if (event.ctrlKey || event.metaKey || event.altKey || event.shiftKey) return;
       if (isTypingTarget(event.target)) return;
 
       const digit = Number(event.key);

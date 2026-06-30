@@ -5,6 +5,7 @@ interface DashboardBackgroundProps {
   accentColor: string;
   glowColor: string;
   colorMode: ColorMode;
+  backgroundColor: string;
   backgroundImageUrl?: string | null;
 }
 
@@ -12,6 +13,7 @@ export function DashboardBackground({
   accentColor,
   glowColor,
   colorMode,
+  backgroundColor,
   backgroundImageUrl,
 }: DashboardBackgroundProps) {
   const isDark = colorMode === "dark";
@@ -19,10 +21,8 @@ export function DashboardBackground({
 
   return (
     <div
-      className={cn(
-        "pointer-events-none fixed inset-0 -z-10 overflow-hidden",
-        isDark ? "bg-[#050508]" : "bg-[#f4f4f5]",
-      )}
+      className="pointer-events-none fixed inset-0 -z-10 overflow-hidden"
+      style={{ backgroundColor }}
     >
       {hasBackgroundImage && (
         <>
@@ -97,17 +97,15 @@ export function DashboardBackground({
       />
 
       <div
-        className={cn(
-          "absolute inset-0 bg-gradient-to-b from-transparent to-transparent",
-          isDark ? "via-[#050508]/20" : "via-[#f4f4f5]/30",
-        )}
+        className="absolute inset-0"
+        style={{
+          background: `linear-gradient(to bottom, transparent, color-mix(in srgb, ${backgroundColor} ${isDark ? "20%" : "30%"}, transparent), transparent)`,
+        }}
       />
       <div
         className="absolute inset-0"
         style={{
-          background: isDark
-            ? "radial-gradient(ellipse at center, transparent 0%, #050508 75%)"
-            : "radial-gradient(ellipse at center, transparent 0%, #f4f4f5 80%)",
+          background: `radial-gradient(ellipse at center, transparent 0%, ${backgroundColor} ${isDark ? "75%" : "80%"})`,
         }}
       />
     </div>

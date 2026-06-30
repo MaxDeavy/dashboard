@@ -35,7 +35,7 @@ import {
 } from "@/lib/layout-settings";
 import type { NetworkMode } from "@/lib/network-mode";
 import type { Category } from "@/lib/db/schema";
-import { useCtrlKeyHeld } from "@/hooks/useCtrlKeyHeld";
+import { useShiftKeyHeld } from "@/hooks/useShiftKeyHeld";
 import { cn } from "@/lib/utils";
 import { getCategoryAccentColor } from "@/lib/tile-colors";
 import {
@@ -100,8 +100,8 @@ export function ServiceGrid({
   layoutEditable = false,
 }: ServiceGridProps) {
   const t = useTranslations("dashboard");
-  const ctrlHeld = useCtrlKeyHeld();
-  const layoutEditMode = ctrlHeld && !searchQuery && layoutEditable;
+  const shiftHeld = useShiftKeyHeld();
+  const layoutEditMode = shiftHeld && !searchQuery && layoutEditable;
 
   const filteredColumns = useMemo(
     () => filterColumnsForDisplay(columns, searchQuery),
@@ -438,7 +438,7 @@ export function ServiceGrid({
                 draggable={layoutEditMode && !savingLayout}
                 onDragStart={(event) => {
                   if (!layoutEditMode) return;
-                  if (!event.ctrlKey && !ctrlHeld) {
+                  if (!event.shiftKey && !shiftHeld) {
                     event.preventDefault();
                     return;
                   }
@@ -580,7 +580,7 @@ export function ServiceGrid({
                               className="flex h-full min-w-0 flex-1"
                               draggable={layoutEditMode && !savingLayout}
                               onDragStart={(event) => {
-                                if (!event.ctrlKey && !ctrlHeld) {
+                                if (!event.shiftKey && !shiftHeld) {
                                   event.preventDefault();
                                   return;
                                 }

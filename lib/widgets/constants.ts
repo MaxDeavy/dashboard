@@ -34,6 +34,7 @@ export const WIDGET_TYPES = [
   { value: "filebrowser", label: "FileBrowser" },
   { value: "guacamole", label: "Guacamole" },
   { value: "fritzbox", label: "FRITZ!Box" },
+  { value: "iframe", label: "Iframe / Embed" },
   { value: "generic", label: "Generic HTTP" },
 ] as const;
 

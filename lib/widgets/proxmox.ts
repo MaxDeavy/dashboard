@@ -1,11 +1,16 @@
 import {
   fetchWithTimeout,
+  formatBytes,
   formatPercent,
   normalizeApiUrl,
   readApiError,
   type WidgetConfigInput,
   type WidgetResult,
 } from "./base";
+
+interface ProxmoxGuest {
+  status?: string;
+}
 
 export async function fetchProxmoxWidget(
   config: WidgetConfigInput,
@@ -36,45 +41,90 @@ export async function fetchProxmoxWidget(
       extraConfig,
     );
 
-    const response = await fetchWithTimeout(
-      `${base}/api2/json/nodes/${encodeURIComponent(node)}/status`,
-      { headers },
-      extraConfig,
-    );
+    const [statusRes, qemuRes, lxcRes] = await Promise.all([
+      fetchWithTimeout(
+        `${base}/api2/json/nodes/${encodeURIComponent(node)}/status`,
+        { headers },
+        extraConfig,
+      ),
+      fetchWithTimeout(
+        `${base}/api2/json/nodes/${encodeURIComponent(node)}/qemu`,
+        { headers },
+        extraConfig,
+      ),
+      fetchWithTimeout(
+        `${base}/api2/json/nodes/${encodeURIComponent(node)}/lxc`,
+        { headers },
+        extraConfig,
+      ),
+    ]);
 
-    if (!response.ok) {
-      throw new Error(await readApiError(response));
+    if (!statusRes.ok) {
+      throw new Error(await readApiError(statusRes));
     }
 
-    const data = await response.json();
+    const data = await statusRes.json();
     const status = data.data;
+
+    const vms = qemuRes.ok
+      ? ((await qemuRes.json()).data as ProxmoxGuest[])
+      : [];
+    const lxcs = lxcRes.ok
+      ? ((await lxcRes.json()).data as ProxmoxGuest[])
+      : [];
 
     const cpuPercent = (status.cpu ?? 0) * 100;
     const memUsed = status.memory?.used ?? 0;
     const memTotal = status.memory?.total ?? 1;
     const memPercent = (memUsed / memTotal) * 100;
+    const diskUsed = status.rootfs?.used ?? 0;
+    const diskTotal = status.rootfs?.total ?? 0;
+    const diskPercent = diskTotal > 0 ? (diskUsed / diskTotal) * 100 : 0;
+    const loadavg = Array.isArray(status.loadavg)
+      ? status.loadavg[0]
+      : undefined;
+
+    const runningVms = vms.filter((vm) => vm.status === "running").length;
+    const runningLxc = lxcs.filter((lxc) => lxc.status === "running").length;
 
     return {
-      title: `Proxmox (${node})`,
+      title: `Proxmox · ${node}`,
       status: "ok",
       fields: [
         {
           label: "CPU",
-          value: formatPercent(cpuPercent),
+          value: loadavg != null
+            ? `${formatPercent(cpuPercent)} (load ${loadavg})`
+            : formatPercent(cpuPercent),
           highlight: cpuPercent > 80,
         },
         {
           label: "RAM",
-          value: formatPercent(memPercent),
+          value: `${formatPercent(memPercent)} (${formatBytes(memUsed)} / ${formatBytes(memTotal)})`,
           highlight: memPercent > 85,
+        },
+        ...(diskTotal > 0
+          ? [
+              {
+                label: "Disk",
+                value: `${formatPercent(diskPercent)} (${formatBytes(diskUsed)} / ${formatBytes(diskTotal)})`,
+                highlight: diskPercent > 85,
+              },
+            ]
+          : []),
+        {
+          label: "VMs",
+          value: `${runningVms}/${vms.length} running`,
+          highlight: runningVms > 0,
+        },
+        {
+          label: "LXC",
+          value: `${runningLxc}/${lxcs.length} running`,
+          highlight: runningLxc > 0,
         },
         {
           label: "Uptime",
           value: formatUptime(status.uptime ?? 0),
-        },
-        {
-          label: "Status",
-          value: status.status ?? "unknown",
         },
       ],
     };

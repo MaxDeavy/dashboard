@@ -2,13 +2,20 @@ import {
   credentialString,
   fetchWithTimeout,
   normalizeApiUrl,
+  truncate,
   type WidgetConfigInput,
   type WidgetResult,
 } from "./base";
 
 interface NpmProxyHost {
   enabled?: boolean;
+  domain_names?: string[];
   meta?: { online?: boolean };
+}
+
+interface NpmCertificate {
+  expires_on?: string;
+  domain_names?: string[];
 }
 
 async function loginNpm(
@@ -39,6 +46,26 @@ async function loginNpm(
   return data.token;
 }
 
+function formatOfflineHosts(hosts: NpmProxyHost[]): string {
+  const domains = hosts
+    .filter((host) => host.enabled !== false && host.meta?.online === false)
+    .flatMap((host) => host.domain_names ?? [])
+    .filter(Boolean);
+
+  if (domains.length === 0) return "—";
+
+  return truncate(domains.join(", "), 40);
+}
+
+function countExpiringCerts(certs: NpmCertificate[], withinDays: number): number {
+  const threshold = Date.now() + withinDays * 86_400_000;
+  return certs.filter((cert) => {
+    if (!cert.expires_on) return false;
+    const expires = new Date(cert.expires_on).getTime();
+    return expires > Date.now() && expires < threshold;
+  }).length;
+}
+
 export async function fetchNpmWidget(
   config: WidgetConfigInput,
 ): Promise<WidgetResult> {
@@ -59,7 +86,7 @@ export async function fetchNpmWidget(
     const token = await loginNpm(base, identity, secret, config.extraConfig);
     const headers = { Authorization: `Bearer ${token}` };
 
-    const [proxyRes, redirectRes] = await Promise.all([
+    const [proxyRes, redirectRes, certRes, streamRes] = await Promise.all([
       fetchWithTimeout(
         `${base}/api/nginx/proxy-hosts`,
         { headers },
@@ -67,6 +94,16 @@ export async function fetchNpmWidget(
       ),
       fetchWithTimeout(
         `${base}/api/nginx/redirection-hosts`,
+        { headers },
+        config.extraConfig,
+      ),
+      fetchWithTimeout(
+        `${base}/api/nginx/certificates`,
+        { headers },
+        config.extraConfig,
+      ),
+      fetchWithTimeout(
+        `${base}/api/nginx/streams`,
         { headers },
         config.extraConfig,
       ),
@@ -80,38 +117,49 @@ export async function fetchNpmWidget(
     const redirects = redirectRes.ok
       ? ((await redirectRes.json()) as NpmProxyHost[])
       : [];
+    const certificates = certRes.ok
+      ? ((await certRes.json()) as NpmCertificate[])
+      : [];
+    const streams = streamRes.ok
+      ? ((await streamRes.json()) as NpmProxyHost[])
+      : [];
 
-    const enabled = proxyHosts.filter((host) => host.enabled !== false).length;
-    const online = proxyHosts.filter(
-      (host) => host.enabled !== false && host.meta?.online === true,
-    ).length;
-    const offline = enabled - online;
+    const enabled = proxyHosts.filter((host) => host.enabled !== false);
+    const online = enabled.filter((host) => host.meta?.online === true).length;
+    const offline = enabled.length - online;
+    const expiringSoon = countExpiringCerts(certificates, 30);
+    const offlineHosts = formatOfflineHosts(proxyHosts);
 
     return {
-      title: "NPM",
+      title: "Nginx Proxy Manager",
       status: "ok",
       fields: [
         {
           label: "Proxy-Hosts",
-          value: String(proxyHosts.length),
-        },
-        {
-          label: "Active",
-          value: String(enabled),
-        },
-        {
-          label: "Online",
-          value: String(online),
+          value: `${online}/${enabled.length} online`,
           highlight: online > 0,
         },
         {
-          label: "Offline",
-          value: String(Math.max(offline, 0)),
+          label: "Offline Hosts",
+          value: offlineHosts,
           highlight: offline > 0,
+        },
+        {
+          label: "SSL Certificates",
+          value: String(certificates.length),
+        },
+        {
+          label: "Certs Expiring",
+          value: expiringSoon > 0 ? `${expiringSoon} in 30d` : "—",
+          highlight: expiringSoon > 0,
         },
         {
           label: "Redirections",
           value: String(redirects.length),
+        },
+        {
+          label: "Streams",
+          value: String(streams.length),
         },
       ],
     };

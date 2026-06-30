@@ -2,18 +2,18 @@
 
 import { useEffect, useState } from "react";
 
-export function useCtrlKeyHeld(): boolean {
+export function useShiftKeyHeld(): boolean {
   const [held, setHeld] = useState(false);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Control") {
+      if (event.key === "Shift") {
         setHeld(true);
       }
     }
 
     function onKeyUp(event: KeyboardEvent) {
-      if (event.key === "Control") {
+      if (event.key === "Shift") {
         setHeld(false);
       }
     }

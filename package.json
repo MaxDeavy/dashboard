@@ -1,6 +1,6 @@
 {
   "name": "homelab-dashboard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Self-hosted homelab dashboard with browser-based configuration, health checks, and API hover widgets",
   "license": "MIT",
   "private": false,

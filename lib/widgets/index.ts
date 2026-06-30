@@ -15,6 +15,7 @@ import { fetchGenericWidget } from "./generic";
 import { fetchGrafanaWidget } from "./grafana";
 import { fetchGuacamoleWidget } from "./guacamole";
 import { fetchHomeAssistantWidget } from "./homeassistant";
+import { fetchIframeWidget } from "./iframe";
 import { fetchImmichWidget } from "./immich";
 import { fetchJellyfinWidget } from "./jellyfin";
 import { fetchJellyseerrWidget } from "./jellyseerr";
@@ -181,6 +182,8 @@ export async function fetchWidgetData(
         return fetchGuacamoleWidget(widgetInput);
       case "fritzbox":
         return fetchFritzboxWidget(widgetInput);
+      case "iframe":
+        return fetchIframeWidget(widgetInput);
       case "generic":
         return fetchGenericWidget(widgetInput);
       default:

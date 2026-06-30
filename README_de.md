@@ -59,7 +59,7 @@ mkdir homelab-dashboard && cd homelab-dashboard
 services:
   dashboard:
     container_name: homelab-dashboard
-    image: ghcr.io/maxdeavy/dashboard:1.0.0
+    image: ghcr.io/maxdeavy/dashboard:1.0.1
     restart: unless-stopped
     ports:
       - "${PORT:-3333}:${PORT:-3333}"
@@ -98,18 +98,18 @@ mkdir homelab-dashboard && cd homelab-dashboard
 `.env` wie oben anlegen, dann:
 
 ```bash
-docker pull ghcr.io/maxdeavy/dashboard:1.0.0
+docker pull ghcr.io/maxdeavy/dashboard:1.0.1
 docker run -d \
   --name homelab-dashboard \
   --restart unless-stopped \
   -p 3333:3333 \
   --env-file .env \
   -v "$(pwd)/data:/app/data" \
-  ghcr.io/maxdeavy/dashboard:1.0.0
+  ghcr.io/maxdeavy/dashboard:1.0.1
 ```
 
 Verfügbare Versionen: [GitHub Releases](https://github.com/MaxDeavy/dashboard/releases)  
-Image-Tag entspricht der Versionsnummer (`v1.0.0` → `ghcr.io/maxdeavy/dashboard:1.0.0`).
+Image-Tag entspricht der Versionsnummer (`v1.0.1` → `ghcr.io/maxdeavy/dashboard:1.0.1`). Der Tag `latest` zeigt immer auf das neueste Release.
 
 #### Aus Quellcode bauen (Entwicklung)
 

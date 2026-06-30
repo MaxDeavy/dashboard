@@ -11,6 +11,8 @@ export interface WidgetResult {
   status: "ok" | "error" | "warning";
   fields: WidgetField[];
   error?: string;
+  displayMode?: "iframe";
+  iframeUrl?: string;
 }
 
 export interface WidgetCredentials {
@@ -131,4 +133,9 @@ export function formatBytes(bytes: number): string {
 
 export function formatPercent(value: number): string {
   return `${value.toFixed(1)}%`;
+}
+
+export function truncate(text: string, max: number): string {
+  if (text.length <= max) return text;
+  return `${text.slice(0, max - 1)}…`;
 }

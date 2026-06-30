@@ -12,7 +12,7 @@ import {
   getLinkAnchorProps,
   parseLinkOpenMode,
 } from "@/lib/link-open-mode";
-import { useCtrlKeyHeld } from "@/hooks/useCtrlKeyHeld";
+import { useShiftKeyHeld } from "@/hooks/useShiftKeyHeld";
 import { cn } from "@/lib/utils";
 
 interface LinkBarRowProps {
@@ -31,8 +31,8 @@ export function LinkBarRow({
   layoutEditable = false,
 }: LinkBarRowProps) {
   const t = useTranslations("dashboard");
-  const ctrlHeld = useCtrlKeyHeld();
-  const layoutEditMode = ctrlHeld && layoutEditable;
+  const shiftHeld = useShiftKeyHeld();
+  const layoutEditMode = shiftHeld && layoutEditable;
 
   const visibleLinks = useMemo(
     () => links.filter((link) => link.enabled),
@@ -169,7 +169,7 @@ export function LinkBarRow({
             <div
               draggable={!saving}
               onDragStart={(event) => {
-                if (!event.ctrlKey && !ctrlHeld) {
+                if (!event.shiftKey && !shiftHeld) {
                   event.preventDefault();
                   return;
                 }

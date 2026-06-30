@@ -59,7 +59,7 @@ Create `docker-compose.yml`:
 services:
   dashboard:
     container_name: homelab-dashboard
-    image: ghcr.io/maxdeavy/dashboard:1.0.0
+    image: ghcr.io/maxdeavy/dashboard:1.0.1
     restart: unless-stopped
     ports:
       - "${PORT:-3333}:${PORT:-3333}"
@@ -98,18 +98,18 @@ mkdir homelab-dashboard && cd homelab-dashboard
 Create `.env` as above, then:
 
 ```bash
-docker pull ghcr.io/maxdeavy/dashboard:1.0.0
+docker pull ghcr.io/maxdeavy/dashboard:1.0.1
 docker run -d \
   --name homelab-dashboard \
   --restart unless-stopped \
   -p 3333:3333 \
   --env-file .env \
   -v "$(pwd)/data:/app/data" \
-  ghcr.io/maxdeavy/dashboard:1.0.0
+  ghcr.io/maxdeavy/dashboard:1.0.1
 ```
 
 Available versions: [GitHub Releases](https://github.com/MaxDeavy/dashboard/releases)  
-Image tag matches the release version (`v1.0.0` → `ghcr.io/maxdeavy/dashboard:1.0.0`).
+Image tag matches the release version (`v1.0.1` → `ghcr.io/maxdeavy/dashboard:1.0.1`). The `latest` tag always points to the most recent release.
 
 #### Build from source (development)
 

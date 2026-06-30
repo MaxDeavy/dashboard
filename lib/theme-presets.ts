@@ -62,6 +62,11 @@ export const FALLBACK_ACCENT_COLOR = THEME_PRESETS[0].accent;
 export const FALLBACK_CARD_BASE_COLOR = THEME_PRESETS[0].cardBase;
 export const FALLBACK_GLOW_COLOR = THEME_PRESETS[0].glow;
 
+export const FALLBACK_BACKGROUND_COLOR: Record<ColorMode, string> = {
+  dark: "#050508",
+  light: "#f4f4f5",
+};
+
 export function parseThemePreset(value: string | undefined | null): ThemePresetId {
   if (value && THEME_PRESETS.some((p) => p.id === value)) {
     return value as ThemePresetId;
@@ -83,11 +88,22 @@ export interface ResolvedTheme {
   cardBaseColor: string;
   glowColor: string;
   colorMode: ColorMode;
+  backgroundColor: string;
+}
+
+export function resolveBackgroundColor(
+  settings: Record<string, string>,
+  colorMode: ColorMode = parseColorMode(settings.color_mode),
+): string {
+  const custom = settings.background_color?.trim();
+  if (custom) return custom;
+  return FALLBACK_BACKGROUND_COLOR[colorMode];
 }
 
 export function resolveTheme(settings: Record<string, string>): ResolvedTheme {
   const presetId = parseThemePreset(settings.theme_preset);
   const colorMode = parseColorMode(settings.color_mode);
+  const backgroundColor = resolveBackgroundColor(settings, colorMode);
 
   if (presetId === "custom") {
     const accent = settings.accent_color?.trim() || FALLBACK_ACCENT_COLOR;
@@ -100,6 +116,7 @@ export function resolveTheme(settings: Record<string, string>): ResolvedTheme {
       cardBaseColor: cardBase,
       glowColor: glow,
       colorMode,
+      backgroundColor,
     };
   }
 
@@ -110,6 +127,7 @@ export function resolveTheme(settings: Record<string, string>): ResolvedTheme {
     cardBaseColor: preset.cardBase,
     glowColor: preset.glow,
     colorMode,
+    backgroundColor,
   };
 }
 

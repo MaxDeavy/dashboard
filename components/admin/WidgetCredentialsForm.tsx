@@ -316,6 +316,10 @@ export function WidgetCredentialsForm({
         </p>
       )}
 
+      {form.widgetType === "iframe" && (
+        <p className="text-xs text-muted-foreground">{t("iframeHint")}</p>
+      )}
+
       {form.widgetType === "filebrowser" && (
         <p className="text-xs text-muted-foreground">
           {t("filebrowserHint", { api: "/api/usage" })}
@@ -381,6 +385,8 @@ function getApiUrlPlaceholder(widgetType: string): string {
       return "http://guacamole.local:8080/guacamole";
     case "fritzbox":
       return "http://192.168.178.1";
+    case "iframe":
+      return "https://grafana.local/d/abc123";
     case "npm":
       return "http://npm.local:81";
     case "adguard":

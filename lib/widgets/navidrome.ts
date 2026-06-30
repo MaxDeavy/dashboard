@@ -2,9 +2,20 @@ import {
   credentialString,
   fetchWithTimeout,
   normalizeApiUrl,
+  truncate,
   type WidgetConfigInput,
   type WidgetResult,
 } from "./base";
+
+interface SubsonicArtist {
+  albumCount?: number;
+}
+
+interface SubsonicNowPlayingEntry {
+  title?: string;
+  artist?: string;
+  username?: string;
+}
 
 function buildSubsonicUrl(
   base: string,
@@ -23,6 +34,21 @@ function buildSubsonicUrl(
   });
 
   return `${normalizeApiUrl(base)}/rest/${command}?${params.toString()}`;
+}
+
+function formatNowPlaying(entries: SubsonicNowPlayingEntry[]): string {
+  if (entries.length === 0) return "—";
+
+  return entries
+    .map((entry) => {
+      const user = entry.username ?? "Unknown";
+      const title = entry.title?.trim();
+      const artist = entry.artist?.trim();
+      const track =
+        title && artist ? `${artist} – ${title}` : (title ?? artist ?? "");
+      return track ? `${user} · ${truncate(track, 24)}` : user;
+    })
+    .join(", ");
 }
 
 export async function fetchNavidromeWidget(
@@ -60,39 +86,45 @@ export async function fetchNavidromeWidget(
       throw new Error("Authentication failed");
     }
 
-    const indexesRes = await fetchWithTimeout(
-      buildSubsonicUrl(base, "getIndexes", username, password),
-      {},
-      config.extraConfig,
-    );
+    const [indexesRes, nowPlayingRes] = await Promise.all([
+      fetchWithTimeout(
+        buildSubsonicUrl(base, "getIndexes", username, password),
+        {},
+        config.extraConfig,
+      ),
+      fetchWithTimeout(
+        buildSubsonicUrl(base, "getNowPlaying", username, password),
+        {},
+        config.extraConfig,
+      ),
+    ]);
 
     let artists = 0;
+    let albums = 0;
     if (indexesRes.ok) {
       const indexes = (await indexesRes.json()) as {
         "subsonic-response"?: {
-          indexes?: { index?: Array<{ artist?: unknown[] }> };
+          indexes?: { index?: Array<{ artist?: SubsonicArtist[] }> };
         };
       };
       const indexList = indexes["subsonic-response"]?.indexes?.index ?? [];
       for (const entry of indexList) {
-        artists += entry.artist?.length ?? 0;
+        for (const artist of entry.artist ?? []) {
+          artists += 1;
+          albums += artist.albumCount ?? 0;
+        }
       }
     }
 
-    const nowPlayingRes = await fetchWithTimeout(
-      buildSubsonicUrl(base, "getNowPlaying", username, password),
-      {},
-      config.extraConfig,
-    );
-
-    let playing = 0;
+    let playingEntries: SubsonicNowPlayingEntry[] = [];
     if (nowPlayingRes.ok) {
       const nowPlaying = (await nowPlayingRes.json()) as {
         "subsonic-response"?: {
-          nowPlaying?: { entry?: unknown[] };
+          nowPlaying?: { entry?: SubsonicNowPlayingEntry[] };
         };
       };
-      playing = nowPlaying["subsonic-response"]?.nowPlaying?.entry?.length ?? 0;
+      playingEntries =
+        nowPlaying["subsonic-response"]?.nowPlaying?.entry ?? [];
     }
 
     return {
@@ -100,17 +132,27 @@ export async function fetchNavidromeWidget(
       status: "ok",
       fields: [
         {
-          label: "Version",
-          value: ping["subsonic-response"]?.version ?? "—",
-        },
-        {
           label: "Artists",
           value: String(artists),
         },
         {
-          label: "Plays",
-          value: String(playing),
-          highlight: playing > 0,
+          label: "Albums",
+          value: String(albums),
+          highlight: albums > 0,
+        },
+        {
+          label: "Now Playing",
+          value: formatNowPlaying(playingEntries),
+          highlight: playingEntries.length > 0,
+        },
+        {
+          label: "Listeners",
+          value: String(playingEntries.length),
+          highlight: playingEntries.length > 0,
+        },
+        {
+          label: "Version",
+          value: ping["subsonic-response"]?.version ?? "—",
         },
       ],
     };

@@ -25,6 +25,7 @@ export function KeyboardBindingsReference() {
     { keys: ["D"], label: t("keyBindingsDashboard") },
     { keys: ["S", "E"], label: t("keyBindingsSettings") },
     { keys: [t("keyBindingsPagesKey")], label: t("keyBindingsPages") },
+    { keys: ["Shift"], label: t("keyBindingsLayout") },
   ];
 
   return (

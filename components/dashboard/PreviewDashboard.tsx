@@ -46,6 +46,7 @@ export function PreviewDashboard() {
         accentColor={theme.accentColor}
         glowColor={theme.glowColor}
         colorMode={theme.colorMode}
+        backgroundColor={theme.backgroundColor}
         backgroundImageUrl={null}
       />
 

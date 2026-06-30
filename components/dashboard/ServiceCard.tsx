@@ -60,13 +60,13 @@ function getCardShellClass(
   lanMissing: boolean,
 ) {
   return cn(
-    "group relative overflow-hidden border",
+    "service-tile-surface group relative overflow-hidden border",
     "transition-all duration-300 ease-out",
-    !layoutEditMode && "hover:-translate-y-0.5 hover:border-foreground/20",
+    !layoutEditMode && "hover:-translate-y-0.5 hover:border-foreground/15",
     !layoutEditMode &&
-      "shadow-[0_16px_40px_color-mix(in_srgb,var(--tile-glow)_28%,transparent),inset_0_1px_0_0_rgba(255,255,255,0.1)]",
+      "hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.95),0_6px_18px_rgba(0,0,0,0.08)]",
     !layoutEditMode &&
-      "hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_8px_24px_rgba(0,0,0,0.28)]",
+      "dark:hover:border-foreground/20 dark:hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.06),0_8px_24px_rgba(0,0,0,0.28)]",
     layoutEditMode && "cursor-grab active:cursor-grabbing",
     layoutEditMode && "ring-1 ring-primary/25",
     dragging && "opacity-45",
@@ -147,13 +147,7 @@ export function ServiceCard({
 
   const tileBackground = (
     <>
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background: `radial-gradient(ellipse at 0% 50%, color-mix(in srgb, var(--tile-tint) 12%, transparent), transparent 58%),
-            radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--tile-tint) 7%, transparent), transparent 42%)`,
-        }}
-      />
+      <div className="service-tile-tint-bg pointer-events-none absolute inset-0" />
 
       <div
         className={cn(
@@ -167,12 +161,7 @@ export function ServiceCard({
         }}
       />
 
-      <div
-        className="pointer-events-none absolute inset-0 opacity-100 transition-opacity duration-300 group-hover:opacity-0"
-        style={{
-          background: `radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--tile-tint) 16%, transparent), transparent 72%)`,
-        }}
-      />
+      <div className="service-tile-tint-hover pointer-events-none absolute inset-0 opacity-100 transition-opacity duration-300 group-hover:opacity-0" />
     </>
   );
 
@@ -181,14 +170,13 @@ export function ServiceCard({
       <div
         className={cn(
           "relative flex items-center justify-center transition-all duration-300",
-          !frameless && "ring-1 ring-white/10 group-hover:ring-white/20",
+          !frameless && "service-tile-icon-frame ring-1 ring-black/[0.07] group-hover:ring-black/[0.12] dark:ring-white/10 dark:group-hover:ring-white/20",
           getIconFrameClasses(layout.iconFrameStyle),
         )}
         style={{
           width: metrics.iconSize,
           height: metrics.iconSize,
           fontSize: frameless ? metrics.iconImageSize : undefined,
-          background: frameless ? undefined : "rgba(255, 255, 255, 0.05)",
         }}
       >
         <ServiceIconDisplay
@@ -221,6 +209,7 @@ export function ServiceCard({
       <ServiceHoverCard
         serviceId={service.id}
         hasWidget={service.hasWidget}
+        widgetType={service.widgetType}
         url={href}
         linkOpenMode={linkOpenMode}
         layoutEditMode={layoutEditMode}
@@ -257,6 +246,7 @@ export function ServiceCard({
     <ServiceHoverCard
       serviceId={service.id}
       hasWidget={service.hasWidget}
+      widgetType={service.widgetType}
       url={href}
       linkOpenMode={linkOpenMode}
       layoutEditMode={layoutEditMode}
