@@ -216,6 +216,8 @@
     "dashboardPagesHint": "Steuert die Seiten-Auswahl oben im Header (bei mehreren Seiten).",
     "showPageSwitcher": "Seiten-Umschalter anzeigen",
     "showPageSwitcherHint": "Ausblenden spart Platz im Header. Seitenwechsel per Tastatur bleibt möglich.",
+    "showSearch": "Suche anzeigen",
+    "showSearchHint": "Ausblenden entfernt das Suchfeld im Header und auf Mobilgeräten.",
     "security": "Sicherheit",
     "securityHint": "Zugriff auf das Dashboard und den Admin-Bereich.",
     "dashboardAuthRequired": "Dashboard nur angemeldet",

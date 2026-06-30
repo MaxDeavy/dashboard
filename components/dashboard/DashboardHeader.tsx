@@ -33,6 +33,7 @@ interface DashboardHeaderProps {
   showPageSwitcher?: boolean;
   pageKeyboardShortcutsEnabled?: boolean;
   lanEnabled?: boolean;
+  searchEnabled?: boolean;
   previewMode?: boolean;
 }
 
@@ -55,6 +56,7 @@ export function DashboardHeader({
   showPageSwitcher = true,
   pageKeyboardShortcutsEnabled = true,
   lanEnabled = true,
+  searchEnabled = true,
   previewMode = false,
 }: DashboardHeaderProps) {
   const t = useTranslations("dashboard");
@@ -219,16 +221,18 @@ export function DashboardHeader({
                   onChange={onNetworkModeChange}
                 />
               )}
-              <div className="relative hidden sm:block">
-                <Search className="absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  type="search"
-                  placeholder={t("search")}
-                  value={searchQuery}
-                  onChange={(e) => onSearchChange(e.target.value)}
-                  className="h-9 w-44 rounded-xl border-border/60 bg-background/50 pl-9 text-sm shadow-inner ring-1 ring-foreground/5 lg:w-56"
-                />
-              </div>
+              {searchEnabled ? (
+                <div className="relative hidden sm:block">
+                  <Search className="absolute top-1/2 left-3.5 size-3.5 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    type="search"
+                    placeholder={t("search")}
+                    value={searchQuery}
+                    onChange={(e) => onSearchChange(e.target.value)}
+                    className="h-9 w-44 rounded-xl border-border/60 bg-background/50 pl-9 text-sm shadow-inner ring-1 ring-foreground/5 lg:w-56"
+                  />
+                </div>
+              ) : null}
               <Link
                 href={previewMode ? "/admin?tab=settings" : "/admin"}
                 className={cn(

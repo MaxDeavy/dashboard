@@ -200,6 +200,8 @@
     "dashboardPagesHint": "Controls page selection in the header (when multiple pages exist).",
     "showPageSwitcher": "Show page switcher",
     "showPageSwitcherHint": "Hiding saves header space. Keyboard page switching still works.",
+    "showSearch": "Show search",
+    "showSearchHint": "Hiding removes the search field from the header and on mobile.",
     "security": "Security",
     "securityHint": "Access to the dashboard and admin area.",
     "dashboardAuthRequired": "Dashboard requires sign-in",

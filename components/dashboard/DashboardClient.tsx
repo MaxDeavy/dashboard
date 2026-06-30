@@ -20,6 +20,7 @@ import { LayoutWidthShell } from "./LayoutWidthShell";
 import { useIsLoggedIn } from "@/hooks/useIsLoggedIn";
 import { NetworkModeToggle, useNetworkMode } from "./NetworkModeToggle";
 import { isLanEnabled } from "@/lib/network-mode";
+import { isSearchEnabled } from "@/lib/dashboard-search";
 import { ServiceGrid } from "./ServiceGrid";
 import type { ServiceWithWidget } from "./ServiceCard";
 import { WidgetPanelProvider } from "./WidgetPanelContext";
@@ -134,7 +135,9 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
   const showPageSwitcher =
     data.settings[SHOW_PAGE_SWITCHER_SETTING] !== "false";
   const lanEnabled = isLanEnabled(data.settings);
+  const searchEnabled = isSearchEnabled(data.settings);
   const effectiveNetworkMode = lanEnabled ? networkMode : "web";
+  const effectiveSearchQuery = searchEnabled ? searchQuery : "";
 
   const activeColumns = useMemo(() => {
     const board = data.pageBoards.find((entry) => entry.pageId === activePageId);
@@ -153,6 +156,12 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
   useEffect(() => {
     applyColorMode(colorMode);
   }, [colorMode]);
+
+  useEffect(() => {
+    if (!searchEnabled) {
+      setSearchQuery("");
+    }
+  }, [searchEnabled]);
 
   useEffect(() => {
     if (!lanEnabled && networkMode === "lan") {
@@ -190,10 +199,12 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
         showPageSwitcher={showPageSwitcher}
         pageKeyboardShortcutsEnabled={true}
         lanEnabled={lanEnabled}
+        searchEnabled={searchEnabled}
       />
 
       <main className="min-h-0 flex-1 overflow-y-auto py-4 sm:py-6 lg:py-8">
         <LayoutWidthShell layout={layout}>
+        {(lanEnabled || searchEnabled) ? (
         <div className="mb-5 flex gap-2 sm:hidden">
           {lanEnabled && (
             <NetworkModeToggle
@@ -202,18 +213,21 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
               className="shrink-0"
             />
           )}
-          <input
-            type="search"
-            placeholder={t("search")}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full rounded-xl border border-border/60 bg-background/50 px-4 py-2.5 text-sm shadow-inner ring-1 ring-foreground/5 placeholder:text-muted-foreground backdrop-blur-sm"
-          />
+          {searchEnabled ? (
+            <input
+              type="search"
+              placeholder={t("search")}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full rounded-xl border border-border/60 bg-background/50 px-4 py-2.5 text-sm shadow-inner ring-1 ring-foreground/5 placeholder:text-muted-foreground backdrop-blur-sm"
+            />
+          ) : null}
         </div>
+        ) : null}
 
         <ServiceGrid
           columns={activeColumns}
-          searchQuery={searchQuery}
+          searchQuery={effectiveSearchQuery}
           healthMap={healthMap}
           baseCardColor={baseCardColor}
           networkMode={effectiveNetworkMode}

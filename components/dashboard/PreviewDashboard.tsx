@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { applyColorMode, resolveTheme } from "@/lib/theme-presets";
 import { resolveLayoutSettings } from "@/lib/layout-settings";
 import { isLanEnabled } from "@/lib/network-mode";
+import { isSearchEnabled } from "@/lib/dashboard-search";
 import { usePreviewDashboardData } from "@/hooks/usePreviewDashboardData";
 import { DashboardBackground } from "./DashboardBackground";
 import { DashboardFooter } from "./DashboardFooter";
@@ -23,6 +24,7 @@ export function PreviewDashboard() {
   const theme = resolveTheme(data.settings);
   const layout = resolveLayoutSettings(data.settings);
   const lanEnabled = isLanEnabled(data.settings);
+  const searchEnabled = isSearchEnabled(data.settings);
   const effectiveNetworkMode = lanEnabled ? networkMode : "web";
 
   const activeColumns = useMemo(() => {
@@ -68,11 +70,13 @@ export function PreviewDashboard() {
         showPageSwitcher
         pageKeyboardShortcutsEnabled={false}
         lanEnabled={lanEnabled}
+        searchEnabled={searchEnabled}
         previewMode
       />
 
       <main className="min-h-0 flex-1 overflow-y-auto py-4 sm:py-6 lg:py-8 [&_a]:pointer-events-none">
         <LayoutWidthShell layout={layout}>
+          {(lanEnabled || searchEnabled) ? (
           <div className="mb-5 flex gap-2 sm:hidden">
             {lanEnabled && (
               <NetworkModeToggle
@@ -81,18 +85,21 @@ export function PreviewDashboard() {
                 className="shrink-0"
               />
             )}
-            <input
-              type="search"
-              placeholder={t("search")}
-              value={searchQuery}
-              readOnly
-              className="w-full rounded-xl border border-border/60 bg-background/50 px-4 py-2.5 text-sm shadow-inner ring-1 ring-foreground/5 placeholder:text-muted-foreground backdrop-blur-sm"
-            />
+            {searchEnabled ? (
+              <input
+                type="search"
+                placeholder={t("search")}
+                value={searchQuery}
+                readOnly
+                className="w-full rounded-xl border border-border/60 bg-background/50 px-4 py-2.5 text-sm shadow-inner ring-1 ring-foreground/5 placeholder:text-muted-foreground backdrop-blur-sm"
+              />
+            ) : null}
           </div>
+          ) : null}
 
           <ServiceGrid
             columns={activeColumns}
-            searchQuery={searchQuery}
+            searchQuery={searchEnabled ? searchQuery : ""}
             healthMap={data.healthMap}
             baseCardColor={theme.cardBaseColor}
             networkMode={effectiveNetworkMode}

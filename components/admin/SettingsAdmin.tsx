@@ -71,6 +71,7 @@ import {
 } from "@/lib/page-storage";
 import { LAN_ENABLED_SETTING } from "@/lib/network-mode";
 import { DASHBOARD_AUTH_REQUIRED_SETTING } from "@/lib/dashboard-auth-constants";
+import { SEARCH_ENABLED_SETTING } from "@/lib/dashboard-search";
 
 interface SettingsAdminProps {
   settings: Record<string, string>;
@@ -149,6 +150,9 @@ export function SettingsAdmin({
   );
   const [showPageSwitcher, setShowPageSwitcher] = useState(
     settings[SHOW_PAGE_SWITCHER_SETTING] !== "false",
+  );
+  const [searchEnabled, setSearchEnabled] = useState(
+    settings[SEARCH_ENABLED_SETTING] !== "false",
   );
   const [lanEnabled, setLanEnabled] = useState(
     settings[LAN_ENABLED_SETTING] !== "false",
@@ -403,6 +407,7 @@ export function SettingsAdmin({
         layout_header_follows_width: headerFollowsLayout ? "true" : "false",
         layout_footer_follows_width: footerFollowsLayout ? "true" : "false",
         [SHOW_PAGE_SWITCHER_SETTING]: showPageSwitcher ? "true" : "false",
+        [SEARCH_ENABLED_SETTING]: searchEnabled ? "true" : "false",
         [LAN_ENABLED_SETTING]: lanEnabled ? "true" : "false",
         [DASHBOARD_AUTH_REQUIRED_SETTING]: dashboardAuthRequired
           ? "true"
@@ -581,6 +586,20 @@ export function SettingsAdmin({
               <EnableSwitch
                 enabled={showPageSwitcher}
                 onChange={setShowPageSwitcher}
+                compact
+              />
+            </div>
+
+            <div className="flex items-center justify-between gap-4 rounded-lg border border-border/50 bg-background/40 p-3">
+              <div className="space-y-1">
+                <Label>{t("showSearch")}</Label>
+                <p className="text-xs text-muted-foreground">
+                  {t("showSearchHint")}
+                </p>
+              </div>
+              <EnableSwitch
+                enabled={searchEnabled}
+                onChange={setSearchEnabled}
                 compact
               />
             </div>
