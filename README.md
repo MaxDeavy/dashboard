@@ -59,7 +59,7 @@ Create `docker-compose.yml`:
 services:
   dashboard:
     container_name: homelab-dashboard
-    image: ghcr.io/maxdeavy/dashboard:1.0.1
+    image: ghcr.io/maxdeavy/dashboard:latest
     restart: unless-stopped
     ports:
       - "${PORT:-3333}:${PORT:-3333}"
