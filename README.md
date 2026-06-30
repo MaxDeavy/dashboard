@@ -10,9 +10,9 @@ Self-hosted dashboard for homelab services: tiles with health checks, live API h
 
 - **Dashboard** — category columns, live search, health status, glass design with theme presets
 - **Multiple pages** — tabs with keyboard shortcuts `1`–`9`, categories per page
-- **Web / LAN** — external and local URL per service; toggle in the header
+- **Web / LAN** — external and local URL per service; toggle in the header (can be disabled)
 - **Hover widgets** — live data from 35+ services (Plex, Nextcloud, Proxmox, …)
-- **Layout with Ctrl** — logged-in users reorder categories and tiles via drag & drop
+- **Layout with Shift** — logged-in users reorder categories and tiles via drag & drop
 - **Service rows** — up to three services side by side per row (admin and dashboard)
 - **Admin** — services, categories, pages, header/footer links, themes, backup
 - **Internationalization** — English and German UI; language switcher in Admin → Settings
