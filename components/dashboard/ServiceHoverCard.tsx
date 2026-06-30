@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   HoverCard,
   HoverCardContent,
@@ -10,6 +10,7 @@ import { useLongPress } from "@/hooks/useLongPress";
 import { usePrefersTouch } from "@/hooks/usePrefersTouch";
 import { getLinkAnchorProps, type LinkOpenMode } from "@/lib/link-open-mode";
 import { ServiceHoverWidget } from "./ServiceHoverWidget";
+import { useWidgetPanel } from "./WidgetPanelContext";
 
 interface ServiceHoverCardProps {
   serviceId: number;
@@ -40,12 +41,27 @@ export function ServiceHoverCard({
   layoutEditMode = false,
 }: ServiceHoverCardProps) {
   const prefersTouch = usePrefersTouch();
+  const { setPanelOpen } = useWidgetPanel();
   const [open, setOpen] = useState(false);
 
+  const handleOpenChange = useCallback(
+    (nextOpen: boolean) => {
+      setOpen(nextOpen);
+      setPanelOpen(serviceId, nextOpen);
+    },
+    [serviceId, setPanelOpen],
+  );
+
+  useEffect(() => {
+    return () => {
+      setPanelOpen(serviceId, false);
+    };
+  }, [serviceId, setPanelOpen]);
+
   const openWidget = useCallback(() => {
-    setOpen(true);
+    handleOpenChange(true);
     navigator.vibrate?.(12);
-  }, []);
+  }, [handleOpenChange]);
 
   const longPress = useLongPress({
     enabled: hasWidget && prefersTouch && !layoutEditMode,
@@ -89,9 +105,7 @@ export function ServiceHoverCard({
   }
 
   return (
-    <HoverCard
-      {...(prefersTouch ? { open, onOpenChange: setOpen } : {})}
-    >
+    <HoverCard open={open} onOpenChange={handleOpenChange}>
       <HoverCardTrigger render={<a {...linkProps} />}>
         {children}
       </HoverCardTrigger>
@@ -100,7 +114,7 @@ export function ServiceHoverCard({
         side="top"
         align="start"
       >
-        <ServiceHoverWidget serviceId={serviceId} />
+        <ServiceHoverWidget serviceId={serviceId} panelOpen={open} />
       </HoverCardContent>
     </HoverCard>
   );

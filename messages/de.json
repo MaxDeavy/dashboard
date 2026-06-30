@@ -388,6 +388,9 @@
     "widgetOnline": "Online",
     "widgetConfig": "Konfiguration",
     "widgetWarning": "Warnung",
+    "widgetFieldEditHint": "Shift gedrückt: Felder anklicken zum Ein- oder Ausblenden",
+    "widgetFieldEditHintEnd": "Shift loslassen übernimmt die Auswahl.",
+    "widgetFieldsAllHidden": "Alle Felder ausgeblendet. Shift gedrückt halten zum Wiederherstellen.",
     "widgetError": "Fehler"
   },
   "enableSwitch": {

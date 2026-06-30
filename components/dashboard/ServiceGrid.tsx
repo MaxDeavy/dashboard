@@ -36,6 +36,7 @@ import {
 import type { NetworkMode } from "@/lib/network-mode";
 import type { Category } from "@/lib/db/schema";
 import { useShiftKeyHeld } from "@/hooks/useShiftKeyHeld";
+import { useWidgetPanel } from "./WidgetPanelContext";
 import { cn } from "@/lib/utils";
 import { getCategoryAccentColor } from "@/lib/tile-colors";
 import {
@@ -101,7 +102,8 @@ export function ServiceGrid({
 }: ServiceGridProps) {
   const t = useTranslations("dashboard");
   const shiftHeld = useShiftKeyHeld();
-  const layoutEditMode = shiftHeld && !searchQuery && layoutEditable;
+  const { isAnyPanelOpen } = useWidgetPanel();
+  const layoutEditMode = shiftHeld && !searchQuery && layoutEditable && !isAnyPanelOpen;
 
   const filteredColumns = useMemo(
     () => filterColumnsForDisplay(columns, searchQuery),

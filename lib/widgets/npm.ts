@@ -1,8 +1,8 @@
 import {
   credentialString,
   fetchWithTimeout,
+  formatMultilineList,
   normalizeApiUrl,
-  truncate,
   type WidgetConfigInput,
   type WidgetResult,
 } from "./base";
@@ -52,9 +52,7 @@ function formatOfflineHosts(hosts: NpmProxyHost[]): string {
     .flatMap((host) => host.domain_names ?? [])
     .filter(Boolean);
 
-  if (domains.length === 0) return "—";
-
-  return truncate(domains.join(", "), 40);
+  return formatMultilineList(domains);
 }
 
 function countExpiringCerts(certs: NpmCertificate[], withinDays: number): number {

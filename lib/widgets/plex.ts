@@ -1,5 +1,7 @@
 import {
   fetchWithTimeout,
+  formatMultilineList,
+  truncate,
   type WidgetConfigInput,
   type WidgetResult,
 } from "./base";
@@ -24,25 +26,18 @@ function asArray<T>(value: T | T[] | undefined): T[] {
   return Array.isArray(value) ? value : [value];
 }
 
-function truncate(text: string, max: number): string {
-  if (text.length <= max) return text;
-  return `${text.slice(0, max - 1)}…`;
-}
-
 function formatActiveViewers(sessions: PlexSession[]): string {
   const active = sessions.filter(
     (session) => session.Player?.state === "playing",
   );
 
-  if (active.length === 0) return "—";
-
-  return active
-    .map((session) => {
+  return formatMultilineList(
+    active.map((session) => {
       const user = session.User?.title ?? "Unknown";
       const title = session.title?.trim();
-      return title ? `${user} · ${truncate(title, 24)}` : user;
-    })
-    .join(", ");
+      return title ? `${user} – ${truncate(title, 24)}` : user;
+    }),
+  );
 }
 
 export async function fetchPlexWidget(

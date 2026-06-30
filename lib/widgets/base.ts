@@ -4,6 +4,7 @@ export interface WidgetField {
   label: string;
   value: string;
   highlight?: boolean;
+  fieldId?: string;
 }
 
 export interface WidgetResult {
@@ -138,4 +139,11 @@ export function formatPercent(value: number): string {
 export function truncate(text: string, max: number): string {
   if (text.length <= max) return text;
   return `${text.slice(0, max - 1)}…`;
+}
+
+export function formatMultilineList(
+  items: string[],
+  fallback = "—",
+): string {
+  return items.length > 0 ? items.join("\n") : fallback;
 }

@@ -1,5 +1,6 @@
 import {
   fetchWithTimeout,
+  formatMultilineList,
   truncate,
   type WidgetConfigInput,
   type WidgetResult,
@@ -26,13 +27,13 @@ function formatActiveViewers(sessions: JellyfinSession[]): string {
 
   if (active.length === 0) return "—";
 
-  return active
-    .map((session) => {
+  return formatMultilineList(
+    active.map((session) => {
       const user = session.UserName ?? "Unknown";
       const title = session.NowPlayingItem?.Name?.trim();
-      return title ? `${user} · ${truncate(title, 22)}` : user;
-    })
-    .join(", ");
+      return title ? `${user} – ${truncate(title, 22)}` : user;
+    }),
+  );
 }
 
 export async function fetchJellyfinWidget(
@@ -103,7 +104,7 @@ export async function fetchJellyfinWidget(
         },
         {
           label: "Library",
-          value: mediaParts.length > 0 ? mediaParts.join(" · ") : "—",
+          value: formatMultilineList(mediaParts),
         },
         {
           label: "Sessions",

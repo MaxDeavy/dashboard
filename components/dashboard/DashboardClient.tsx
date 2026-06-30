@@ -22,6 +22,7 @@ import { NetworkModeToggle, useNetworkMode } from "./NetworkModeToggle";
 import { isLanEnabled } from "@/lib/network-mode";
 import { ServiceGrid } from "./ServiceGrid";
 import type { ServiceWithWidget } from "./ServiceCard";
+import { WidgetPanelProvider } from "./WidgetPanelContext";
 
 interface ColumnData extends Category {
   services: ServiceWithWidget[];
@@ -160,6 +161,7 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
   }, [lanEnabled, networkMode, setNetworkMode]);
 
   return (
+    <WidgetPanelProvider>
     <div className="dashboard-surface relative flex h-dvh flex-col overflow-hidden">
       <DashboardBackground
         accentColor={accentColor}
@@ -230,5 +232,6 @@ export function DashboardClient({ initialData }: { initialData: DashboardData })
         onLayoutSaved={refreshDashboard}
       />
     </div>
+    </WidgetPanelProvider>
   );
 }

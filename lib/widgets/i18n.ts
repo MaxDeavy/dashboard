@@ -140,6 +140,10 @@ function translateLabel(label: string, t: Translator): string {
   return t(key);
 }
 
+export function resolveWidgetFieldId(label: string): string {
+  return LABEL_TO_KEY[label] ?? label;
+}
+
 function translateError(error: string, t: Translator): string {
   const key = ERROR_TO_KEY[error];
   if (!key) return error;
@@ -155,6 +159,7 @@ export function localizeWidgetResult(
     ...result,
     fields: result.fields.map((field) => ({
       ...field,
+      fieldId: resolveWidgetFieldId(field.label),
       label: translateLabel(field.label, tFields),
     })),
     error: result.error ? translateError(result.error, tErrors) : undefined,

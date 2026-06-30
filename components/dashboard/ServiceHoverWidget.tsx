@@ -1,18 +1,45 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
-import type { WidgetResult } from "@/lib/widgets/base";
+import { useShiftKeyHeld } from "@/hooks/useShiftKeyHeld";
+import type { WidgetField, WidgetResult } from "@/lib/widgets/base";
+import {
+  readHiddenWidgetFields,
+  writeHiddenWidgetFields,
+} from "@/lib/widget-field-visibility";
+import { cn } from "@/lib/utils";
 
 interface ServiceHoverWidgetProps {
   serviceId: number;
+  panelOpen: boolean;
 }
 
-export function ServiceHoverWidget({ serviceId }: ServiceHoverWidgetProps) {
+function fieldKey(field: WidgetField): string {
+  return field.fieldId ?? field.label;
+}
+
+export function ServiceHoverWidget({
+  serviceId,
+  panelOpen,
+}: ServiceHoverWidgetProps) {
   const t = useTranslations("dashboard");
+  const shiftHeld = useShiftKeyHeld();
   const [data, setData] = useState<WidgetResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [hiddenFieldIds, setHiddenFieldIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [stagedHiddenIds, setStagedHiddenIds] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const [isStaging, setIsStaging] = useState(false);
+  const prevShiftHeld = useRef(false);
+
+  useEffect(() => {
+    setHiddenFieldIds(readHiddenWidgetFields(serviceId));
+  }, [serviceId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -51,6 +78,62 @@ export function ServiceHoverWidget({ serviceId }: ServiceHoverWidgetProps) {
     };
   }, [serviceId, t]);
 
+  const beginStaging = useCallback(() => {
+    setStagedHiddenIds(new Set(hiddenFieldIds));
+    setIsStaging(true);
+  }, [hiddenFieldIds]);
+
+  const commitStaging = useCallback(() => {
+    setHiddenFieldIds(new Set(stagedHiddenIds));
+    writeHiddenWidgetFields(serviceId, stagedHiddenIds);
+    setIsStaging(false);
+  }, [serviceId, stagedHiddenIds]);
+
+  useEffect(() => {
+    if (!panelOpen) {
+      setIsStaging(false);
+      prevShiftHeld.current = shiftHeld;
+      return;
+    }
+
+    if (shiftHeld && !prevShiftHeld.current) {
+      beginStaging();
+    }
+
+    if (!shiftHeld && prevShiftHeld.current && isStaging) {
+      commitStaging();
+    }
+
+    if (shiftHeld && !isStaging) {
+      beginStaging();
+    }
+
+    prevShiftHeld.current = shiftHeld;
+  }, [
+    panelOpen,
+    shiftHeld,
+    isStaging,
+    beginStaging,
+    commitStaging,
+  ]);
+
+  const toggleStagedField = useCallback(
+    (id: string) => {
+      if (!panelOpen || !shiftHeld) return;
+
+      setStagedHiddenIds((prev) => {
+        const next = new Set(prev);
+        if (next.has(id)) {
+          next.delete(id);
+        } else {
+          next.add(id);
+        }
+        return next;
+      });
+    },
+    [panelOpen, shiftHeld],
+  );
+
   if (loading) {
     return (
       <div className="flex items-center gap-2 py-2 text-sm text-muted-foreground">
@@ -67,6 +150,12 @@ export function ServiceHoverWidget({ serviceId }: ServiceHoverWidgetProps) {
     error: "text-red-400",
     warning: "text-amber-400",
   }[data.status];
+
+  const isFieldEditMode = panelOpen && shiftHeld && isStaging;
+  const activeHiddenIds = isFieldEditMode ? stagedHiddenIds : hiddenFieldIds;
+  const visibleFields = isFieldEditMode
+    ? data.fields
+    : data.fields.filter((field) => !hiddenFieldIds.has(fieldKey(field)));
 
   return (
     <div className="space-y-3.5">
@@ -96,23 +185,77 @@ export function ServiceHoverWidget({ serviceId }: ServiceHoverWidgetProps) {
         />
       ) : (
         <div className="space-y-2.5">
-          {data.fields.map((field) => (
-            <div
-              key={field.label}
-              className="flex items-start justify-between gap-3 text-sm"
-            >
-              <span className="shrink-0 text-muted-foreground">{field.label}</span>
-              <span
-                className={`max-w-[58%] text-right leading-snug ${
-                  field.highlight
-                    ? "font-semibold text-primary"
-                    : "font-medium"
-                }`}
-              >
-                {field.value}
-              </span>
-            </div>
-          ))}
+          {isFieldEditMode ? (
+            <p className="text-xs text-primary/80">{t("widgetFieldEditHint")}</p>
+          ) : null}
+
+          {visibleFields.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              {t("widgetFieldsAllHidden")}
+            </p>
+          ) : (
+            visibleFields.map((field) => {
+              const id = fieldKey(field);
+              const markedHidden = isFieldEditMode && activeHiddenIds.has(id);
+
+              return (
+                <div
+                  key={id}
+                  role={isFieldEditMode ? "button" : undefined}
+                  tabIndex={isFieldEditMode ? 0 : undefined}
+                  onMouseDown={(event) => {
+                    if (!isFieldEditMode) return;
+                    event.preventDefault();
+                  }}
+                  onClick={(event) => {
+                    if (!isFieldEditMode) return;
+                    event.preventDefault();
+                    event.stopPropagation();
+                    toggleStagedField(id);
+                  }}
+                  onKeyDown={(event) => {
+                    if (!isFieldEditMode) return;
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      toggleStagedField(id);
+                    }
+                  }}
+                  className={cn(
+                    "flex items-start justify-between gap-3 rounded-md text-sm transition-colors",
+                    isFieldEditMode &&
+                      "cursor-pointer select-none px-1.5 py-1 hover:bg-white/5",
+                    markedHidden && "opacity-45",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "shrink-0 text-muted-foreground",
+                      markedHidden && "line-through",
+                    )}
+                  >
+                    {field.label}
+                  </span>
+                  <span
+                    className={cn(
+                      "max-w-[58%] whitespace-pre-line text-right leading-snug",
+                      field.highlight && !markedHidden
+                        ? "font-semibold text-primary"
+                        : "font-medium",
+                      markedHidden && "line-through text-muted-foreground",
+                    )}
+                  >
+                    {field.value}
+                  </span>
+                </div>
+              );
+            })
+          )}
+
+          {isFieldEditMode ? (
+            <p className="text-xs text-muted-foreground">
+              {t("widgetFieldEditHintEnd")}
+            </p>
+          ) : null}
         </div>
       )}
     </div>

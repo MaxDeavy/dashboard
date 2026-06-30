@@ -13,6 +13,7 @@ import {
   parseLinkOpenMode,
 } from "@/lib/link-open-mode";
 import { useShiftKeyHeld } from "@/hooks/useShiftKeyHeld";
+import { useWidgetPanel } from "./WidgetPanelContext";
 import { cn } from "@/lib/utils";
 
 interface LinkBarRowProps {
@@ -32,7 +33,8 @@ export function LinkBarRow({
 }: LinkBarRowProps) {
   const t = useTranslations("dashboard");
   const shiftHeld = useShiftKeyHeld();
-  const layoutEditMode = shiftHeld && layoutEditable;
+  const { isAnyPanelOpen } = useWidgetPanel();
+  const layoutEditMode = shiftHeld && layoutEditable && !isAnyPanelOpen;
 
   const visibleLinks = useMemo(
     () => links.filter((link) => link.enabled),

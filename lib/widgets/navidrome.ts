@@ -1,6 +1,7 @@
 import {
   credentialString,
   fetchWithTimeout,
+  formatMultilineList,
   normalizeApiUrl,
   truncate,
   type WidgetConfigInput,
@@ -39,16 +40,16 @@ function buildSubsonicUrl(
 function formatNowPlaying(entries: SubsonicNowPlayingEntry[]): string {
   if (entries.length === 0) return "—";
 
-  return entries
-    .map((entry) => {
+  return formatMultilineList(
+    entries.map((entry) => {
       const user = entry.username ?? "Unknown";
       const title = entry.title?.trim();
       const artist = entry.artist?.trim();
       const track =
         title && artist ? `${artist} – ${title}` : (title ?? artist ?? "");
-      return track ? `${user} · ${truncate(track, 24)}` : user;
-    })
-    .join(", ");
+      return track ? `${user} – ${truncate(track, 24)}` : user;
+    }),
+  );
 }
 
 export async function fetchNavidromeWidget(

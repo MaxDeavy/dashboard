@@ -1,6 +1,7 @@
 import {
   fetchWithTimeout,
   formatBytes,
+  formatMultilineList,
   type WidgetConfigInput,
   type WidgetResult,
 } from "./base";
@@ -70,7 +71,11 @@ export async function fetchKavitaWidget(
     const words = stats.total_words ?? stats.totalWords ?? 0;
 
     const libraryTypes = [
-      ...new Set(libraries.map((lib) => lib.type).filter(Boolean)),
+      ...new Set(
+        libraries
+          .map((lib) => lib.type)
+          .filter((type): type is string => Boolean(type)),
+      ),
     ];
 
     return {
@@ -94,7 +99,10 @@ export async function fetchKavitaWidget(
           label: "Libraries",
           value:
             libraries.length > 0
-              ? `${libraries.length}${libraryTypes.length > 0 ? ` (${libraryTypes.join(", ")})` : ""}`
+              ? formatMultilineList([
+                  String(libraries.length),
+                  ...libraryTypes,
+                ])
               : "—",
         },
         ...(words > 0
