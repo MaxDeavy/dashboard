@@ -6,13 +6,14 @@ All notable changes to this project are documented in this file.
 
 ### Added
 
-- **Shift + click** to hide or show individual widget fields per service (persisted in the browser)
+- **Shift + click** to hide or show individual widget fields per service (persisted in the database)
 - **3–5 additional API fields** per implemented hover widget (31 services)
 - Admin setting to **hide dashboard search**
 - New widget field translations (DE/EN) for enriched labels
 
 ### Changed
 
+- Widget field visibility is stored in the **database** (`widget_configs.hidden_fields`) instead of browser localStorage — syncs across devices and backups
 - **Now Playing / Watching Now** fields are only shown when someone is actively streaming
 - Multiline widget values (e.g. libraries) stack vertically instead of inline separators
 - Layout edit mode (Shift + drag) is separate from widget field editing; dashboard DnD is disabled while a widget panel is open
