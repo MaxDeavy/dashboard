@@ -10,15 +10,15 @@ Selbst gehostetes Dashboard für Homelab-Dienste — alles im Browser konfigurie
 
 ### Dashboard auf einen Blick
 
-Dienste als Kacheln in Kategorie-Spalten mit Glass-UI. Jede Kachel kann einen **Health-Status** (online/offline) über eine separate Check-URL anzeigen. Die **Live-Suche** filtert sofort; die Suchleiste lässt sich in den Einstellungen ausblenden.
+Dienste als Kacheln in Kategorie-Spalten mit Glass-UI. Jede Kachel kann einen **Health-Status** über eine separate Check-URL anzeigen.
 
-**Theme-Presets** (Stealth, Ember, Neon, Cobalt) oder eigene Farben, Dark/Light Mode, Hintergrundbild und -farbe, Logo-Upload — alles ohne Config-Dateien.
+**Theme-Presets** (Stealth, Ember, Neon, Cobalt) oder eigene Farben, Dark/Light Mode, Hintergrundbild und -farbe, Logo-Upload — Kachel-, Fenster- und Seitenbreite anpassbar.
 
 ### Live-API-Hover-Widgets (35+ Dienste)
 
-Über eine Kachel hovern für **Echtzeitdaten** aus der API: Plex-Streams, Proxmox CPU/RAM, Pi-hole-Anfragen, qBittorrent-Speed, Home-Assistant-Entitäten, FRITZ!Box-Traffic und mehr. Zugangsdaten werden **AES-256-GCM-verschlüsselt** in SQLite gespeichert.
+Über eine Kachel hovern für **Echtzeitdaten** aus der API: Plex, Proxmox, Pi-hole, qBittorrent, Home Assistant, FRITZ!Box und mehr. Zugangsdaten werden **AES-256-GCM-verschlüsselt** in SQLite gespeichert.
 
-**Shift** gedrückt halten und Feldlabels **anklicken**, um einzelne Widget-Zeilen ein- oder auszublenden — pro Dienst, im Browser gespeichert. *Gerade läuft* / *Watching Now* erscheinen nur bei aktiver Wiedergabe.
+**Shift** gedrückt halten und Feldlabels anklicken, um einzelne Widget-Zeilen ein- oder auszublenden — pro Dienst, im Browser gespeichert. *Gerade läuft* / *Watching Now* erscheinen nur bei aktiver Wiedergabe.
 
 Unterstützt u. a. Jellyfin, Plex, Nextcloud, Immich, *arr-Stack, Docker/Portainer, NPM, Proxmox, QNAP, Navidrome, Kavita, n8n, Grafana — siehe [Widget-Tabelle](#widget-konfiguration) weiter unten.
 
@@ -27,19 +27,9 @@ Unterstützt u. a. Jellyfin, Plex, Nextcloud, Immich, *arr-Stack, Docker/Portain
 - **Mehrere Dashboard-Seiten** mit Tabs und Tastaturkürzeln `1`–`9`
 - **Drag & Drop** für Kategorien und Kacheln (**Shift** auf dem Dashboard, wenn angemeldet)
 - Bis zu **drei Dienste pro Zeile** — im Admin oder auf dem Dashboard
-- **Web / LAN**-Umschaltung pro Dienst: externe URL vs. lokale IP/Hostname im Header
-
-### Deployment fürs Homelab
-
-Fertige **Docker-Images** auf GitHub Container Registry (`ghcr.io/maxdeavy/dashboard`). SQLite-Datenbank im Volume, Migrationen beim Container-Start. Läuft hinter Reverse Proxies (`APP_URL`, `COOKIE_SECURE`).
+- **Web / LAN**-Umschaltung pro Dienst: externe URL vs. lokale IP/Hostname im Header (deaktivierbar)
 
 **Backup & Restore** als ZIP (Datenbank + Uploads + verschlüsselte Widget-Zugangsdaten). Optionale **Dashboard-Anmeldung**, damit nur angemeldete Nutzer das Board sehen.
-
-### Admin & Mehrsprachigkeit
-
-Vollständiger **Browser-Admin** unter `/admin`: Dienste, Kategorien, Seiten, Header/Footer-Links, Icon-Bibliothek (Vorlagen + Upload), Health-Checks, Widget-Setup und Design.
-
-UI auf **Englisch und Deutsch** (next-intl). Sprachumschalter unter Admin → Einstellungen.
 
 Bug oder fehlendes API-Feld für dein Setup? Bitte ein [Issue](https://github.com/MaxDeavy/dashboard/issues) öffnen — ich nutze selbst nur etwa die Hälfte der Widgets.
 

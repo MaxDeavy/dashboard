@@ -10,36 +10,26 @@ Self-hosted dashboard for homelab services — configure everything in the brows
 
 ### Dashboard at a glance
 
-Your services as tiles in category columns with a glass-style UI. Each tile can show a **health status** (online/offline) via a separate check URL. **Live search** filters services instantly; the search bar can be hidden in settings if you prefer a cleaner header.
+Your services as tiles in category columns with a glass-style UI. Each tile can show a **health status** via a separate check URL.
 
-**Theme presets** (Stealth, Ember, Neon, Cobalt) or custom colors, dark/light mode, background image and color, logo upload — all without editing config files.
+**Theme presets** (Stealth, Ember, Neon, Cobalt) or custom colors, dark/light mode, background image and color, logo upload — adjustable tile, window, and page width.
 
 ### Live API hover widgets (35+ services)
 
-Hover a service tile to see **real-time data** from the API: Plex streams, Proxmox CPU/RAM, Pi-hole queries, qBittorrent speed, Home Assistant entities, FRITZ!Box traffic, and many more. Credentials are stored **AES-256-GCM encrypted** in SQLite.
+Hover a service tile for **real-time API data**: Plex, Proxmox, Pi-hole, qBittorrent, Home Assistant, FRITZ!Box, and more. Credentials are stored **AES-256-GCM encrypted** in SQLite.
 
-Hold **Shift** and click field labels to **show or hide** individual widget rows — per service, saved in your browser. *Now Playing* / *Watching Now* fields appear only when someone is actually streaming.
+Hold **Shift** and click field labels to show or hide individual widget rows — per service, saved in your browser. *Now Playing* / *Watching Now* appear only during active playback.
 
-Supported integrations include Jellyfin, Plex, Nextcloud, Immich, *arr stack, Docker/Portainer, NPM, Proxmox, QNAP, Navidrome, Kavita, n8n, Grafana, and others — see [widget table](#widget-configuration) below.
+Includes Jellyfin, Plex, Nextcloud, Immich, *arr stack, Docker/Portainer, NPM, Proxmox, QNAP, Navidrome, Kavita, n8n, Grafana, and others — see the [widget table](#widget-configuration) below.
 
 ### Layout & pages
 
 - **Multiple dashboard pages** with tabs and keyboard shortcuts `1`–`9`
 - **Drag & drop** categories and tiles (hold **Shift** on the dashboard when logged in)
 - Up to **three services per row** — in admin or on the dashboard
-- **Web / LAN** toggle per service: external URL vs. local IP/hostname in the header
-
-### Homelab-ready deployment
-
-Pre-built **Docker images** on GitHub Container Registry (`ghcr.io/maxdeavy/dashboard`). SQLite database in a volume, migrations on container start. Works behind reverse proxies (`APP_URL`, `COOKIE_SECURE`).
+- **Web / LAN** toggle per service: external URL vs. local IP/hostname in the header (can be disabled)
 
 **Backup & restore** as ZIP (database + uploads + encrypted widget credentials). Optional **dashboard sign-in** so only authenticated users see the board.
-
-### Admin & internationalization
-
-Full **browser-based admin** at `/admin`: services, categories, pages, header/footer links, icon library (presets + upload), health checks, widget setup, and design settings.
-
-UI in **English and German** (next-intl). Language switcher under Admin → Settings.
 
 Found a bug or missing API field for your setup? Please [open an issue](https://github.com/MaxDeavy/dashboard/issues) — I only run about half of the widgets myself.
 
