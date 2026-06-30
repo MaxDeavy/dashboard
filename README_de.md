@@ -10,9 +10,9 @@ Selbst gehostetes Dashboard für Homelab-Dienste: Kacheln mit Health-Checks, Liv
 
 - **Dashboard** — Kategorie-Spalten, Live-Suche, Health-Status, Glass-Design mit Theme-Presets
 - **Mehrere Seiten** — Tabs mit Tastaturkürzeln `1`–`9`, Kategorien pro Seite
-- **Web / LAN** — pro Dienst externe und lokale URL; Umschaltung im Header
+- **Web / LAN** — pro Dienst externe und lokale URL; Umschaltung im Header (auch deaktivierbar)
 - **Hover-Widgets** — Live-Daten von 35+ Diensten (Plex, Nextcloud, Proxmox, …)
-- **Layout per Strg** — angemeldete Nutzer ordnen Kategorien und Kacheln per Drag & Drop
+- **Layout per Shift** — angemeldete Nutzer ordnen Kategorien und Kacheln per Drag & Drop
 - **Dienst-Zeilen** — bis zu drei Dienste nebeneinander pro Zeile (Admin und Dashboard)
 - **Admin** — Dienste, Kategorien, Seiten, Header/Footer-Links, Themes, Backup
 - **Mehrsprachigkeit** — Englisch und Deutsch; Sprachumschalter unter Admin → Einstellungen
