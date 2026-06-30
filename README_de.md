@@ -2,22 +2,46 @@
 
 ![Homelab Dashboard](screen.png)
 
-Selbst gehostetes Dashboard für Homelab-Dienste: Kacheln mit Health-Checks, Live-API-Widgets, mehrere Seiten, Web/LAN-Umschaltung und vollständige Browser-Konfiguration — ohne YAML oder Config-Dateien.
+Selbst gehostetes Dashboard für Homelab-Dienste — alles im Browser konfigurieren, ohne YAML. Kacheln mit Health-Checks, Live-API-Daten per Hover und ein Layout, das du an dein Setup anpassen kannst.
 
 **English version:** [README.md](README.md)
 
-## Highlights
+## Features
 
-- **Dashboard** — Kategorie-Spalten, Live-Suche, Health-Status, Glass-Design mit Theme-Presets
-- **Mehrere Seiten** — Tabs mit Tastaturkürzeln `1`–`9`, Kategorien pro Seite
-- **Web / LAN** — pro Dienst externe und lokale URL; Umschaltung im Header (auch deaktivierbar)
-- **Hover-Widgets** — Live-Daten von 35+ Diensten (Plex, Nextcloud, Proxmox, …); **Shift + Klick** zum Anpassen sichtbarer Felder pro Dienst
-- **Layout per Shift** — angemeldete Nutzer ordnen Kategorien und Kacheln per Drag & Drop
-- **Dienst-Zeilen** — bis zu drei Dienste nebeneinander pro Zeile (Admin und Dashboard)
-- **Admin** — Dienste, Kategorien, Seiten, Header/Footer-Links, Themes, Backup
-- **Mehrsprachigkeit** — Englisch und Deutsch; Sprachumschalter unter Admin → Einstellungen
-- **Optionale Dashboard-Anmeldung** — Login vor dem Dashboard erzwingen (Admin → Einstellungen)
-- **Docker-ready** — SQLite-Volume, Migrationen beim Start, fertige Images auf GHCR
+### Dashboard auf einen Blick
+
+Dienste als Kacheln in Kategorie-Spalten mit Glass-UI. Jede Kachel kann einen **Health-Status** (online/offline) über eine separate Check-URL anzeigen. Die **Live-Suche** filtert sofort; die Suchleiste lässt sich in den Einstellungen ausblenden.
+
+**Theme-Presets** (Stealth, Ember, Neon, Cobalt) oder eigene Farben, Dark/Light Mode, Hintergrundbild und -farbe, Logo-Upload — alles ohne Config-Dateien.
+
+### Live-API-Hover-Widgets (35+ Dienste)
+
+Über eine Kachel hovern für **Echtzeitdaten** aus der API: Plex-Streams, Proxmox CPU/RAM, Pi-hole-Anfragen, qBittorrent-Speed, Home-Assistant-Entitäten, FRITZ!Box-Traffic und mehr. Zugangsdaten werden **AES-256-GCM-verschlüsselt** in SQLite gespeichert.
+
+**Shift** gedrückt halten und Feldlabels **anklicken**, um einzelne Widget-Zeilen ein- oder auszublenden — pro Dienst, im Browser gespeichert. *Gerade läuft* / *Watching Now* erscheinen nur bei aktiver Wiedergabe.
+
+Unterstützt u. a. Jellyfin, Plex, Nextcloud, Immich, *arr-Stack, Docker/Portainer, NPM, Proxmox, QNAP, Navidrome, Kavita, n8n, Grafana — siehe [Widget-Tabelle](#widget-konfiguration) weiter unten.
+
+### Layout & Seiten
+
+- **Mehrere Dashboard-Seiten** mit Tabs und Tastaturkürzeln `1`–`9`
+- **Drag & Drop** für Kategorien und Kacheln (**Shift** auf dem Dashboard, wenn angemeldet)
+- Bis zu **drei Dienste pro Zeile** — im Admin oder auf dem Dashboard
+- **Web / LAN**-Umschaltung pro Dienst: externe URL vs. lokale IP/Hostname im Header
+
+### Deployment fürs Homelab
+
+Fertige **Docker-Images** auf GitHub Container Registry (`ghcr.io/maxdeavy/dashboard`). SQLite-Datenbank im Volume, Migrationen beim Container-Start. Läuft hinter Reverse Proxies (`APP_URL`, `COOKIE_SECURE`).
+
+**Backup & Restore** als ZIP (Datenbank + Uploads + verschlüsselte Widget-Zugangsdaten). Optionale **Dashboard-Anmeldung**, damit nur angemeldete Nutzer das Board sehen.
+
+### Admin & Mehrsprachigkeit
+
+Vollständiger **Browser-Admin** unter `/admin`: Dienste, Kategorien, Seiten, Header/Footer-Links, Icon-Bibliothek (Vorlagen + Upload), Health-Checks, Widget-Setup und Design.
+
+UI auf **Englisch und Deutsch** (next-intl). Sprachumschalter unter Admin → Einstellungen.
+
+Bug oder fehlendes API-Feld für dein Setup? Bitte ein [Issue](https://github.com/MaxDeavy/dashboard/issues) öffnen — ich nutze selbst nur etwa die Hälfte der Widgets.
 
 ## Schnellstart
 
@@ -358,9 +382,7 @@ Details: [SECURITY.md](SECURITY.md)
 
 ## Feedback & Issues
 
-Ich nutze selbst nur etwa die Hälfte der unterstützten Widgets im Homelab. Wenn etwas bei deinem Setup nicht passt — falsche API-Felder, fehlende Daten oder ein Bug — bitte ein [Issue](https://github.com/MaxDeavy/dashboard/issues) mit Dienst, Widget-Typ und erwartetem Verhalten öffnen.
-
-Feature-Wünsche und Vorschläge für weitere API-Felder sind ebenfalls willkommen.
+Bugs, fehlende Widget-Daten oder Feature-Ideen — bitte ein [Issue](https://github.com/MaxDeavy/dashboard/issues) öffnen (Dienst, Widget-Typ, erwartetes vs. tatsächliches Verhalten). Siehe auch den Hinweis unter [Features](#features).
 
 ---
 

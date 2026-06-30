@@ -2,22 +2,46 @@
 
 ![Homelab Dashboard](screen.png)
 
-Self-hosted dashboard for homelab services: tiles with health checks, live API hover widgets, multiple pages, Web/LAN switching, and full browser-based configuration — no YAML or config files required.
+Self-hosted dashboard for homelab services — configure everything in the browser, no YAML. Tiles with health checks, live API data on hover, and a layout you can shape to your setup.
 
 **Deutsche Version:** [README_de.md](README_de.md)
 
-## Highlights
+## Features
 
-- **Dashboard** — category columns, live search, health status, glass design with theme presets
-- **Multiple pages** — tabs with keyboard shortcuts `1`–`9`, categories per page
-- **Web / LAN** — external and local URL per service; toggle in the header (can be disabled)
-- **Hover widgets** — live data from 35+ services (Plex, Nextcloud, Proxmox, …); **Shift + click** to customize visible fields per service
-- **Layout with Shift** — logged-in users reorder categories and tiles via drag & drop
-- **Service rows** — up to three services side by side per row (admin and dashboard)
-- **Admin** — services, categories, pages, header/footer links, themes, backup
-- **Internationalization** — English and German UI; language switcher in Admin → Settings
-- **Optional dashboard sign-in** — require login before viewing the dashboard (Admin → Settings)
-- **Docker-ready** — SQLite volume, migrations on container start, pre-built images on GHCR
+### Dashboard at a glance
+
+Your services as tiles in category columns with a glass-style UI. Each tile can show a **health status** (online/offline) via a separate check URL. **Live search** filters services instantly; the search bar can be hidden in settings if you prefer a cleaner header.
+
+**Theme presets** (Stealth, Ember, Neon, Cobalt) or custom colors, dark/light mode, background image and color, logo upload — all without editing config files.
+
+### Live API hover widgets (35+ services)
+
+Hover a service tile to see **real-time data** from the API: Plex streams, Proxmox CPU/RAM, Pi-hole queries, qBittorrent speed, Home Assistant entities, FRITZ!Box traffic, and many more. Credentials are stored **AES-256-GCM encrypted** in SQLite.
+
+Hold **Shift** and click field labels to **show or hide** individual widget rows — per service, saved in your browser. *Now Playing* / *Watching Now* fields appear only when someone is actually streaming.
+
+Supported integrations include Jellyfin, Plex, Nextcloud, Immich, *arr stack, Docker/Portainer, NPM, Proxmox, QNAP, Navidrome, Kavita, n8n, Grafana, and others — see [widget table](#widget-configuration) below.
+
+### Layout & pages
+
+- **Multiple dashboard pages** with tabs and keyboard shortcuts `1`–`9`
+- **Drag & drop** categories and tiles (hold **Shift** on the dashboard when logged in)
+- Up to **three services per row** — in admin or on the dashboard
+- **Web / LAN** toggle per service: external URL vs. local IP/hostname in the header
+
+### Homelab-ready deployment
+
+Pre-built **Docker images** on GitHub Container Registry (`ghcr.io/maxdeavy/dashboard`). SQLite database in a volume, migrations on container start. Works behind reverse proxies (`APP_URL`, `COOKIE_SECURE`).
+
+**Backup & restore** as ZIP (database + uploads + encrypted widget credentials). Optional **dashboard sign-in** so only authenticated users see the board.
+
+### Admin & internationalization
+
+Full **browser-based admin** at `/admin`: services, categories, pages, header/footer links, icon library (presets + upload), health checks, widget setup, and design settings.
+
+UI in **English and German** (next-intl). Language switcher under Admin → Settings.
+
+Found a bug or missing API field for your setup? Please [open an issue](https://github.com/MaxDeavy/dashboard/issues) — I only run about half of the widgets myself.
 
 ## Quick start
 
@@ -358,9 +382,7 @@ Details: [SECURITY.md](SECURITY.md)
 
 ## Feedback & issues
 
-I only run about half of the supported widgets in my own homelab. If something does not work for your setup — wrong API fields, missing data, or a bug — please [open an issue](https://github.com/MaxDeavy/dashboard/issues) with your service, widget type, and what you expected.
-
-Feature requests and API field suggestions are welcome the same way.
+Bugs, missing widget data, or feature ideas — please [open an issue](https://github.com/MaxDeavy/dashboard/issues) (service name, widget type, expected vs. actual behavior). See also the note under [Features](#features).
 
 ---
 
