@@ -28,3 +28,9 @@ export function getCategoryAccentColor(
   const trimmed = categoryColor?.trim();
   return trimmed && trimmed.length > 0 ? trimmed : fallback;
 }
+
+export function hasCustomCategoryColor(
+  categoryColor: string | null | undefined,
+): boolean {
+  return Boolean(categoryColor?.trim());
+}

@@ -385,6 +385,7 @@
     "widgetConfig": "Configuration",
     "widgetWarning": "Warning",
     "widgetFieldEditHint": "Shift held: click fields to hide or show them",
+    "widgetFieldCycleHint": "Click to switch",
     "widgetFieldsAllHidden": "All fields hidden. Hold Shift and click fields to restore them.",
     "widgetFieldsAllHiddenView": "All fields hidden.",
     "widgetError": "Error"

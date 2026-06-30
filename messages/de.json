@@ -391,6 +391,7 @@
     "widgetConfig": "Konfiguration",
     "widgetWarning": "Warnung",
     "widgetFieldEditHint": "Shift gedrückt: Felder anklicken zum Ein- oder Ausblenden",
+    "widgetFieldCycleHint": "Klicken zum Umschalten",
     "widgetFieldsAllHidden": "Alle Felder ausgeblendet. Shift gedrückt halten und Felder anklicken.",
     "widgetFieldsAllHiddenView": "Alle Felder ausgeblendet.",
     "widgetError": "Fehler"

@@ -6,6 +6,7 @@ import { Loader2 } from "lucide-react";
 import { useIsLoggedIn } from "@/hooks/useIsLoggedIn";
 import { useShiftKeyHeld } from "@/hooks/useShiftKeyHeld";
 import type { WidgetField, WidgetResult } from "@/lib/widgets/base";
+import { nextCycleOption } from "@/lib/widget-extra-config";
 import { cn } from "@/lib/utils";
 
 interface ServiceHoverWidgetProps {
@@ -33,46 +34,40 @@ export function ServiceHoverWidget({
   const [hiddenFieldIds, setHiddenFieldIds] = useState<Set<string>>(
     () => new Set(),
   );
+  const [cyclingFieldId, setCyclingFieldId] = useState<string | null>(null);
+
+  const loadWidget = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/widgets/${serviceId}`);
+      if (response.ok) {
+        const payload = (await response.json()) as WidgetApiResponse;
+        const { hiddenFieldIds: hidden = [], ...widget } = payload;
+        setData(widget);
+        setHiddenFieldIds(new Set(hidden));
+      } else {
+        setData({
+          title: "Widget",
+          status: "error",
+          fields: [],
+          error: t("widgetUnavailable"),
+        });
+      }
+    } catch {
+      setData({
+        title: "Widget",
+        status: "error",
+        fields: [],
+        error: t("widgetUnreachable"),
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [serviceId, t]);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      try {
-        const response = await fetch(`/api/widgets/${serviceId}`);
-        if (!cancelled && response.ok) {
-          const payload = (await response.json()) as WidgetApiResponse;
-          const { hiddenFieldIds: hidden = [], ...widget } = payload;
-          setData(widget);
-          setHiddenFieldIds(new Set(hidden));
-        } else if (!cancelled) {
-          setData({
-            title: "Widget",
-            status: "error",
-            fields: [],
-            error: t("widgetUnavailable"),
-          });
-        }
-      } catch {
-        if (!cancelled) {
-          setData({
-            title: "Widget",
-            status: "error",
-            fields: [],
-            error: t("widgetUnreachable"),
-          });
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [serviceId, t]);
+    void loadWidget();
+  }, [loadWidget]);
 
   const persistHiddenFields = useCallback(
     async (next: Set<string>) => {
@@ -87,6 +82,38 @@ export function ServiceHoverWidget({
       }
     },
     [serviceId],
+  );
+
+  const cycleFieldValue = useCallback(
+    async (field: WidgetField) => {
+      if (!field.cycle || !isLoggedIn || cyclingFieldId) return;
+
+      const id = fieldKey(field);
+      const nextValue = nextCycleOption(field.value, field.cycle.options);
+      setCyclingFieldId(id);
+
+      try {
+        const response = await fetch(`/api/widgets/${serviceId}`, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            extraConfig: { [field.cycle.configKey]: nextValue },
+          }),
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const payload = (await response.json()) as WidgetApiResponse;
+        const { hiddenFieldIds: hidden = [], ...widget } = payload;
+        setData(widget);
+        setHiddenFieldIds(new Set(hidden));
+      } finally {
+        setCyclingFieldId(null);
+      }
+    },
+    [cyclingFieldId, isLoggedIn, serviceId],
   );
 
   const toggleFieldVisibility = useCallback(
@@ -175,6 +202,9 @@ export function ServiceHoverWidget({
             fields.map((field) => {
               const id = fieldKey(field);
               const isHidden = isFieldEditMode && hiddenFieldIds.has(id);
+              const isCycleable =
+                Boolean(field.cycle) && isLoggedIn && !isFieldEditMode;
+              const isCycling = cyclingFieldId === id;
 
               return (
                 <div
@@ -213,17 +243,45 @@ export function ServiceHoverWidget({
                   >
                     {field.label}
                   </span>
-                  <span
-                    className={cn(
-                      "max-w-[58%] whitespace-pre-line text-right leading-snug",
-                      field.highlight && !isHidden
-                        ? "font-semibold text-primary"
-                        : "font-medium",
-                      isHidden && "line-through text-muted-foreground",
-                    )}
-                  >
-                    {field.value}
-                  </span>
+                  {isCycleable ? (
+                    <button
+                      type="button"
+                      title={t("widgetFieldCycleHint")}
+                      disabled={isCycling}
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        void cycleFieldValue(field);
+                      }}
+                      className={cn(
+                        "max-w-[58%] whitespace-pre-line text-right leading-snug font-medium",
+                        "rounded px-1 -mx-1 transition-colors",
+                        "hover:bg-white/10 hover:text-primary",
+                        "disabled:opacity-60",
+                        field.highlight && !isHidden && "text-primary font-semibold",
+                        isHidden && "line-through text-muted-foreground",
+                      )}
+                    >
+                      {isCycling ? (
+                        <Loader2 className="ml-auto size-3.5 animate-spin" />
+                      ) : (
+                        field.value
+                      )}
+                    </button>
+                  ) : (
+                    <span
+                      className={cn(
+                        "max-w-[58%] whitespace-pre-line text-right leading-snug",
+                        field.highlight && !isHidden
+                          ? "font-semibold text-primary"
+                          : "font-medium",
+                        isHidden && "line-through text-muted-foreground",
+                      )}
+                    >
+                      {field.value}
+                    </span>
+                  )}
                 </div>
               );
             })

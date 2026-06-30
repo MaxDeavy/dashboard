@@ -95,6 +95,10 @@ export function invalidateWidgetCache() {
   widgetCache.clear();
 }
 
+export function invalidateWidgetCacheForService(serviceId: number) {
+  widgetCache.delete(serviceId);
+}
+
 export async function fetchWidgetData(
   serviceId: number,
   config: WidgetConfig,

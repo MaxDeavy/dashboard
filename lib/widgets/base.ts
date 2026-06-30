@@ -1,10 +1,17 @@
 import { serverFetch, type ServerFetchOptions } from "@/lib/server-fetch";
 
+export interface WidgetFieldCycle {
+  /** Key in widget `extraConfig` (e.g. `range`). */
+  configKey: string;
+  options: string[];
+}
+
 export interface WidgetField {
   label: string;
   value: string;
   highlight?: boolean;
   fieldId?: string;
+  cycle?: WidgetFieldCycle;
 }
 
 export interface WidgetResult {

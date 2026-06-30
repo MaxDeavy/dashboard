@@ -38,7 +38,7 @@ import type { Category } from "@/lib/db/schema";
 import { useShiftKeyHeld } from "@/hooks/useShiftKeyHeld";
 import { useDashboardLayoutEditMode } from "./WidgetPanelContext";
 import { cn } from "@/lib/utils";
-import { getCategoryAccentColor } from "@/lib/tile-colors";
+import { getCategoryAccentColor, hasCustomCategoryColor } from "@/lib/tile-colors";
 import {
   FALLBACK_CARD_BASE_COLOR,
 } from "@/lib/theme-presets";
@@ -411,12 +411,14 @@ export function ServiceGrid({
       >
         {displayColumns.map((column, columnIndex) => {
           const columnAccent = getCategoryAccentColor(column.color, baseCardColor);
+          const tintedColumn = hasCustomCategoryColor(column.color);
 
           return (
           <section
             key={column.id}
             className={cn(
               "dashboard-service-column-shell glass-panel min-w-0 rounded-2xl transition-shadow",
+              tintedColumn && "dashboard-category-column-tinted",
               customColumnWidth && "dashboard-service-column",
               layoutEditMode && "ring-1 ring-primary/20",
               dropTarget?.type === "column" &&
@@ -426,6 +428,9 @@ export function ServiceGrid({
             style={
               {
                 "--dashboard-column-padding": `${layout.columnPadding}px`,
+                ...(tintedColumn
+                  ? { "--category-accent": columnAccent }
+                  : {}),
               } as React.CSSProperties
             }
             onDragOver={(event) => {

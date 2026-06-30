@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Suspense } from "react";
 import { AdminHeader } from "@/components/admin/AdminHeader";
+import { AdminVersionBadge } from "@/components/admin/AdminVersionBadge";
 import { AppNavigationShortcuts } from "@/components/AppNavigationShortcuts";
 
 async function AdminLoading() {
@@ -33,6 +34,7 @@ export default function AdminLayout({
       <main className="relative mx-auto max-w-5xl px-4 py-6 sm:px-6">
         <Suspense fallback={<AdminLoading />}>{children}</Suspense>
       </main>
+      <AdminVersionBadge />
     </div>
   );
 }

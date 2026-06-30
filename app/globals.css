@@ -181,6 +181,30 @@
     @apply border-white/[0.1] bg-white/[0.05] shadow-[0_8px_32px_rgba(0,0,0,0.35),inset_0_1px_0_0_rgba(255,255,255,0.08)];
   }
 
+  .glass-panel.dashboard-category-column-tinted {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--category-accent) 12%, oklch(0.98 0.004 264)) 0%,
+      color-mix(in srgb, var(--category-accent) 6%, oklch(0.965 0.004 264)) 100%
+    );
+    border-color: color-mix(in srgb, var(--category-accent) 24%, rgba(0, 0, 0, 0.08));
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in srgb, var(--category-accent) 18%, rgba(255, 255, 255, 0.7)),
+      0 4px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  .dark .glass-panel.dashboard-category-column-tinted {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--category-accent) 20%, rgba(22, 22, 30, 0.92)) 0%,
+      color-mix(in srgb, var(--category-accent) 11%, rgba(10, 10, 14, 0.96)) 100%
+    );
+    border-color: color-mix(in srgb, var(--category-accent) 24%, rgba(255, 255, 255, 0.08));
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in srgb, var(--category-accent) 14%, rgba(255, 255, 255, 0.06)),
+      0 8px 24px rgba(0, 0, 0, 0.28);
+  }
+
   .service-tile-surface {
     background: linear-gradient(
       155deg,

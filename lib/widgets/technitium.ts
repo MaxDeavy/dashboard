@@ -13,13 +13,15 @@ interface TechnitiumStats {
   totalClients?: number;
 }
 
-const VALID_RANGES = new Set([
+export const TECHNITIUM_STAT_RANGES = [
   "LastHour",
   "LastDay",
   "LastWeek",
   "LastMonth",
   "LastYear",
-]);
+] as const;
+
+const VALID_RANGES = new Set<string>(TECHNITIUM_STAT_RANGES);
 
 async function fetchTechnitiumStats(
   base: string,
@@ -133,6 +135,10 @@ export async function fetchTechnitiumWidget(
         {
           label: "Type",
           value: range,
+          cycle: {
+            configKey: "range",
+            options: [...TECHNITIUM_STAT_RANGES],
+          },
         },
       ],
     };

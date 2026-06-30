@@ -10,10 +10,13 @@ All notable changes to this project are documented in this file.
 - **3–5 additional API fields** per implemented hover widget (31 services)
 - Admin setting to **hide dashboard search**
 - New widget field translations (DE/EN) for enriched labels
+- **Admin version badge** (bottom right, from `package.json`)
+- **Click-to-cycle** widget options (e.g. Technitium stats range: LastHour → LastDay → …), saved in DB
 
 ### Changed
 
 - Widget field visibility is stored in the **database** (`widget_configs.hidden_fields`) instead of browser localStorage — syncs across devices and backups
+- **Colored category columns** get a matching tinted background when a custom category color is set
 - **Now Playing / Watching Now** fields are only shown when someone is actively streaming
 - Multiline widget values (e.g. libraries) stack vertically instead of inline separators
 - Layout edit mode (Shift + drag) is separate from widget field editing; dashboard DnD is disabled while a widget panel is open
