@@ -70,6 +70,7 @@ export const widgetConfigs = sqliteTable("widget_configs", {
   apiUrl: text("api_url").notNull(),
   credentials: text("credentials"),
   extraConfig: text("extra_config"),
+  hiddenFields: text("hidden_fields"),
 });
 
 export const settings = sqliteTable("settings", {

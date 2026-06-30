@@ -18,7 +18,7 @@ Your services as tiles in category columns with a glass-style UI. Each tile can 
 
 Hover a service tile for **real-time API data**: Plex, Proxmox, Pi-hole, qBittorrent, Home Assistant, FRITZ!Box, and more. Credentials are stored **AES-256-GCM encrypted** in SQLite.
 
-Hold **Shift** and click field labels to show or hide individual widget rows — per service, saved in your browser. *Now Playing* / *Watching Now* appear only during active playback.
+Hold **Shift** and click field labels to show or hide individual widget rows — per service, stored in the database (logged-in admins only). *Now Playing* / *Watching Now* appear only during active playback.
 
 Includes Jellyfin, Plex, Nextcloud, Immich, *arr stack, Docker/Portainer, NPM, Proxmox, QNAP, Navidrome, Kavita, n8n, Grafana, and others — see the [widget table](#widget-configuration) below.
 
@@ -205,7 +205,7 @@ The selection persists after reload (`localStorage`). The Web/LAN toggle can be 
 
 ### Customize widget fields
 
-With a widget panel open, hold **Shift** and click a field label to hide or show it. Hidden fields stay saved per service in your browser. In Shift mode, hidden fields appear struck through so you can restore them.
+With a widget panel open, hold **Shift** and click a field label to hide or show it. The selection is stored per service in the **database** and applies on every device (logged-in admins only). In Shift mode, hidden fields appear struck through so you can restore them.
 
 ### Edit layout (dashboard)
 

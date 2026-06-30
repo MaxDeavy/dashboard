@@ -18,7 +18,7 @@ Dienste als Kacheln in Kategorie-Spalten mit Glass-UI. Jede Kachel kann einen **
 
 Über eine Kachel hovern für **Echtzeitdaten** aus der API: Plex, Proxmox, Pi-hole, qBittorrent, Home Assistant, FRITZ!Box und mehr. Zugangsdaten werden **AES-256-GCM-verschlüsselt** in SQLite gespeichert.
 
-**Shift** gedrückt halten und Feldlabels anklicken, um einzelne Widget-Zeilen ein- oder auszublenden — pro Dienst, im Browser gespeichert. *Gerade läuft* / *Watching Now* erscheinen nur bei aktiver Wiedergabe.
+**Shift** gedrückt halten und Feldlabels anklicken, um einzelne Widget-Zeilen ein- oder auszublenden — pro Dienst, in der Datenbank gespeichert (nur angemeldete Admins). *Gerade läuft* / *Watching Now* erscheinen nur bei aktiver Wiedergabe.
 
 Unterstützt u. a. Jellyfin, Plex, Nextcloud, Immich, *arr-Stack, Docker/Portainer, NPM, Proxmox, QNAP, Navidrome, Kavita, n8n, Grafana — siehe [Widget-Tabelle](#widget-konfiguration) weiter unten.
 
@@ -205,7 +205,7 @@ Die Auswahl bleibt nach Reload erhalten (`localStorage`). Den Web/LAN-Umschalter
 
 ### Widget-Felder anpassen
 
-Mit geöffnetem Widget-Panel **Shift** gedrückt halten und auf ein Feldlabel klicken, um es ein- oder auszublenden. Ausgeblendete Felder bleiben pro Dienst im Browser gespeichert. Im Shift-Modus erscheinen ausgeblendete Felder durchgestrichen, damit du sie wieder aktivieren kannst.
+Mit geöffnetem Widget-Panel **Shift** gedrückt halten und auf ein Feldlabel klicken, um es ein- oder auszublenden. Die Auswahl wird pro Dienst in der **Datenbank** gespeichert und gilt auf allen Geräten gleich (nur angemeldete Admins). Im Shift-Modus erscheinen ausgeblendete Felder durchgestrichen, damit du sie wieder aktivieren kannst.
 
 ### Layout bearbeiten (Dashboard)
 

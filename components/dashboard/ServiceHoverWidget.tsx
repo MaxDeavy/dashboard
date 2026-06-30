@@ -3,18 +3,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Loader2 } from "lucide-react";
+import { useIsLoggedIn } from "@/hooks/useIsLoggedIn";
 import { useShiftKeyHeld } from "@/hooks/useShiftKeyHeld";
 import type { WidgetField, WidgetResult } from "@/lib/widgets/base";
-import {
-  readHiddenWidgetFields,
-  writeHiddenWidgetFields,
-} from "@/lib/widget-field-visibility";
 import { cn } from "@/lib/utils";
 
 interface ServiceHoverWidgetProps {
   serviceId: number;
   panelOpen: boolean;
 }
+
+type WidgetApiResponse = WidgetResult & {
+  hiddenFieldIds?: string[];
+};
 
 function fieldKey(field: WidgetField): string {
   return field.fieldId ?? field.label;
@@ -26,15 +27,12 @@ export function ServiceHoverWidget({
 }: ServiceHoverWidgetProps) {
   const t = useTranslations("dashboard");
   const shiftHeld = useShiftKeyHeld();
+  const isLoggedIn = useIsLoggedIn();
   const [data, setData] = useState<WidgetResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [hiddenFieldIds, setHiddenFieldIds] = useState<Set<string>>(
     () => new Set(),
   );
-
-  useEffect(() => {
-    setHiddenFieldIds(readHiddenWidgetFields(serviceId));
-  }, [serviceId]);
 
   useEffect(() => {
     let cancelled = false;
@@ -44,7 +42,10 @@ export function ServiceHoverWidget({
       try {
         const response = await fetch(`/api/widgets/${serviceId}`);
         if (!cancelled && response.ok) {
-          setData(await response.json());
+          const payload = (await response.json()) as WidgetApiResponse;
+          const { hiddenFieldIds: hidden = [], ...widget } = payload;
+          setData(widget);
+          setHiddenFieldIds(new Set(hidden));
         } else if (!cancelled) {
           setData({
             title: "Widget",
@@ -73,9 +74,24 @@ export function ServiceHoverWidget({
     };
   }, [serviceId, t]);
 
+  const persistHiddenFields = useCallback(
+    async (next: Set<string>) => {
+      const response = await fetch(`/api/widgets/${serviceId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hiddenFieldIds: [...next] }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save widget field visibility");
+      }
+    },
+    [serviceId],
+  );
+
   const toggleFieldVisibility = useCallback(
     (id: string) => {
-      if (!panelOpen || !shiftHeld) return;
+      if (!panelOpen || !shiftHeld || !isLoggedIn) return;
 
       setHiddenFieldIds((prev) => {
         const next = new Set(prev);
@@ -84,11 +100,15 @@ export function ServiceHoverWidget({
         } else {
           next.add(id);
         }
-        writeHiddenWidgetFields(serviceId, next);
+
+        void persistHiddenFields(next).catch(() => {
+          setHiddenFieldIds(prev);
+        });
+
         return next;
       });
     },
-    [panelOpen, shiftHeld, serviceId],
+    [panelOpen, shiftHeld, isLoggedIn, persistHiddenFields],
   );
 
   if (loading) {
@@ -108,7 +128,7 @@ export function ServiceHoverWidget({
     warning: "text-amber-400",
   }[data.status];
 
-  const isFieldEditMode = panelOpen && shiftHeld;
+  const isFieldEditMode = panelOpen && shiftHeld && isLoggedIn;
   const fields = isFieldEditMode
     ? data.fields
     : data.fields.filter((field) => !hiddenFieldIds.has(fieldKey(field)));

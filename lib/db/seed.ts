@@ -88,6 +88,16 @@ function ensureSchemaPatches() {
   if (!categoryColumns.some((column) => column.name === "color")) {
     sqlite.exec("ALTER TABLE `categories` ADD COLUMN `color` text");
   }
+
+  if (tableExists("widget_configs")) {
+    const widgetColumns = sqlite
+      .prepare("PRAGMA table_info(widget_configs)")
+      .all() as Array<{ name: string }>;
+
+    if (!widgetColumns.some((column) => column.name === "hidden_fields")) {
+      sqlite.exec("ALTER TABLE `widget_configs` ADD COLUMN `hidden_fields` text");
+    }
+  }
 }
 
 function ensurePagesTable() {
