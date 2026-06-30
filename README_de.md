@@ -164,7 +164,7 @@ Einzelne Dienste nutzen weiterhin die volle Breite — nur bewusst gruppierte Ka
 | **2 pro Zeile** | Kompakte Kacheln mit etwas Abstand, gleiche Zeilenhöhe |
 | **3 pro Zeile** | Icon oben, Untertitel darunter (ohne Dienstname), gleiche Zeilenhöhe |
 
-Im Dashboard können angemeldete Admins das Layout zusätzlich mit **Strg + Drag & Drop** anpassen (horizontale und vertikale Einfüge-Linien wie im Admin).
+Im Dashboard können angemeldete Admins das Layout zusätzlich mit **Shift + Drag & Drop** anpassen (horizontale und vertikale Einfüge-Linien wie im Admin).
 
 Die gewählte Dienste-Seite im Admin wird im Browser gemerkt.
 
@@ -176,7 +176,7 @@ Mehrere Dashboard-Seiten mit eigenen Kategorien. Im Dashboard wechseln per Tab-L
 
 - Theme-Presets (Stealth, Ember, Neon, Cobalt) oder eigene Farben
 - Dark / Light Mode
-- Hintergrundbild und Logo
+- Hintergrundbild, **Hintergrundfarbe** und Logo
 - Layout-Slider: Icon-Größe, Kachelform, Schrift, Spaltenabstand, maximale Breite
 - **Sprache** — Englisch oder Deutsch (Cookie, gilt für Dashboard und Admin)
 
@@ -187,13 +187,13 @@ Mehrere Dashboard-Seiten mit eigenen Kategorien. Im Dashboard wechseln per Tab-L
 | **Web** | Nutzt immer die Web-URL |
 | **LAN** | Nutzt `lanUrl`, falls gesetzt; sonst abgedunkelte Kachel mit Hinweis |
 
-Die Auswahl bleibt nach Reload erhalten (`localStorage`).
+Die Auswahl bleibt nach Reload erhalten (`localStorage`). Den Web/LAN-Umschalter kannst du unter **Admin → Einstellungen** ausblenden, wenn du keine LAN-URLs brauchst.
 
 ### Layout bearbeiten (Dashboard)
 
-1. **Strg** gedrückt halten
+1. **Shift** gedrückt halten
 2. Kategorien (⋮⋮-Griff) und Kacheln per Drag & Drop anordnen
-3. **Strg** loslassen — normale Navigation
+3. **Shift** loslassen — normale Navigation
 
 Beim Verschieben von Kacheln erscheinen **Einfüge-Linien**: horizontal zwischen Zeilen, vertikal zwischen oder neben Kacheln in einer Zeile. Nur für angemeldete Admins; während einer aktiven Suche deaktiviert.
 
@@ -213,26 +213,27 @@ Im Admin: **Dienste** → Dienst bearbeiten → **Links & Widget**
 | **Prowlarr** | API-Key | Indexer, Queue |
 | **qBittorrent / Transmission / Deluge** | Benutzer + Passwort | Speed, aktive Torrents |
 | **SABnzbd** | API-Key | Speed, Queue |
-| **Proxmox** | API-Token + Node | CPU, RAM, Uptime |
+| **Proxmox** | API-Token + Node | CPU, RAM, Festplatte, VMs/LXC, Uptime |
 | **Docker Engine** | — | Container, Images |
 | **Portainer** | API-Token | Container pro Endpoint |
-| **Nginx Proxy Manager** | E-Mail + Passwort | Hosts, Zertifikate |
+| **Nginx Proxy Manager** | E-Mail + Passwort | Online-Hosts, SSL-Zertifikate, Weiterleitungen |
 | **Pi-hole / AdGuard Home** | App-Passwort / API-Key | Anfragen, Block-Rate |
 | **Technitium DNS** | API-Token | Abfragen, Blocklisten |
 | **Jellyseerr / Overseerr** | API-Key | Offene Anfragen |
-| **Jellyfin / Plex / Tautulli** | API-Key / Token | Streams, Sessions, Statistik |
+| **Jellyfin / Plex / Tautulli** | API-Key / Token | Aktive Streams, Bibliothek, Sessions / Statistik |
 | **Nextcloud** | NC-Token | Speicher, Benutzer, Apps |
 | **Immich** | API-Key | Bibliotheksstatistik |
 | **Mealie** | API-Token | Rezepte |
-| **Kavita / Audiobookshelf** | Auth-Key / API-Token | Bibliotheken, Medien |
-| **Navidrome** | Benutzer + Passwort | Künstler, Alben, Titel |
+| **Kavita / Audiobookshelf** | Auth-Key / API-Token | Bibliotheken, Serien, Speicher / Medien |
+| **Navidrome** | Benutzer + Passwort | Künstler, Alben, gerade läuft |
 | **Paperless-ngx** | API-Token | Dokumente, Posteingang |
 | **n8n / Grafana** | API-Key | Workflows / Dashboards |
-| **Home Assistant** | Access-Token | Entity-State |
+| **Home Assistant** | Access-Token | Entitäten, Automationen oder Entity-State |
 | **QNAP** | Benutzer + Passwort | CPU, RAM, Volume, Temperatur |
-| **FileBrowser** | Benutzer + Passwort | Speicher |
+| **FileBrowser** | Benutzer + Passwort | Speicherauslastung |
 | **Guacamole** | Benutzer + Passwort | Verbindungen |
-| **FRITZ!Box** | — | Verbindung, Speed (TR-064) |
+| **FRITZ!Box** | — | Verbindung, Speeds, externe IP, Traffic (TR-064) |
+| **Iframe / Embed** | — | Externe Seite im Hover-Panel |
 | **Generic** | — | HTTP-Status, Latenz |
 
 API-Zugangsdaten werden AES-256-GCM-verschlüsselt in SQLite gespeichert.

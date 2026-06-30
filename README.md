@@ -164,7 +164,7 @@ Single services keep full width — only deliberately grouped tiles sit side by 
 | **2 per row** | Compact tiles with spacing, uniform row height |
 | **3 per row** | Icon on top, subtitle below (no service name), uniform row height |
 
-Logged-in admins can also adjust layout on the dashboard with **Ctrl + drag & drop** (horizontal and vertical insertion lines, same as in admin).
+Logged-in admins can also adjust layout on the dashboard with **Shift + drag & drop** (horizontal and vertical insertion lines, same as in admin).
 
 The selected services page in the admin is remembered in the browser.
 
@@ -176,7 +176,7 @@ Multiple dashboard pages with their own categories. Switch in the dashboard via 
 
 - Theme presets (Stealth, Ember, Neon, Cobalt) or custom colors
 - Dark / light mode
-- Background image and logo
+- Background image, **background color**, and logo
 - Layout sliders: icon size, tile shape, font, column spacing, max width
 - **Language** — English or German (stored in a cookie, applies to dashboard and admin)
 
@@ -187,13 +187,13 @@ Multiple dashboard pages with their own categories. Switch in the dashboard via 
 | **Web** | Always uses the Web URL |
 | **LAN** | Uses `lanUrl` when set; otherwise dimmed tile with hint |
 
-The selection persists after reload (`localStorage`).
+The selection persists after reload (`localStorage`). The Web/LAN toggle can be hidden in **Admin → Settings** if you do not need LAN URLs.
 
 ### Edit layout (dashboard)
 
-1. Hold **Ctrl**
+1. Hold **Shift**
 2. Drag categories (⋮⋮ handle) and tiles to reorder
-3. Release **Ctrl** — normal navigation resumes
+3. Release **Shift** — normal navigation resumes
 
 While dragging tiles, **insertion lines** appear: horizontal between rows, vertical between or beside tiles in a row. Only for logged-in admins; disabled while a search is active.
 
@@ -213,26 +213,27 @@ In Admin: **Services** → edit service → **Links & widget**
 | **Prowlarr** | API key | Indexers, queue |
 | **qBittorrent / Transmission / Deluge** | User + password | Speed, active torrents |
 | **SABnzbd** | API key | Speed, queue |
-| **Proxmox** | API token + node | CPU, RAM, uptime |
+| **Proxmox** | API token + node | CPU, RAM, disk, VMs/LXC, uptime |
 | **Docker Engine** | — | Containers, images |
 | **Portainer** | API token | Containers per endpoint |
-| **Nginx Proxy Manager** | Email + password | Hosts, certificates |
+| **Nginx Proxy Manager** | Email + password | Online hosts, SSL certs, redirects |
 | **Pi-hole / AdGuard Home** | App password / API key | Queries, block rate |
 | **Technitium DNS** | API token | Queries, blocklists |
 | **Jellyseerr / Overseerr** | API key | Open requests |
-| **Jellyfin / Plex / Tautulli** | API key / token | Streams, sessions, stats |
+| **Jellyfin / Plex / Tautulli** | API key / token | Active streams, library, sessions / stats |
 | **Nextcloud** | NC token | Storage, users, apps |
 | **Immich** | API key | Library statistics |
 | **Mealie** | API token | Recipes |
-| **Kavita / Audiobookshelf** | Auth key / API token | Libraries, media |
-| **Navidrome** | User + password | Artists, albums, tracks |
+| **Kavita / Audiobookshelf** | Auth key / API token | Libraries, series, storage / media |
+| **Navidrome** | User + password | Artists, albums, now playing |
 | **Paperless-ngx** | API token | Documents, inbox |
 | **n8n / Grafana** | API key | Workflows / dashboards |
-| **Home Assistant** | Access token | Entity state |
+| **Home Assistant** | Access token | Entities, automations, or entity state |
 | **QNAP** | User + password | CPU, RAM, volume, temperature |
-| **FileBrowser** | User + password | Storage |
+| **FileBrowser** | User + password | Storage usage |
 | **Guacamole** | User + password | Connections |
-| **FRITZ!Box** | — | Connection, speed (TR-064) |
+| **FRITZ!Box** | — | Connection, speeds, external IP, traffic (TR-064) |
+| **Iframe / Embed** | — | External page in hover panel |
 | **Generic** | — | HTTP status, latency |
 
 API credentials are stored AES-256-GCM encrypted in SQLite.
