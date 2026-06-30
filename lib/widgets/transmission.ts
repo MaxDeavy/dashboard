@@ -1,6 +1,7 @@
 import {
   credentialString,
   fetchWithTimeout,
+  formatBytes,
   formatBytesPerSec,
   normalizeApiUrl,
   type WidgetConfigInput,
@@ -81,12 +82,26 @@ export async function fetchTransmissionWidget(
   }
 
   try {
-    const stats = await transmissionRpc<{
-      activeTorrentCount?: number;
-      downloadSpeed?: number;
-      uploadSpeed?: number;
-      pausedTorrentCount?: number;
-    }>(base, "session-stats", username, password, config.extraConfig);
+    const [stats, session] = await Promise.all([
+      transmissionRpc<{
+        activeTorrentCount?: number;
+        downloadSpeed?: number;
+        uploadSpeed?: number;
+        pausedTorrentCount?: number;
+        torrentCount?: number;
+        cumulativeStats?: {
+          downloadedBytes?: number;
+          uploadedBytes?: number;
+        };
+      }>(base, "session-stats", username, password, config.extraConfig),
+      transmissionRpc<{
+        version?: string;
+        "download-dir"?: string;
+      }>(base, "session-get", username, password, config.extraConfig),
+    ]);
+    const totalTorrents = stats.torrentCount ?? 0;
+    const cumulativeDownloaded = stats.cumulativeStats?.downloadedBytes ?? 0;
+    const cumulativeUploaded = stats.cumulativeStats?.uploadedBytes ?? 0;
 
     return {
       title: "Transmission",
@@ -109,6 +124,26 @@ export async function fetchTransmissionWidget(
         {
           label: "Paused",
           value: String(stats.pausedTorrentCount ?? 0),
+        },
+        {
+          label: "Total",
+          value: String(totalTorrents),
+        },
+        {
+          label: "Total Download",
+          value: formatBytes(cumulativeDownloaded),
+        },
+        {
+          label: "Total Upload",
+          value: formatBytes(cumulativeUploaded),
+        },
+        {
+          label: "Version",
+          value: session.version ?? "—",
+        },
+        {
+          label: "Location",
+          value: session["download-dir"] ?? "—",
         },
       ],
     };

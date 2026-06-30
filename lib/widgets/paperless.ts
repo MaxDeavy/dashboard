@@ -23,11 +23,24 @@ export async function fetchPaperlessWidget(
   try {
     const headers = { Authorization: `Token ${token}` };
 
-    const statsRes = await fetchWithTimeout(
-      `${base}/api/statistics/`,
-      { headers },
-      config.extraConfig,
-    );
+    const [statsRes, tagsRes, correspondentsRes, docTypesRes] = await Promise.all([
+      fetchWithTimeout(
+        `${base}/api/statistics/`,
+        { headers },
+        config.extraConfig,
+      ),
+      fetchWithTimeout(`${base}/api/tags/?page_size=1`, { headers }, config.extraConfig).catch(() => null),
+      fetchWithTimeout(
+        `${base}/api/correspondents/?page_size=1`,
+        { headers },
+        config.extraConfig,
+      ).catch(() => null),
+      fetchWithTimeout(
+        `${base}/api/document_types/?page_size=1`,
+        { headers },
+        config.extraConfig,
+      ).catch(() => null),
+    ]);
 
     if (!statsRes.ok) {
       throw new Error(`API: ${statsRes.status}`);
@@ -39,6 +52,15 @@ export async function fetchPaperlessWidget(
       inbox_tag?: number;
       character_count?: number;
     };
+    const tags = tagsRes?.ok
+      ? (((await tagsRes.json()) as { count?: number }).count ?? 0)
+      : 0;
+    const correspondents = correspondentsRes?.ok
+      ? (((await correspondentsRes.json()) as { count?: number }).count ?? 0)
+      : 0;
+    const documentTypes = docTypesRes?.ok
+      ? (((await docTypesRes.json()) as { count?: number }).count ?? 0)
+      : 0;
 
     return {
       title: "Paperless",
@@ -56,6 +78,18 @@ export async function fetchPaperlessWidget(
         {
           label: "Characters",
           value: formatCount(stats.character_count ?? 0),
+        },
+        {
+          label: "Tags",
+          value: String(tags),
+        },
+        {
+          label: "Users",
+          value: String(correspondents),
+        },
+        {
+          label: "Categories",
+          value: String(documentTypes),
         },
       ],
     };

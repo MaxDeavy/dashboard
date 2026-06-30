@@ -43,7 +43,7 @@ export async function fetchKavitaWidget(
       "x-api-key": apiKey,
     };
 
-    const [statsRes, librariesRes] = await Promise.all([
+    const [statsRes, librariesRes, serverInfoRes] = await Promise.all([
       fetchWithTimeout(
         `${base}/api/Stats/server/stats`,
         { headers },
@@ -54,6 +54,11 @@ export async function fetchKavitaWidget(
         { headers },
         config.extraConfig,
       ),
+      fetchWithTimeout(
+        `${base}/api/Server/server-info-slim`,
+        { headers },
+        config.extraConfig,
+      ).catch(() => null),
     ]);
 
     if (!statsRes.ok) {
@@ -77,6 +82,14 @@ export async function fetchKavitaWidget(
           .filter((type): type is string => Boolean(type)),
       ),
     ];
+    const serverInfo = serverInfoRes?.ok
+      ? ((await serverInfoRes.json()) as {
+          kavitaVersion?: string;
+          kavita_version?: string;
+        })
+      : {};
+    const version =
+      serverInfo.kavitaVersion ?? serverInfo.kavita_version ?? "—";
 
     return {
       title: "Kavita",
@@ -118,6 +131,18 @@ export async function fetchKavitaWidget(
               },
             ]
           : []),
+        {
+          label: "Type",
+          value: libraryTypes.length > 0 ? formatMultilineList(libraryTypes) : "—",
+        },
+        {
+          label: "Total",
+          value: String(series + files),
+        },
+        {
+          label: "Version",
+          value: version,
+        },
       ],
     };
   } catch (error) {

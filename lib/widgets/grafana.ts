@@ -23,9 +23,11 @@ export async function fetchGrafanaWidget(
   try {
     const headers = { Authorization: `Bearer ${apiKey}` };
 
-    const [healthRes, statsRes] = await Promise.all([
+    const [healthRes, statsRes, datasourcesRes, orgsRes] = await Promise.all([
       fetchWithTimeout(`${base}/api/health`, { headers }, config.extraConfig),
       fetchWithTimeout(`${base}/api/admin/stats`, { headers }, config.extraConfig),
+      fetchWithTimeout(`${base}/api/datasources`, { headers }, config.extraConfig).catch(() => null),
+      fetchWithTimeout(`${base}/api/orgs`, { headers }, config.extraConfig).catch(() => null),
     ]);
 
     if (!healthRes.ok) {
@@ -51,6 +53,10 @@ export async function fetchGrafanaWidget(
       users = stats.users ?? 0;
       alerts = stats.alerts ?? 0;
     }
+    const datasources = datasourcesRes?.ok
+      ? ((await datasourcesRes.json()) as unknown[]).length
+      : 0;
+    const orgs = orgsRes?.ok ? ((await orgsRes.json()) as unknown[]).length : 0;
 
     return {
       title: "Grafana",
@@ -72,6 +78,19 @@ export async function fetchGrafanaWidget(
           label: "Alerts",
           value: String(alerts),
           highlight: alerts > 0,
+        },
+        {
+          label: "Data Source",
+          value: String(datasources),
+        },
+        {
+          label: "Total",
+          value: String(orgs),
+        },
+        {
+          label: "Active",
+          value: String(users),
+          highlight: users > 0,
         },
       ],
     };

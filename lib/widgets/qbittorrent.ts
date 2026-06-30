@@ -1,5 +1,6 @@
 import {
   fetchWithTimeout,
+  formatBytes,
   formatBytesPerSec,
   type WidgetConfigInput,
   type WidgetResult,
@@ -50,9 +51,12 @@ export async function fetchQbittorrentWidget(
     }
 
     const headers = { Cookie: cookie };
-    const [transferRes, torrentsRes] = await Promise.all([
+    const [transferRes, activeRes, allTorrentsRes] = await Promise.all([
       fetchWithTimeout(`${apiUrl}/api/v2/transfer/info`, { headers }),
       fetchWithTimeout(`${apiUrl}/api/v2/torrents/info?filter=active`, {
+        headers,
+      }),
+      fetchWithTimeout(`${apiUrl}/api/v2/torrents/info`, {
         headers,
       }),
     ]);
@@ -62,7 +66,18 @@ export async function fetchQbittorrentWidget(
     }
 
     const transfer = await transferRes.json();
-    const torrents = torrentsRes.ok ? await torrentsRes.json() : [];
+    const activeTorrents = activeRes.ok ? await activeRes.json() : [];
+    const allTorrents = allTorrentsRes.ok ? await allTorrentsRes.json() : [];
+    const queuedCount = Array.isArray(allTorrents)
+      ? allTorrents.filter(
+          (torrent: { state?: string }) =>
+            torrent.state?.includes("queued") ||
+            torrent.state?.includes("stalled"),
+        ).length
+      : 0;
+    const freeSpace = Number(transfer.free_space_on_disk ?? 0);
+    const dlInfoData = Number(transfer.dl_info_data ?? 0);
+    const connectionStatus = transfer.connection_status ?? "unknown";
 
     return {
       title: "qBittorrent",
@@ -79,11 +94,38 @@ export async function fetchQbittorrentWidget(
         },
         {
           label: "Active Torrents",
-          value: String(torrents.length ?? 0),
+          value: String(activeTorrents.length ?? 0),
+          highlight: (activeTorrents.length ?? 0) > 0,
         },
         {
           label: "Queue",
-          value: String(transfer.dl_info_data ?? 0 > 0 ? "Aktiv" : "Leer"),
+          value: dlInfoData > 0 ? "Active" : "Empty",
+        },
+        {
+          label: "Total",
+          value: String(allTorrents.length ?? 0),
+        },
+        {
+          label: "Free Storage",
+          value: formatBytes(freeSpace),
+        },
+        {
+          label: "Total Download",
+          value: formatBytes(Number(transfer.alltime_dl ?? 0)),
+        },
+        {
+          label: "Total Upload",
+          value: formatBytes(Number(transfer.alltime_ul ?? 0)),
+        },
+        {
+          label: "Status",
+          value: String(connectionStatus),
+          highlight: connectionStatus === "connected",
+        },
+        {
+          label: "Pending",
+          value: String(queuedCount),
+          highlight: queuedCount > 0,
         },
       ],
     };

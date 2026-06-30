@@ -71,7 +71,7 @@ export async function fetchGuacamoleWidget(
     const headers = { Accept: "application/json" };
     const tokenParam = `token=${encodeURIComponent(authToken)}`;
 
-    const [activeRes, connectionsRes] = await Promise.all([
+    const [activeRes, connectionsRes, usersRes, groupsRes, historyRes] = await Promise.all([
       fetchWithTimeout(
         `${base}/api/session/data/${encodeURIComponent(dataSource)}/activeConnections?${tokenParam}`,
         { headers },
@@ -82,6 +82,21 @@ export async function fetchGuacamoleWidget(
         { headers },
         config.extraConfig,
       ),
+      fetchWithTimeout(
+        `${base}/api/session/data/${encodeURIComponent(dataSource)}/users?${tokenParam}`,
+        { headers },
+        config.extraConfig,
+      ).catch(() => null),
+      fetchWithTimeout(
+        `${base}/api/session/data/${encodeURIComponent(dataSource)}/userGroups?${tokenParam}`,
+        { headers },
+        config.extraConfig,
+      ).catch(() => null),
+      fetchWithTimeout(
+        `${base}/api/session/data/${encodeURIComponent(dataSource)}/history/connections?${tokenParam}`,
+        { headers },
+        config.extraConfig,
+      ).catch(() => null),
     ]);
 
     if (!activeRes.ok) {
@@ -102,6 +117,15 @@ export async function fetchGuacamoleWidget(
       >;
       configuredCount = String(Object.keys(connections).length);
     }
+    const users = usersRes?.ok
+      ? Object.keys((await usersRes.json()) as Record<string, unknown>).length
+      : 0;
+    const groups = groupsRes?.ok
+      ? Object.keys((await groupsRes.json()) as Record<string, unknown>).length
+      : 0;
+    const history = historyRes?.ok
+      ? Object.keys((await historyRes.json()) as Record<string, unknown>).length
+      : 0;
 
     return {
       title: "Guacamole",
@@ -114,6 +138,13 @@ export async function fetchGuacamoleWidget(
         },
         { label: "Connections", value: configuredCount },
         { label: "Data Source", value: dataSource },
+        { label: "Users", value: String(users) },
+        { label: "Groups", value: String(groups) },
+        {
+          label: "History",
+          value: String(history),
+          highlight: history > 0,
+        },
       ],
     };
   } catch (error) {

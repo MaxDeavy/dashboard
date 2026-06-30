@@ -1,5 +1,6 @@
 import {
   fetchWithTimeout,
+  formatBytes,
   formatBytesPerSec,
   type WidgetConfigInput,
   type WidgetResult,
@@ -39,6 +40,9 @@ export async function fetchSabnzbdWidget(
     const slots = queue?.queue?.slots ?? [];
     const speed = status?.status?.speed ?? 0;
     const remaining = status?.status?.mb ?? 0;
+    const paused = Boolean(status?.status?.paused);
+    const diskSpace = Number(status?.status?.diskspace1 ?? 0);
+    const version = status?.status?.version ?? "—";
 
     return {
       title: "SABnzbd",
@@ -61,6 +65,19 @@ export async function fetchSabnzbdWidget(
         {
           label: "Status",
           value: status?.status?.status ?? "unknown",
+        },
+        {
+          label: "Paused",
+          value: paused ? "Yes" : "No",
+          highlight: paused,
+        },
+        {
+          label: "Free Storage",
+          value: diskSpace > 0 ? formatBytes(diskSpace * 1024 * 1024) : "—",
+        },
+        {
+          label: "Version",
+          value: String(version),
         },
       ],
     };

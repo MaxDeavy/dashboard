@@ -27,11 +27,26 @@ export async function fetchArrWidget(
     const base = `${config.apiUrl}${app.apiPath}`;
     const headers = { "X-Api-Key": apiKey };
 
-    const [queueRes, wantedRes, indexerRes] = await Promise.all([
+    const [queueRes, wantedRes, indexerRes, statusRes, healthRes, mediaRes, calendarRes, historyRes] = await Promise.all([
       fetchWithTimeout(`${base}/queue/status`, { headers }),
       fetchWithTimeout(`${base}/wanted/missing?page=1&pageSize=1`, { headers }),
       config.widgetType === "prowlarr"
         ? fetchWithTimeout(`${base}/indexer`, { headers })
+        : Promise.resolve(null),
+      fetchWithTimeout(`${base}/system/status`, { headers }).catch(() => null),
+      fetchWithTimeout(`${base}/health`, { headers }).catch(() => null),
+      config.widgetType === "sonarr"
+        ? fetchWithTimeout(`${base}/series?page=1&pageSize=1`, { headers }).catch(() => null)
+        : config.widgetType === "radarr"
+          ? fetchWithTimeout(`${base}/movie?page=1&pageSize=1`, { headers }).catch(() => null)
+          : config.widgetType === "lidarr"
+            ? fetchWithTimeout(`${base}/artist?page=1&pageSize=1`, { headers }).catch(() => null)
+            : Promise.resolve(null),
+      config.widgetType !== "prowlarr"
+        ? fetchWithTimeout(`${base}/calendar`, { headers }).catch(() => null)
+        : Promise.resolve(null),
+      config.widgetType === "prowlarr"
+        ? fetchWithTimeout(`${base}/history?page=1&pageSize=1`, { headers }).catch(() => null)
         : Promise.resolve(null),
     ]);
 
@@ -50,16 +65,28 @@ export async function fetchArrWidget(
       missingCount = wanted.totalRecords ?? 0;
     }
 
+    const statusPayload = statusRes?.ok ? await statusRes.json() : {};
+    const healthPayload = healthRes?.ok ? ((await healthRes.json()) as unknown[]) : [];
+    const healthIssues = Array.isArray(healthPayload) ? healthPayload.length : 0;
+
     if (config.widgetType === "prowlarr") {
       let indexerCount = 0;
       let enabledCount = 0;
+      let failedIndexers = 0;
       if (indexerRes?.ok) {
         const indexers = await indexerRes.json();
         if (Array.isArray(indexers)) {
           indexerCount = indexers.length;
           enabledCount = indexers.filter((i: { enable?: boolean }) => i.enable).length;
+          failedIndexers = indexers.filter(
+            (i: { enable?: boolean; status?: string }) =>
+              i.enable && i.status && i.status !== "healthy",
+          ).length;
         }
       }
+      const grabs = historyRes?.ok
+        ? (((await historyRes.json()) as { totalRecords?: number }).totalRecords ?? 0)
+        : 0;
 
       return {
         title: app.title,
@@ -79,9 +106,37 @@ export async function fetchArrWidget(
             value: String(queueCount),
             highlight: queueCount > 0,
           },
+          {
+            label: "Alerts",
+            value: String(healthIssues),
+            highlight: healthIssues > 0,
+          },
+          {
+            label: "Offline",
+            value: String(failedIndexers),
+            highlight: failedIndexers > 0,
+          },
+          {
+            label: "Total",
+            value: String(grabs),
+          },
+          {
+            label: "Version",
+            value: String(statusPayload.version ?? "—"),
+          },
         ],
       };
     }
+
+    const mediaTotal = mediaRes?.ok
+      ? ((await mediaRes.json()) as { totalRecords?: number; records?: unknown[] })
+      : null;
+    const mediaCount = mediaTotal
+      ? (mediaTotal.totalRecords ?? mediaTotal.records?.length ?? 0)
+      : 0;
+    const calendarEntries = calendarRes?.ok
+      ? ((await calendarRes.json()) as unknown[]).length
+      : 0;
 
     return {
       title: app.title,
@@ -100,6 +155,24 @@ export async function fetchArrWidget(
           label: "Missing",
           value: String(missingCount),
           highlight: missingCount > 0,
+        },
+        {
+          label: "Total",
+          value: String(mediaCount),
+        },
+        {
+          label: "Pending",
+          value: String(calendarEntries),
+          highlight: calendarEntries > 0,
+        },
+        {
+          label: "Alerts",
+          value: String(healthIssues),
+          highlight: healthIssues > 0,
+        },
+        {
+          label: "Version",
+          value: String(statusPayload.version ?? "—"),
         },
       ],
     };

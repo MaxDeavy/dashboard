@@ -41,7 +41,7 @@ export async function fetchProxmoxWidget(
       extraConfig,
     );
 
-    const [statusRes, qemuRes, lxcRes] = await Promise.all([
+    const [statusRes, qemuRes, lxcRes, resourcesRes] = await Promise.all([
       fetchWithTimeout(
         `${base}/api2/json/nodes/${encodeURIComponent(node)}/status`,
         { headers },
@@ -57,6 +57,11 @@ export async function fetchProxmoxWidget(
         { headers },
         extraConfig,
       ),
+      fetchWithTimeout(
+        `${base}/api2/json/cluster/resources`,
+        { headers },
+        extraConfig,
+      ).catch(() => null),
     ]);
 
     if (!statusRes.ok) {
@@ -86,6 +91,28 @@ export async function fetchProxmoxWidget(
 
     const runningVms = vms.filter((vm) => vm.status === "running").length;
     const runningLxc = lxcs.filter((lxc) => lxc.status === "running").length;
+    const stoppedGuests =
+      (vms.length - runningVms) + (lxcs.length - runningLxc);
+    const swapUsed = status.swap?.used ?? 0;
+    const swapTotal = status.swap?.total ?? 0;
+    const swapPercent = swapTotal > 0 ? (swapUsed / swapTotal) * 100 : 0;
+    const cpuCores = Number(status.cpuinfo?.cpus ?? 0);
+    const kernelVersion = String(
+      status.current_kernel ?? status.kversion ?? "—",
+    );
+    let storageTotal = 0;
+    let storageUsed = 0;
+    if (resourcesRes?.ok) {
+      const payload = (await resourcesRes.json()) as {
+        data?: Array<{ type?: string; maxdisk?: number; disk?: number }>;
+      };
+      for (const entry of payload.data ?? []) {
+        if (entry.type === "storage") {
+          storageTotal += entry.maxdisk ?? 0;
+          storageUsed += entry.disk ?? 0;
+        }
+      }
+    }
 
     return {
       title: `Proxmox · ${node}`,
@@ -126,6 +153,36 @@ export async function fetchProxmoxWidget(
           label: "Uptime",
           value: formatUptime(status.uptime ?? 0),
         },
+        ...(swapTotal > 0
+          ? [
+              {
+                label: "Usage",
+                value: `${formatPercent(swapPercent)} (swap)`,
+                highlight: swapPercent > 85,
+              },
+            ]
+          : []),
+        {
+          label: "Total",
+          value: cpuCores > 0 ? `${cpuCores} cores` : "—",
+        },
+        {
+          label: "Version",
+          value: kernelVersion,
+        },
+        {
+          label: "Stopped",
+          value: String(stoppedGuests),
+          highlight: stoppedGuests > 0,
+        },
+        ...(storageTotal > 0
+          ? [
+              {
+                label: "Storage",
+                value: `${formatBytes(storageUsed)} / ${formatBytes(storageTotal)}`,
+              },
+            ]
+          : []),
       ],
     };
   } catch (error) {

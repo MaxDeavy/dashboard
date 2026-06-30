@@ -9,7 +9,7 @@ import {
 } from "./base";
 
 interface SubsonicArtist {
-  albumCount?: number;
+  name?: string;
 }
 
 interface SubsonicNowPlayingEntry {
@@ -38,8 +38,6 @@ function buildSubsonicUrl(
 }
 
 function formatNowPlaying(entries: SubsonicNowPlayingEntry[]): string {
-  if (entries.length === 0) return "—";
-
   return formatMultilineList(
     entries.map((entry) => {
       const user = entry.username ?? "Unknown";
@@ -50,6 +48,42 @@ function formatNowPlaying(entries: SubsonicNowPlayingEntry[]): string {
       return track ? `${user} – ${truncate(track, 24)}` : user;
     }),
   );
+}
+
+async function fetchSubsonicAlbumCount(
+  base: string,
+  username: string,
+  password: string,
+  extraConfig?: Record<string, string>,
+): Promise<number> {
+  const response = await fetchWithTimeout(
+    buildSubsonicUrl(base, "getAlbumList2", username, password, {
+      type: "alphabeticalByName",
+      size: "1",
+    }),
+    {},
+    extraConfig,
+  );
+
+  if (!response.ok) {
+    return 0;
+  }
+
+  const headerCount = Number(response.headers.get("x-total-count"));
+  if (Number.isFinite(headerCount) && headerCount >= 0) {
+    return headerCount;
+  }
+
+  const data = (await response.json()) as {
+    "subsonic-response"?: {
+      albumList2?: { album?: unknown[] | unknown };
+    };
+  };
+  const album = data["subsonic-response"]?.albumList2?.album;
+  if (Array.isArray(album)) {
+    return album.length;
+  }
+  return album ? 1 : 0;
 }
 
 export async function fetchNavidromeWidget(
@@ -87,21 +121,26 @@ export async function fetchNavidromeWidget(
       throw new Error("Authentication failed");
     }
 
-    const [indexesRes, nowPlayingRes] = await Promise.all([
+    const [indexesRes, albumCountRes, nowPlayingRes, playlistsRes] = await Promise.all([
       fetchWithTimeout(
         buildSubsonicUrl(base, "getIndexes", username, password),
         {},
         config.extraConfig,
       ),
+      fetchSubsonicAlbumCount(base, username, password, config.extraConfig),
       fetchWithTimeout(
         buildSubsonicUrl(base, "getNowPlaying", username, password),
         {},
         config.extraConfig,
       ),
+      fetchWithTimeout(
+        buildSubsonicUrl(base, "getPlaylists", username, password),
+        {},
+        config.extraConfig,
+      ).catch(() => null),
     ]);
 
     let artists = 0;
-    let albums = 0;
     if (indexesRes.ok) {
       const indexes = (await indexesRes.json()) as {
         "subsonic-response"?: {
@@ -112,10 +151,11 @@ export async function fetchNavidromeWidget(
       for (const entry of indexList) {
         for (const artist of entry.artist ?? []) {
           artists += 1;
-          albums += artist.albumCount ?? 0;
         }
       }
     }
+
+    const albums = albumCountRes;
 
     let playingEntries: SubsonicNowPlayingEntry[] = [];
     if (nowPlayingRes.ok) {
@@ -127,6 +167,11 @@ export async function fetchNavidromeWidget(
       playingEntries =
         nowPlaying["subsonic-response"]?.nowPlaying?.entry ?? [];
     }
+    const playlists = playlistsRes?.ok
+      ? (((await playlistsRes.json()) as {
+          "subsonic-response"?: { playlists?: { playlist?: unknown[] } };
+        })["subsonic-response"]?.playlists?.playlist?.length ?? 0)
+      : 0;
 
     return {
       title: "Navidrome",
@@ -141,11 +186,15 @@ export async function fetchNavidromeWidget(
           value: String(albums),
           highlight: albums > 0,
         },
-        {
-          label: "Now Playing",
-          value: formatNowPlaying(playingEntries),
-          highlight: playingEntries.length > 0,
-        },
+        ...(playingEntries.length > 0
+          ? [
+              {
+                label: "Now Playing",
+                value: formatNowPlaying(playingEntries),
+                highlight: true,
+              },
+            ]
+          : []),
         {
           label: "Listeners",
           value: String(playingEntries.length),
@@ -154,6 +203,19 @@ export async function fetchNavidromeWidget(
         {
           label: "Version",
           value: ping["subsonic-response"]?.version ?? "—",
+        },
+        {
+          label: "Libraries",
+          value: String(playlists),
+        },
+        {
+          label: "Total",
+          value: String(artists + albums),
+        },
+        {
+          label: "Status",
+          value: "Connected",
+          highlight: true,
         },
       ],
     };

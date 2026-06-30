@@ -104,19 +104,23 @@ export async function fetchNextcloudWidget(
   }
 
   const url = `${base}${INFO_PATH}`;
+  const capabilitiesUrl =
+    `${base}/ocs/v2.php/cloud/capabilities?format=json`;
+  const sharesUrl = `${base}/ocs/v2.php/apps/files_sharing/api/v1/shares?format=json`;
 
   try {
-    const response = await fetchWithTimeout(
-      url,
-      {
-        headers: {
-          Accept: "application/json",
-          "OCS-APIRequest": "true",
-          "NC-Token": token,
-        },
+    const requestOptions = {
+      headers: {
+        Accept: "application/json",
+        "OCS-APIRequest": "true",
+        "NC-Token": token,
       },
-      config.extraConfig,
-    );
+    };
+    const [response, capabilitiesRes, sharesRes] = await Promise.all([
+      fetchWithTimeout(url, requestOptions, config.extraConfig),
+      fetchWithTimeout(capabilitiesUrl, requestOptions, config.extraConfig).catch(() => null),
+      fetchWithTimeout(sharesUrl, requestOptions, config.extraConfig).catch(() => null),
+    ]);
 
     const text = await response.text();
     let payload: NextcloudInfoResponse;
@@ -146,7 +150,24 @@ export async function fetchNextcloudWidget(
     const memory = formatMemoryUsage(system?.mem_total, system?.mem_free);
     const freespace = Number(system?.freespace ?? 0);
     const active = Number(activeUsers?.last5minutes ?? 0);
+    const activeHour = Number((activeUsers as { last1hour?: number | string } | undefined)?.last1hour ?? 0);
+    const activeDay = Number((activeUsers as { last24hours?: number | string } | undefined)?.last24hours ?? 0);
     const files = Number(storage?.num_files ?? 0);
+    const shares = sharesRes?.ok
+      ? (((await sharesRes.json()) as { ocs?: { data?: unknown[] } }).ocs?.data?.length ?? 0)
+      : 0;
+    const capabilities = capabilitiesRes?.ok
+      ? ((await capabilitiesRes.json()) as {
+          ocs?: {
+            data?: {
+              version?: { string?: string };
+              apps?: { enabled?: string[] };
+            };
+          };
+        })
+      : {};
+    const appsCount = capabilities.ocs?.data?.apps?.enabled?.length ?? 0;
+    const version = capabilities.ocs?.data?.version?.string ?? "—";
 
     return {
       title: "Nextcloud",
@@ -174,6 +195,23 @@ export async function fetchNextcloudWidget(
         {
           label: "Files",
           value: files > 0 ? String(files) : "—",
+        },
+        {
+          label: "Version",
+          value: version,
+        },
+        {
+          label: "Total",
+          value: String(appsCount),
+        },
+        {
+          label: "Pending",
+          value: String(shares),
+          highlight: shares > 0,
+        },
+        {
+          label: "Users",
+          value: `${active}/${activeHour}/${activeDay}`,
         },
       ],
     };

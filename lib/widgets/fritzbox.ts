@@ -83,7 +83,7 @@ export async function fetchFritzboxWidget(
   try {
     const apiBase = getFritzApiBase(base);
 
-    const [statusInfo, addonInfos, externalIp, totalReceived, totalSent] =
+    const [statusInfo, addonInfos, linkProps, externalIp, totalReceived, totalSent] =
       await Promise.all([
         fritzSoapRequest(
           apiBase,
@@ -97,6 +97,12 @@ export async function fetchFritzboxWidget(
           "GetAddonInfos",
           config.extraConfig,
         ),
+        fritzSoapRequest(
+          apiBase,
+          "WANCommonInterfaceConfig",
+          "GetCommonLinkProperties",
+          config.extraConfig,
+        ).catch((): Record<string, string> => ({})),
         fritzSoapRequest(
           apiBase,
           "WANIPConnection",
@@ -128,6 +134,9 @@ export async function fetchFritzboxWidget(
     const externalAddress = externalIp.NewExternalIPAddress;
     const received = Number(totalReceived.NewTotalBytesReceived ?? 0);
     const sent = Number(totalSent.NewTotalBytesSent ?? 0);
+    const downstreamMax = Number(linkProps.NewLayer1DownstreamMaxBitRate ?? 0);
+    const upstreamMax = Number(linkProps.NewLayer1UpstreamMaxBitRate ?? 0);
+    const connectionType = linkProps.NewWANAccessType ?? "—";
 
     return {
       title: "FRITZ!Box",
@@ -176,6 +185,24 @@ export async function fetchFritzboxWidget(
               },
             ]
           : []),
+        {
+          label: "Type",
+          value: connectionType,
+        },
+        {
+          label: "Max Download",
+          value:
+            downstreamMax > 0
+              ? `${formatBytesPerSec(Math.floor(downstreamMax / 8))} max`
+              : "—",
+        },
+        {
+          label: "Max Upload",
+          value:
+            upstreamMax > 0
+              ? `${formatBytesPerSec(Math.floor(upstreamMax / 8))} max`
+              : "—",
+        },
       ],
     };
   } catch (error) {

@@ -2,6 +2,30 @@
 
 All notable changes to this project are documented in this file.
 
+## [1.0.3] - 2026-06-30
+
+### Added
+
+- **Shift + click** to hide or show individual widget fields per service (persisted in the browser)
+- **3–5 additional API fields** per implemented hover widget (31 services)
+- Admin setting to **hide dashboard search**
+- New widget field translations (DE/EN) for enriched labels
+
+### Changed
+
+- **Now Playing / Watching Now** fields are only shown when someone is actively streaming
+- Multiline widget values (e.g. libraries) stack vertically instead of inline separators
+- Layout edit mode (Shift + drag) is separate from widget field editing; dashboard DnD is disabled while a widget panel is open
+- Text selection is disabled while Shift is held during field editing
+
+### Fixed
+
+- **QNAP** uptime (correct `uptime_day` / `uptime_hour` / `uptime_min` / `uptime_sec` parsing)
+- **Navidrome** album count via `getAlbumList2` (`x-total-count`)
+- **Kavita** version via `/api/Server/server-info-slim`
+- **FileBrowser** version from embedded page JSON (settings API has no version field)
+- Mislabeled or duplicate widget field labels (Home Assistant, Immich, Jellyfin, FRITZ!Box, Portainer, Guacamole)
+
 ## [1.0.1] - 2026-06-30
 
 ### Added
@@ -52,5 +76,6 @@ All notable changes to this project are documented in this file.
 - Page keyboard shortcuts are always enabled (setting removed from UI)
 - Login uses a Next.js Server Action (reliable cookies behind reverse proxies)
 
+[1.0.3]: https://github.com/MaxDeavy/dashboard/releases/tag/v1.0.3
 [1.0.1]: https://github.com/MaxDeavy/dashboard/releases/tag/v1.0.1
 [1.0.0]: https://github.com/MaxDeavy/dashboard/releases/tag/v1.0.0

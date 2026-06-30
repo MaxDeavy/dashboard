@@ -1,6 +1,7 @@
 import {
   credentialString,
   fetchWithTimeout,
+  formatBytes,
   formatBytesPerSec,
   normalizeApiUrl,
   type WidgetConfigInput,
@@ -61,7 +62,14 @@ export async function fetchDelugeWidget(
       download_rate?: number;
       upload_rate?: number;
       num_peers?: number;
-    }>(base, "core.get_session_status", [["download_rate", "upload_rate", "num_peers"]], config.extraConfig);
+      total_download?: number;
+      total_upload?: number;
+    }>(
+      base,
+      "core.get_session_status",
+      [["download_rate", "upload_rate", "num_peers", "total_download", "total_upload"]],
+      config.extraConfig,
+    );
 
     const torrents = await delugeRpc<Record<string, { state?: string }>>(
       base,
@@ -74,6 +82,8 @@ export async function fetchDelugeWidget(
     const active = torrentList.filter(
       (torrent) => torrent.state === "Downloading" || torrent.state === "Seeding",
     ).length;
+    const seeding = torrentList.filter((torrent) => torrent.state === "Seeding").length;
+    const paused = torrentList.filter((torrent) => torrent.state === "Paused").length;
 
     return {
       title: "Deluge",
@@ -96,6 +106,28 @@ export async function fetchDelugeWidget(
         {
           label: "Peers",
           value: String(stats.num_peers ?? 0),
+        },
+        {
+          label: "Total",
+          value: String(torrentList.length),
+        },
+        {
+          label: "Running",
+          value: String(seeding),
+          highlight: seeding > 0,
+        },
+        {
+          label: "Paused",
+          value: String(paused),
+          highlight: paused > 0,
+        },
+        {
+          label: "Total Download",
+          value: formatBytes(stats.total_download ?? 0),
+        },
+        {
+          label: "Total Upload",
+          value: formatBytes(stats.total_upload ?? 0),
         },
       ],
     };

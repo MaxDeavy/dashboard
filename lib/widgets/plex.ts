@@ -61,11 +61,15 @@ export async function fetchPlexWidget(
       "X-Plex-Token": token,
     };
 
-    const sessionsResponse = await fetchWithTimeout(
-      `${base}/status/sessions`,
-      { headers },
-      config.extraConfig,
-    );
+    const [sessionsResponse, sectionsRes, identityRes] = await Promise.all([
+      fetchWithTimeout(
+        `${base}/status/sessions`,
+        { headers },
+        config.extraConfig,
+      ),
+      fetchWithTimeout(`${base}/library/sections`, { headers }, config.extraConfig).catch(() => null),
+      fetchWithTimeout(`${base}/identity`, { headers }, config.extraConfig).catch(() => null),
+    ]);
 
     if (!sessionsResponse.ok) {
       throw new Error(`API: ${sessionsResponse.status}`);
@@ -80,6 +84,17 @@ export async function fetchPlexWidget(
     const transcodes = sessions.filter(
       (session) => session.TranscodeSession != null,
     ).length;
+    const paused = sessions.filter((session) => session.Player?.state === "paused").length;
+    const totalSessions = sessions.length;
+    const libraries = sectionsRes?.ok
+      ? (((await sectionsRes.json()) as {
+          MediaContainer?: { Directory?: unknown[] };
+        }).MediaContainer?.Directory?.length ?? 0)
+      : 0;
+    const version = identityRes?.ok
+      ? (((await identityRes.json()) as { MediaContainer?: { version?: string } }).MediaContainer?.version ??
+        "—")
+      : "—";
     const viewers = formatActiveViewers(sessions);
 
     return {
@@ -96,10 +111,31 @@ export async function fetchPlexWidget(
           value: String(transcodes),
           highlight: transcodes > 0,
         },
+        ...(playing > 0
+          ? [
+              {
+                label: "Watching Now",
+                value: viewers,
+                highlight: true,
+              },
+            ]
+          : []),
         {
-          label: "Watching Now",
-          value: viewers,
-          highlight: playing > 0,
+          label: "Libraries",
+          value: String(libraries),
+        },
+        {
+          label: "Paused",
+          value: String(paused),
+          highlight: paused > 0,
+        },
+        {
+          label: "Sessions",
+          value: String(totalSessions),
+        },
+        {
+          label: "Version",
+          value: version,
         },
       ],
     };

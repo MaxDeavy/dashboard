@@ -1,5 +1,6 @@
 import {
   fetchWithTimeout,
+  formatPercent,
   normalizeApiUrl,
   type WidgetConfigInput,
   type WidgetResult,
@@ -95,6 +96,9 @@ export async function fetchTechnitiumWidget(
       node,
       config.extraConfig,
     );
+    const queries = stats.totalQueries ?? 0;
+    const blocked = stats.totalBlocked ?? 0;
+    const blockRate = queries > 0 ? (blocked / queries) * 100 : 0;
 
     return {
       title: "Technitium DNS",
@@ -116,6 +120,19 @@ export async function fetchTechnitiumWidget(
         {
           label: "Clients",
           value: String(stats.totalClients ?? 0),
+        },
+        {
+          label: "Block Rate",
+          value: formatPercent(blockRate),
+        },
+        {
+          label: "Status",
+          value: "Connected",
+          highlight: true,
+        },
+        {
+          label: "Type",
+          value: range,
         },
       ],
     };

@@ -125,6 +125,11 @@ export async function fetchNpmWidget(
     const enabled = proxyHosts.filter((host) => host.enabled !== false);
     const online = enabled.filter((host) => host.meta?.online === true).length;
     const offline = enabled.length - online;
+    const totalDomains = proxyHosts.reduce(
+      (sum, host) => sum + (host.domain_names?.length ?? 0),
+      0,
+    );
+    const disabledHosts = proxyHosts.length - enabled.length;
     const expiringSoon = countExpiringCerts(certificates, 30);
     const offlineHosts = formatOfflineHosts(proxyHosts);
 
@@ -158,6 +163,19 @@ export async function fetchNpmWidget(
         {
           label: "Streams",
           value: String(streams.length),
+        },
+        {
+          label: "Active",
+          value: String(enabled.length),
+        },
+        {
+          label: "Offline",
+          value: String(disabledHosts),
+          highlight: disabledHosts > 0,
+        },
+        {
+          label: "Total",
+          value: String(totalDomains),
         },
       ],
     };

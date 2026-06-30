@@ -109,6 +109,19 @@ const LABEL_TO_KEY: Record<string, string> = {
   "Direct Play": "directPlay",
   "Last Changed": "lastChanged",
   Timezone: "timezone",
+  Lights: "lights",
+  Switches: "switches",
+  Scripts: "scripts",
+  Persons: "persons",
+  "Photo Storage": "photoStorage",
+  "Video Storage": "videoStorage",
+  "Music Tracks": "musicTracks",
+  Remote: "remote",
+  "Max Download": "maxDownload",
+  "Max Upload": "maxUpload",
+  Stacks: "stacks",
+  Groups: "groups",
+  History: "history",
 };
 
 /** Maps English widget error messages to translation keys in `widgetErrors`. */

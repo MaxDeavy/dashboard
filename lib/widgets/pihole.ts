@@ -117,10 +117,23 @@ export async function fetchPiholeWidget(
   }
 
   try {
-    const data = await fetchPiholeSummary(base, apiKey, extraConfig);
+    const [data, clientsRes] = await Promise.all([
+      fetchPiholeSummary(base, apiKey, extraConfig),
+      fetchWithTimeout(
+        `${base}/admin/api.php?getQuerySources&auth=${encodeURIComponent(apiKey)}`,
+        {},
+        extraConfig,
+      ).catch(() => null),
+    ]);
+    const clients = clientsRes?.ok
+      ? Object.keys(
+          (((await clientsRes.json()) as { data?: Record<string, unknown> }).data ??
+            {}) as Record<string, unknown>,
+        ).length
+      : 0;
 
     if (isLegacyPiHoleSummary(data)) {
-      return buildLegacyResult(data);
+      return buildLegacyResult(data, clients);
     }
 
     const queries = data.queries ?? {};
@@ -147,6 +160,19 @@ export async function fetchPiholeWidget(
           label: "Blocklists",
           value: String(gravity.domains_being_blocked ?? 0),
         },
+        {
+          label: "Clients",
+          value: String(clients),
+        },
+        {
+          label: "Total",
+          value: String((queries.total ?? 0) + (queries.blocked ?? 0)),
+        },
+        {
+          label: "Status",
+          value: "Connected",
+          highlight: true,
+        },
       ],
     };
   } catch (error) {
@@ -159,7 +185,7 @@ export async function fetchPiholeWidget(
   }
 }
 
-function buildLegacyResult(data: PiHoleSummary): WidgetResult {
+function buildLegacyResult(data: PiHoleSummary, clients = 0): WidgetResult {
   return {
     title: "Pi-hole",
     status: "ok",
@@ -180,6 +206,19 @@ function buildLegacyResult(data: PiHoleSummary): WidgetResult {
       {
         label: "Blocklists",
         value: String(data.domains_being_blocked ?? 0),
+      },
+      {
+        label: "Clients",
+        value: String(clients),
+      },
+      {
+        label: "Total",
+        value: String((data.dns_queries_today ?? 0) + (data.ads_blocked_today ?? 0)),
+      },
+      {
+        label: "Status",
+        value: "Connected",
+        highlight: true,
       },
     ],
   };

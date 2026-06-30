@@ -11,7 +11,7 @@ Self-hosted dashboard for homelab services: tiles with health checks, live API h
 - **Dashboard** — category columns, live search, health status, glass design with theme presets
 - **Multiple pages** — tabs with keyboard shortcuts `1`–`9`, categories per page
 - **Web / LAN** — external and local URL per service; toggle in the header (can be disabled)
-- **Hover widgets** — live data from 35+ services (Plex, Nextcloud, Proxmox, …)
+- **Hover widgets** — live data from 35+ services (Plex, Nextcloud, Proxmox, …); **Shift + click** to customize visible fields per service
 - **Layout with Shift** — logged-in users reorder categories and tiles via drag & drop
 - **Service rows** — up to three services side by side per row (admin and dashboard)
 - **Admin** — services, categories, pages, header/footer links, themes, backup
@@ -98,18 +98,18 @@ mkdir homelab-dashboard && cd homelab-dashboard
 Create `.env` as above, then:
 
 ```bash
-docker pull ghcr.io/maxdeavy/dashboard:1.0.1
+docker pull ghcr.io/maxdeavy/dashboard:1.0.3
 docker run -d \
   --name homelab-dashboard \
   --restart unless-stopped \
   -p 3333:3333 \
   --env-file .env \
   -v "$(pwd)/data:/app/data" \
-  ghcr.io/maxdeavy/dashboard:1.0.1
+  ghcr.io/maxdeavy/dashboard:1.0.3
 ```
 
 Available versions: [GitHub Releases](https://github.com/MaxDeavy/dashboard/releases)  
-Image tag matches the release version (`v1.0.1` → `ghcr.io/maxdeavy/dashboard:1.0.1`). The `latest` tag always points to the most recent release.
+Image tag matches the release version (`v1.0.3` → `ghcr.io/maxdeavy/dashboard:1.0.3`). The `latest` tag always points to the most recent release.
 
 #### Build from source (development)
 
@@ -189,6 +189,10 @@ Multiple dashboard pages with their own categories. Switch in the dashboard via 
 
 The selection persists after reload (`localStorage`). The Web/LAN toggle can be hidden in **Admin → Settings** if you do not need LAN URLs.
 
+### Customize widget fields
+
+With a widget panel open, hold **Shift** and click a field label to hide or show it. Hidden fields stay saved per service in your browser. In Shift mode, hidden fields appear struck through so you can restore them.
+
 ### Edit layout (dashboard)
 
 1. Hold **Shift**
@@ -230,7 +234,7 @@ In Admin: **Services** → edit service → **Links & widget**
 | **n8n / Grafana** | API key | Workflows / dashboards |
 | **Home Assistant** | Access token | Entities, automations, or entity state |
 | **QNAP** | User + password | CPU, RAM, volume, temperature |
-| **FileBrowser** | User + password | Storage usage |
+| **FileBrowser** | User + password | Storage usage, users, version |
 | **Guacamole** | User + password | Connections |
 | **FRITZ!Box** | — | Connection, speeds, external IP, traffic (TR-064) |
 | **Iframe / Embed** | — | External page in hover panel |
@@ -349,6 +353,14 @@ Bundled icons live in `assets/` and are copied to `public/assets/` on build (`np
 - Mounting the Docker socket directly is convenient but risky — use a socket proxy.
 
 Details: [SECURITY.md](SECURITY.md)
+
+---
+
+## Feedback & issues
+
+I only run about half of the supported widgets in my own homelab. If something does not work for your setup — wrong API fields, missing data, or a bug — please [open an issue](https://github.com/MaxDeavy/dashboard/issues) with your service, widget type, and what you expected.
+
+Feature requests and API field suggestions are welcome the same way.
 
 ---
 

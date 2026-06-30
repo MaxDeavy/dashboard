@@ -129,6 +129,26 @@ export async function fetchHomeAssistantWidget(
           label: "Version",
           value: String(haConfig.version ?? "—"),
         },
+        {
+          label: "Lights",
+          value: String(countByDomain(states, "light")),
+        },
+        {
+          label: "Switches",
+          value: String(countByDomain(states, "switch")),
+        },
+        {
+          label: "Scripts",
+          value: String(countByDomain(states, "script")),
+        },
+        {
+          label: "Persons",
+          value: String(countByDomain(states, "person")),
+        },
+        {
+          label: "Timezone",
+          value: String(haConfig.time_zone ?? "—"),
+        },
         ...(unavailable > 0
           ? [
               {

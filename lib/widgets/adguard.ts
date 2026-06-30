@@ -66,6 +66,8 @@ export async function fetchAdguardWidget(
     const queries = stats.num_dns_queries ?? 0;
     const blocked = stats.num_blocked_filtering ?? 0;
     const blockRate = queries > 0 ? (blocked / queries) * 100 : 0;
+    const safeBrowsing = stats.num_replaced_safebrowsing ?? 0;
+    const safeSearch = stats.num_replaced_safesearch ?? 0;
 
     return {
       title: "AdGuard",
@@ -89,6 +91,20 @@ export async function fetchAdguardWidget(
           value: stats.avg_processing_time
             ? `${stats.avg_processing_time.toFixed(2)} ms`
             : "—",
+        },
+        {
+          label: "Blocked Today",
+          value: String(safeBrowsing + safeSearch),
+          highlight: safeBrowsing + safeSearch > 0,
+        },
+        {
+          label: "Total",
+          value: String(blocked + safeBrowsing + safeSearch),
+        },
+        {
+          label: "Status",
+          value: "Connected",
+          highlight: true,
         },
       ],
     };

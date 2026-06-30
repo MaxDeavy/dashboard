@@ -595,7 +595,20 @@
     "workflows": "Workflows",
     "directPlay": "Direct Play",
     "lastChanged": "Zuletzt geändert",
-    "timezone": "Zeitzone"
+    "timezone": "Zeitzone",
+    "lights": "Lichter",
+    "switches": "Schalter",
+    "scripts": "Skripte",
+    "persons": "Personen",
+    "photoStorage": "Foto-Speicher",
+    "videoStorage": "Video-Speicher",
+    "musicTracks": "Musiktitel",
+    "remote": "Remote",
+    "maxDownload": "Max. Download",
+    "maxUpload": "Max. Upload",
+    "stacks": "Stacks",
+    "groups": "Gruppen",
+    "history": "Verlauf"
   },
   "widgetErrors": {
     "apiKeyRequired": "API-Key erforderlich",

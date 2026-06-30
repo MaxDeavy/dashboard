@@ -89,6 +89,98 @@ async function fetchFilebrowserUsage(
   throw lastError ?? new Error("API: usage unavailable");
 }
 
+function extractVersionFromSettings(data: Record<string, unknown>): string {
+  const candidates = [
+    data.version,
+    data.Version,
+    (data.server as Record<string, unknown> | undefined)?.version,
+    (data.server as Record<string, unknown> | undefined)?.Version,
+  ];
+
+  for (const value of candidates) {
+    if (typeof value === "string") {
+      const trimmed = value.trim();
+      if (trimmed && trimmed !== "(untracked)") {
+        return trimmed;
+      }
+    }
+  }
+
+  return "";
+}
+
+function extractVersionFromHtml(html: string): string {
+  const match =
+    html.match(/"Version"\s*:\s*"([^"]+)"/) ??
+    html.match(/"version"\s*:\s*"([^"]+)"/);
+
+  const version = match?.[1]?.trim();
+  if (version && version !== "(untracked)") {
+    return version;
+  }
+
+  return "";
+}
+
+async function fetchFilebrowserVersion(
+  base: string,
+  token: string,
+  extraConfig?: Record<string, string>,
+): Promise<string> {
+  const authHeaders = { "X-Auth": token };
+
+  for (const endpoint of ["/api/settings", "/api/settings?property=server"]) {
+    const response = await fetchWithTimeout(
+      `${base}${endpoint}`,
+      { headers: authHeaders },
+      extraConfig,
+    ).catch(() => null);
+
+    if (!response?.ok) {
+      continue;
+    }
+
+    const version = extractVersionFromSettings(
+      (await response.json()) as Record<string, unknown>,
+    );
+    if (version) {
+      return version;
+    }
+  }
+
+  const indexResponse = await fetchWithTimeout(
+    base,
+    { headers: { Accept: "text/html" } },
+    extraConfig,
+  ).catch(() => null);
+
+  if (indexResponse?.ok) {
+    const version = extractVersionFromHtml(await indexResponse.text());
+    if (version) {
+      return version;
+    }
+  }
+
+  return "";
+}
+
+async function fetchOptionalCount(
+  base: string,
+  token: string,
+  endpoint: string,
+  extraConfig?: Record<string, string>,
+): Promise<number> {
+  const response = await fetchWithTimeout(
+    `${base}${endpoint}`,
+    { headers: { "X-Auth": token } },
+    extraConfig,
+  );
+  if (!response.ok) return 0;
+  const data = (await response.json()) as unknown[] | { items?: unknown[] };
+  if (Array.isArray(data)) return data.length;
+  return data.items?.length ?? 0;
+}
+
 export async function fetchFilebrowserWidget(
   config: WidgetConfigInput,
 ): Promise<WidgetResult> {
@@ -113,11 +205,16 @@ export async function fetchFilebrowserWidget(
       config.extraConfig,
     );
 
-    const usage = await fetchFilebrowserUsage(
-      base,
-      token,
-      config.extraConfig,
-    );
+    const [usage, users, shares, version] = await Promise.all([
+      fetchFilebrowserUsage(
+        base,
+        token,
+        config.extraConfig,
+      ),
+      fetchOptionalCount(base, token, "/api/users", config.extraConfig).catch(() => 0),
+      fetchOptionalCount(base, token, "/api/share", config.extraConfig).catch(() => 0),
+      fetchFilebrowserVersion(base, token, config.extraConfig).catch(() => ""),
+    ]);
     const total = usage.total ?? 0;
     const used = usage.used ?? 0;
     const free = Math.max(total - used, 0);
@@ -137,6 +234,18 @@ export async function fetchFilebrowserWidget(
         {
           label: "Usage",
           value: `${usedPercent.toFixed(1)}%`,
+        },
+        {
+          label: "Users",
+          value: String(users),
+        },
+        {
+          label: "Files",
+          value: String(shares),
+        },
+        {
+          label: "Version",
+          value: version || "—",
         },
       ],
     };

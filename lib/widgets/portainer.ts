@@ -53,6 +53,19 @@ export async function fetchPortainerWidget(
       { headers },
       config.extraConfig,
     );
+    const [stacksRes, volumesRes, imagesRes] = await Promise.all([
+      fetchWithTimeout(`${base}/api/stacks`, { headers }, config.extraConfig).catch(() => null),
+      fetchWithTimeout(
+        `${base}/api/endpoints/${endpointId}/docker/volumes`,
+        { headers },
+        config.extraConfig,
+      ).catch(() => null),
+      fetchWithTimeout(
+        `${base}/api/endpoints/${endpointId}/docker/images/json`,
+        { headers },
+        config.extraConfig,
+      ).catch(() => null),
+    ]);
 
     if (!containersRes.ok) {
       throw new Error(`Container: ${containersRes.status}`);
@@ -61,6 +74,14 @@ export async function fetchPortainerWidget(
     const containers = (await containersRes.json()) as DockerContainer[];
     const running = containers.filter((c) => c.State === "running").length;
     const stopped = containers.length - running;
+    const unhealthy = containers.filter(
+      (c) => (c as { Status?: string }).Status?.includes("unhealthy"),
+    ).length;
+    const stacks = stacksRes?.ok ? ((await stacksRes.json()) as unknown[]).length : 0;
+    const volumes = volumesRes?.ok
+      ? (((await volumesRes.json()) as { Volumes?: unknown[] }).Volumes?.length ?? 0)
+      : 0;
+    const images = imagesRes?.ok ? ((await imagesRes.json()) as unknown[]).length : 0;
 
     return {
       title: "Portainer",
@@ -83,6 +104,23 @@ export async function fetchPortainerWidget(
           label: "Stopped",
           value: String(stopped),
           highlight: stopped > 0,
+        },
+        {
+          label: "Stacks",
+          value: String(stacks),
+        },
+        {
+          label: "Volume",
+          value: String(volumes),
+        },
+        {
+          label: "Images",
+          value: String(images),
+        },
+        {
+          label: "Alerts",
+          value: String(unhealthy),
+          highlight: unhealthy > 0,
         },
       ],
     };

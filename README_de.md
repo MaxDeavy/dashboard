@@ -11,7 +11,7 @@ Selbst gehostetes Dashboard für Homelab-Dienste: Kacheln mit Health-Checks, Liv
 - **Dashboard** — Kategorie-Spalten, Live-Suche, Health-Status, Glass-Design mit Theme-Presets
 - **Mehrere Seiten** — Tabs mit Tastaturkürzeln `1`–`9`, Kategorien pro Seite
 - **Web / LAN** — pro Dienst externe und lokale URL; Umschaltung im Header (auch deaktivierbar)
-- **Hover-Widgets** — Live-Daten von 35+ Diensten (Plex, Nextcloud, Proxmox, …)
+- **Hover-Widgets** — Live-Daten von 35+ Diensten (Plex, Nextcloud, Proxmox, …); **Shift + Klick** zum Anpassen sichtbarer Felder pro Dienst
 - **Layout per Shift** — angemeldete Nutzer ordnen Kategorien und Kacheln per Drag & Drop
 - **Dienst-Zeilen** — bis zu drei Dienste nebeneinander pro Zeile (Admin und Dashboard)
 - **Admin** — Dienste, Kategorien, Seiten, Header/Footer-Links, Themes, Backup
@@ -98,18 +98,18 @@ mkdir homelab-dashboard && cd homelab-dashboard
 `.env` wie oben anlegen, dann:
 
 ```bash
-docker pull ghcr.io/maxdeavy/dashboard:1.0.1
+docker pull ghcr.io/maxdeavy/dashboard:1.0.3
 docker run -d \
   --name homelab-dashboard \
   --restart unless-stopped \
   -p 3333:3333 \
   --env-file .env \
   -v "$(pwd)/data:/app/data" \
-  ghcr.io/maxdeavy/dashboard:1.0.1
+  ghcr.io/maxdeavy/dashboard:1.0.3
 ```
 
 Verfügbare Versionen: [GitHub Releases](https://github.com/MaxDeavy/dashboard/releases)  
-Image-Tag entspricht der Versionsnummer (`v1.0.1` → `ghcr.io/maxdeavy/dashboard:1.0.1`). Der Tag `latest` zeigt immer auf das neueste Release.
+Image-Tag entspricht der Versionsnummer (`v1.0.3` → `ghcr.io/maxdeavy/dashboard:1.0.3`). Der Tag `latest` zeigt immer auf das neueste Release.
 
 #### Aus Quellcode bauen (Entwicklung)
 
@@ -189,6 +189,10 @@ Mehrere Dashboard-Seiten mit eigenen Kategorien. Im Dashboard wechseln per Tab-L
 
 Die Auswahl bleibt nach Reload erhalten (`localStorage`). Den Web/LAN-Umschalter kannst du unter **Admin → Einstellungen** ausblenden, wenn du keine LAN-URLs brauchst.
 
+### Widget-Felder anpassen
+
+Mit geöffnetem Widget-Panel **Shift** gedrückt halten und auf ein Feldlabel klicken, um es ein- oder auszublenden. Ausgeblendete Felder bleiben pro Dienst im Browser gespeichert. Im Shift-Modus erscheinen ausgeblendete Felder durchgestrichen, damit du sie wieder aktivieren kannst.
+
 ### Layout bearbeiten (Dashboard)
 
 1. **Shift** gedrückt halten
@@ -230,7 +234,7 @@ Im Admin: **Dienste** → Dienst bearbeiten → **Links & Widget**
 | **n8n / Grafana** | API-Key | Workflows / Dashboards |
 | **Home Assistant** | Access-Token | Entitäten, Automationen oder Entity-State |
 | **QNAP** | Benutzer + Passwort | CPU, RAM, Volume, Temperatur |
-| **FileBrowser** | Benutzer + Passwort | Speicherauslastung |
+| **FileBrowser** | Benutzer + Passwort | Speicherauslastung, Benutzer, Version |
 | **Guacamole** | Benutzer + Passwort | Verbindungen |
 | **FRITZ!Box** | — | Verbindung, Speeds, externe IP, Traffic (TR-064) |
 | **Iframe / Embed** | — | Externe Seite im Hover-Panel |
@@ -349,6 +353,14 @@ Mitgelieferte Icons liegen in `assets/` und werden beim Build nach `public/asset
 - Docker-Socket direkt zu mounten ist bequem, aber riskant — nutze einen Socket-Proxy.
 
 Details: [SECURITY.md](SECURITY.md)
+
+---
+
+## Feedback & Issues
+
+Ich nutze selbst nur etwa die Hälfte der unterstützten Widgets im Homelab. Wenn etwas bei deinem Setup nicht passt — falsche API-Felder, fehlende Daten oder ein Bug — bitte ein [Issue](https://github.com/MaxDeavy/dashboard/issues) mit Dienst, Widget-Typ und erwartetem Verhalten öffnen.
+
+Feature-Wünsche und Vorschläge für weitere API-Felder sind ebenfalls willkommen.
 
 ---
 

@@ -38,6 +38,9 @@ export async function fetchOverseerrWidget(
     const pending = counts.pending ?? 0;
     const processing = counts.processing ?? 0;
     const approved = counts.approved ?? 0;
+    const available = counts.available ?? 0;
+    const declined = counts.declined ?? 0;
+    const completed = counts.completed ?? 0;
 
     return {
       title: "Overseerr",
@@ -54,7 +57,21 @@ export async function fetchOverseerrWidget(
           highlight: processing > 0,
         },
         { label: "Approved", value: String(approved) },
-        { label: "Completed", value: String(counts.completed ?? 0) },
+        { label: "Completed", value: String(completed) },
+        {
+          label: "Active",
+          value: String(available),
+          highlight: available > 0,
+        },
+        {
+          label: "Unavailable",
+          value: String(declined),
+          highlight: declined > 0,
+        },
+        {
+          label: "Total",
+          value: String(pending + processing + approved + completed + available + declined),
+        },
       ],
     };
   } catch (error) {

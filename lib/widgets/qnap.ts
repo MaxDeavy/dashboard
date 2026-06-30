@@ -1,6 +1,7 @@
 import {
   fetchWithTimeout,
   formatBytes,
+  formatBytesPerSec,
   formatPercent,
   credentialString,
   normalizeApiUrl,
@@ -118,6 +119,35 @@ function parseVolumeUsage(
   return { total, free };
 }
 
+function parseQnapUptimeSeconds(xml: string): number {
+  const days = Number(extractXmlTagValue(xml, "uptime_day").trim()) || 0;
+  const hours = Number(extractXmlTagValue(xml, "uptime_hour").trim()) || 0;
+  const minutes = Number(extractXmlTagValue(xml, "uptime_min").trim()) || 0;
+  const seconds = Number(extractXmlTagValue(xml, "uptime_sec").trim()) || 0;
+  const fromParts = days * 86_400 + hours * 3_600 + minutes * 60 + seconds;
+  if (fromParts > 0) {
+    return fromParts;
+  }
+
+  const legacy = Number(extractXmlTagValue(xml, "up_time").trim());
+  return Number.isFinite(legacy) && legacy > 0 ? legacy : 0;
+}
+
+function formatUptime(seconds: number): string {
+  const total = Math.max(0, Math.floor(seconds));
+  const days = Math.floor(total / 86_400);
+  const hours = Math.floor((total % 86_400) / 3_600);
+  const minutes = Math.floor((total % 3_600) / 60);
+
+  if (days > 0) {
+    return `${days}d ${hours}h`;
+  }
+  if (hours > 0) {
+    return `${hours}h ${minutes}m`;
+  }
+  return `${minutes}m`;
+}
+
 export async function fetchQnapWidget(
   config: WidgetConfigInput,
 ): Promise<WidgetResult> {
@@ -168,6 +198,12 @@ export async function fetchQnapWidget(
     const memoryUsage =
       totalMemory > 0 ? ((totalMemory - freeMemory) / totalMemory) * 100 : 0;
     const systemTemp = extractXmlTagValue(systemXml, "sys_tempc");
+    const uptimeSeconds = parseQnapUptimeSeconds(systemXml);
+    const firmwareVersion =
+      extractXmlTagValue(systemXml, "version") ||
+      extractXmlTagValue(systemXml, "firmware_version");
+    const rxBytes = Number(extractXmlTagValue(systemXml, "rx_bytes")) || 0;
+    const txBytes = Number(extractXmlTagValue(systemXml, "tx_bytes")) || 0;
 
     const { total: volumeTotal, free: volumeFree } = parseVolumeUsage(
       volumeXml,
@@ -199,6 +235,22 @@ export async function fetchQnapWidget(
         {
           label: "Temperature",
           value: systemTemp ? `${systemTemp} °C` : "—",
+        },
+        {
+          label: "Uptime",
+          value: uptimeSeconds > 0 ? formatUptime(uptimeSeconds) : "—",
+        },
+        {
+          label: "Version",
+          value: firmwareVersion || "—",
+        },
+        {
+          label: "Download",
+          value: rxBytes > 0 ? formatBytesPerSec(rxBytes) : "—",
+        },
+        {
+          label: "Upload",
+          value: txBytes > 0 ? formatBytesPerSec(txBytes) : "—",
         },
       ],
     };

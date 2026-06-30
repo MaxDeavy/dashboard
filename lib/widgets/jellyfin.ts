@@ -53,10 +53,11 @@ export async function fetchJellyfinWidget(
 
   try {
     const headers = { "X-Emby-Token": apiKey };
-    const [sessionsRes, infoRes, countsRes] = await Promise.all([
+    const [sessionsRes, infoRes, countsRes, usersRes] = await Promise.all([
       fetchWithTimeout(`${base}/Sessions`, { headers }, config.extraConfig),
       fetchWithTimeout(`${base}/System/Info/Public`, {}, config.extraConfig),
       fetchWithTimeout(`${base}/Items/Counts`, { headers }, config.extraConfig),
+      fetchWithTimeout(`${base}/Users`, { headers }, config.extraConfig).catch(() => null),
     ]);
 
     const sessions: JellyfinSession[] = sessionsRes.ok
@@ -68,8 +69,14 @@ export async function fetchJellyfinWidget(
     const transcodes = sessions.filter(
       (session) => session.TranscodingInfo != null,
     ).length;
+    const pausedSessions = sessions.filter((session) => session.PlayState?.IsPaused).length;
+    const remoteSessions = sessions.filter(
+      (session) =>
+        (session as { RemoteEndPoint?: string }).RemoteEndPoint != null,
+    ).length;
     const info = infoRes.ok ? await infoRes.json() : {};
     const counts: JellyfinCounts = countsRes.ok ? await countsRes.json() : {};
+    const users = usersRes?.ok ? ((await usersRes.json()) as unknown[]).length : 0;
     const viewers = formatActiveViewers(sessions);
 
     const mediaParts: string[] = [];
@@ -92,11 +99,15 @@ export async function fetchJellyfinWidget(
           value: String(activeStreams),
           highlight: activeStreams > 0,
         },
-        {
-          label: "Watching Now",
-          value: viewers,
-          highlight: activeStreams > 0,
-        },
+        ...(activeStreams > 0
+          ? [
+              {
+                label: "Watching Now",
+                value: viewers,
+                highlight: true,
+              },
+            ]
+          : []),
         {
           label: "Transcodes",
           value: String(transcodes),
@@ -113,6 +124,24 @@ export async function fetchJellyfinWidget(
         {
           label: "Version",
           value: String(info.Version ?? "—"),
+        },
+        {
+          label: "Music Tracks",
+          value: String(counts.SongCount ?? 0),
+        },
+        {
+          label: "Paused",
+          value: String(pausedSessions),
+          highlight: pausedSessions > 0,
+        },
+        {
+          label: "Users",
+          value: String(users),
+        },
+        {
+          label: "Remote",
+          value: String(remoteSessions),
+          highlight: remoteSessions > 0,
         },
       ],
     };
