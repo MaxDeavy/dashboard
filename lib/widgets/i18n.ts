@@ -59,6 +59,7 @@ const LABEL_TO_KEY: Record<string, string> = {
   CPU: "cpu",
   "CPU Load (1 min)": "cpuLoad1min",
   Dashboards: "dashboards",
+  "DB Version": "dbVersion",
   "Data Source": "dataSource",
   "Data In": "dataIn",
   "Data Out": "dataOut",

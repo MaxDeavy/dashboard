@@ -20,7 +20,7 @@ Dienste als Kacheln in Kategorie-Spalten mit Glass-UI. Jede Kachel kann einen **
 
 **Shift** gedrückt halten und Feldlabels anklicken, um einzelne Widget-Zeilen ein- oder auszublenden — pro Dienst, in der Datenbank gespeichert (nur angemeldete Admins). *Gerade läuft* / *Watching Now* erscheinen nur bei aktiver Wiedergabe.
 
-Unterstützt u. a. Jellyfin, Plex, Nextcloud, Immich, *arr-Stack, Docker/Portainer, NPM, Proxmox, QNAP, Navidrome, Kavita, n8n, Grafana — siehe [Widget-Tabelle](#widget-konfiguration) weiter unten.
+Unterstützt u. a. Jellyfin, Plex, Nextcloud, Immich, *arr-Stack, Docker/Portainer, NPM, Proxmox, QNAP, Navidrome, Kavita, n8n, Grafana, Uptime Kuma, Vaultwarden, Gitea, Syncthing, Authentik, FreshRSS, BookStack, Frigate, Autobrr, Romm, Trilium — siehe [Widget-Tabelle](#widget-konfiguration) weiter unten.
 
 ### Layout & Seiten
 
@@ -112,18 +112,18 @@ mkdir homelab-dashboard && cd homelab-dashboard
 `.env` wie oben anlegen, dann:
 
 ```bash
-docker pull ghcr.io/maxdeavy/dashboard:1.0.3
+docker pull ghcr.io/maxdeavy/dashboard:1.0.4
 docker run -d \
   --name homelab-dashboard \
   --restart unless-stopped \
   -p 3333:3333 \
   --env-file .env \
   -v "$(pwd)/data:/app/data" \
-  ghcr.io/maxdeavy/dashboard:1.0.3
+  ghcr.io/maxdeavy/dashboard:1.0.4
 ```
 
 Verfügbare Versionen: [GitHub Releases](https://github.com/MaxDeavy/dashboard/releases)  
-Image-Tag entspricht der Versionsnummer (`v1.0.3` → `ghcr.io/maxdeavy/dashboard:1.0.3`). Der Tag `latest` zeigt immer auf das neueste Release.
+Image-Tag entspricht der Versionsnummer (`v1.0.4` → `ghcr.io/maxdeavy/dashboard:1.0.4`). Der Tag `latest` zeigt immer auf das neueste Release.
 
 #### Aus Quellcode bauen (Entwicklung)
 

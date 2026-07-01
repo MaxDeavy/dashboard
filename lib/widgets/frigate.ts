@@ -17,8 +17,92 @@ interface FrigateStats {
   >;
   detection_fps?: number;
   detectors?: Record<string, { inference_speed?: number }>;
-  gpu_usages?: Record<string, number>;
+  gpu_usages?: Record<string, Record<string, unknown> | number>;
   service?: { version?: string };
+}
+
+function parsePercentValue(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value) && value >= 0) {
+    return value;
+  }
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed || trimmed === "-" || trimmed === "- %" || trimmed === "-%") {
+    return null;
+  }
+
+  const match = trimmed.match(/([\d.]+)/);
+  if (!match) {
+    return null;
+  }
+
+  const parsed = Number.parseFloat(match[1]);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : null;
+}
+
+function extractGpuUsage(
+  gpuUsages: FrigateStats["gpu_usages"],
+): string {
+  if (!gpuUsages) {
+    return "—";
+  }
+
+  for (const entry of Object.values(gpuUsages)) {
+    if (typeof entry === "number") {
+      return `${entry.toFixed(1)}%`;
+    }
+
+    if (!entry || typeof entry !== "object") {
+      continue;
+    }
+
+    for (const key of ["gpu", "gpu_usage", "utilization", "usage"]) {
+      const parsed = parsePercentValue(entry[key]);
+      if (parsed != null) {
+        return `${parsed.toFixed(1)}%`;
+      }
+    }
+  }
+
+  return "—";
+}
+
+function formatFrigateVersion(version: string | undefined): string {
+  if (!version?.trim()) {
+    return "—";
+  }
+
+  const trimmed = version.trim();
+  // Frigate returns "0.17.1-" when the git hash suffix is empty.
+  if (/^[\d.]+-$/.test(trimmed)) {
+    return trimmed.slice(0, -1);
+  }
+
+  return trimmed;
+}
+
+async function fetchFrigateVersion(
+  base: string,
+  authHeaders: Record<string, string>,
+  extraConfig?: Record<string, string>,
+): Promise<string> {
+  const response = await fetchWithTimeout(
+    `${base}/api/version`,
+    { headers: authHeaders },
+    extraConfig,
+  ).catch(() => null);
+
+  if (response?.ok) {
+    const version = (await response.text()).trim();
+    if (version) {
+      return formatFrigateVersion(version);
+    }
+  }
+
+  return "—";
 }
 
 async function loginFrigate(
@@ -78,7 +162,7 @@ export async function fetchFrigateWidget(
       authHeaders.Cookie = `frigate_token=${token}`;
     }
 
-    const [statsRes, configRes, summaryRes] = await Promise.all([
+    const [statsRes, configRes, summaryRes, version] = await Promise.all([
       fetchWithTimeout(`${base}/api/stats`, { headers: authHeaders }, config.extraConfig),
       fetchWithTimeout(`${base}/api/config`, { headers: authHeaders }, config.extraConfig).catch(
         () => null,
@@ -88,6 +172,7 @@ export async function fetchFrigateWidget(
         { headers: authHeaders },
         config.extraConfig,
       ).catch(() => null),
+      fetchFrigateVersion(base, authHeaders, config.extraConfig),
     ]);
 
     if (!statsRes.ok) {
@@ -130,10 +215,11 @@ export async function fetchFrigateWidget(
           0,
         )
       : 0;
-    const gpuUsage = Object.entries(stats.gpu_usages ?? {})
-      .filter(([key]) => !["pid", "mib"].includes(key.toLowerCase()))
-      .map(([, value]) => value)
-      .find((value) => typeof value === "number" && value >= 0);
+    const gpuUsage = extractGpuUsage(stats.gpu_usages);
+    const resolvedVersion =
+      version !== "—"
+        ? version
+        : formatFrigateVersion(stats.service?.version);
 
     return {
       title: "Frigate",
@@ -160,9 +246,9 @@ export async function fetchFrigateWidget(
         },
         {
           label: "GPU Usage",
-          value: typeof gpuUsage === "number" ? `${gpuUsage.toFixed(1)}%` : "—",
+          value: gpuUsage,
         },
-        { label: "Version", value: stats.service?.version ?? "—" },
+        { label: "Version", value: resolvedVersion },
       ],
     };
   } catch (error) {

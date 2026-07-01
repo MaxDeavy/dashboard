@@ -20,7 +20,7 @@ Hover a service tile for **real-time API data**: Plex, Proxmox, Pi-hole, qBittor
 
 Hold **Shift** and click field labels to show or hide individual widget rows — per service, stored in the database (logged-in admins only). *Now Playing* / *Watching Now* appear only during active playback.
 
-Includes Jellyfin, Plex, Nextcloud, Immich, *arr stack, Docker/Portainer, NPM, Proxmox, QNAP, Navidrome, Kavita, n8n, Grafana, and others — see the [widget table](#widget-configuration) below.
+Includes Jellyfin, Plex, Nextcloud, Immich, *arr stack, Docker/Portainer, NPM, Proxmox, QNAP, Navidrome, Kavita, n8n, Grafana, Uptime Kuma, Vaultwarden, Gitea, Syncthing, Authentik, FreshRSS, BookStack, Frigate, Autobrr, Romm, Trilium, and others — see the [widget table](#widget-configuration) below.
 
 ### Layout & pages
 
@@ -112,18 +112,18 @@ mkdir homelab-dashboard && cd homelab-dashboard
 Create `.env` as above, then:
 
 ```bash
-docker pull ghcr.io/maxdeavy/dashboard:1.0.3
+docker pull ghcr.io/maxdeavy/dashboard:1.0.4
 docker run -d \
   --name homelab-dashboard \
   --restart unless-stopped \
   -p 3333:3333 \
   --env-file .env \
   -v "$(pwd)/data:/app/data" \
-  ghcr.io/maxdeavy/dashboard:1.0.3
+  ghcr.io/maxdeavy/dashboard:1.0.4
 ```
 
 Available versions: [GitHub Releases](https://github.com/MaxDeavy/dashboard/releases)  
-Image tag matches the release version (`v1.0.3` → `ghcr.io/maxdeavy/dashboard:1.0.3`). The `latest` tag always points to the most recent release.
+Image tag matches the release version (`v1.0.4` → `ghcr.io/maxdeavy/dashboard:1.0.4`). The `latest` tag always points to the most recent release.
 
 #### Build from source (development)
 

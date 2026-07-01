@@ -2,17 +2,19 @@
 
 All notable changes to this project are documented in this file.
 
-## [Unreleased]
+## [1.0.4] - 2026-06-30
 
 ### Added
 
-- **Trilium Notes** hover widget via ETAPI (`/etapi/metrics`)
 - **10 new hover widgets:** Uptime Kuma, Vaultwarden, Gitea, Syncthing, Authentik, FreshRSS, BookStack, Frigate, Autobrr, Romm
+- **Trilium Notes** hover widget via ETAPI (`/etapi/metrics`)
 
 ### Fixed
 
-- Missing widget field translations (`documents`, `endpoint`, `shares`, Trilium labels)
+- Missing widget field translations (`documents`, `endpoint`, `shares`, `categories`, Trilium labels)
 - **FileBrowser** share count label corrected (`Shares` instead of `Files`)
+- **Trilium** ETAPI URL normalization, auth fallbacks, and metrics fallback for older instances
+- **Frigate** GPU usage parsing and version display (trailing dash removed)
 
 ## [1.0.3] - 2026-06-30
 
@@ -92,6 +94,7 @@ All notable changes to this project are documented in this file.
 - Page keyboard shortcuts are always enabled (setting removed from UI)
 - Login uses a Next.js Server Action (reliable cookies behind reverse proxies)
 
+[1.0.4]: https://github.com/MaxDeavy/dashboard/releases/tag/v1.0.4
 [1.0.3]: https://github.com/MaxDeavy/dashboard/releases/tag/v1.0.3
 [1.0.1]: https://github.com/MaxDeavy/dashboard/releases/tag/v1.0.1
 [1.0.0]: https://github.com/MaxDeavy/dashboard/releases/tag/v1.0.0
