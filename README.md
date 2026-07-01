@@ -14,7 +14,7 @@ Your services as tiles in category columns with a glass-style UI. Each tile can 
 
 **Theme presets** (Stealth, Ember, Neon, Cobalt) or custom colors, dark/light mode, background image and color, logo upload — adjustable tile, window, and page width.
 
-### Live API hover widgets (35+ services)
+### Live API hover widgets (46+ services)
 
 Hover a service tile for **real-time API data**: Plex, Proxmox, Pi-hole, qBittorrent, Home Assistant, FRITZ!Box, and more. Credentials are stored **AES-256-GCM encrypted** in SQLite.
 
@@ -245,10 +245,21 @@ In Admin: **Services** → edit service → **Links & widget**
 | **Kavita / Audiobookshelf** | Auth key / API token | Libraries, series, storage / media |
 | **Navidrome** | User + password | Artists, albums, now playing |
 | **Paperless-ngx** | API token | Documents, inbox |
+| **Trilium Notes** | ETAPI token | Notes, attachments, storage |
+| **Uptime Kuma** | API key / status page | Monitors up/down, response time |
+| **Vaultwarden** | Admin token | Users, organizations |
+| **Gitea** | Access token | Repos, issues, pull requests |
+| **Syncthing** | API key | Devices, folders, sync traffic |
+| **Authentik** | API token | Users, apps, providers |
+| **FreshRSS** | Email + API password | Unread, feeds, categories |
+| **BookStack** | API token | Shelves, books, pages |
+| **Frigate** | User + password | Cameras, detection, events |
+| **Autobrr** | API key | Releases, filters, indexers |
+| **Romm** | User + password | Platforms, ROMs, storage |
 | **n8n / Grafana** | API key | Workflows / dashboards |
 | **Home Assistant** | Access token | Entities, automations, or entity state |
 | **QNAP** | User + password | CPU, RAM, volume, temperature |
-| **FileBrowser** | User + password | Storage usage, users, version |
+| **FileBrowser** | User + password | Storage usage, shares, version |
 | **Guacamole** | User + password | Connections |
 | **FRITZ!Box** | — | Connection, speeds, external IP, traffic (TR-064) |
 | **Iframe / Embed** | — | External page in hover panel |

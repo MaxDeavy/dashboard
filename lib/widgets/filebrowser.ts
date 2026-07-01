@@ -240,7 +240,7 @@ export async function fetchFilebrowserWidget(
           value: String(users),
         },
         {
-          label: "Files",
+          label: "Shares",
           value: String(shares),
         },
         {

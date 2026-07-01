@@ -100,6 +100,7 @@ function resolveWidgetExtraEndpoint(
 ): string {
   if (widgetType === "technitium") return extra.range ?? "";
   if (widgetType === "guacamole") return extra.dataSource ?? "";
+  if (widgetType === "uptimekuma") return extra.statusPageSlug ?? "";
   return extra.endpointId ?? "";
 }
 
@@ -125,6 +126,8 @@ function buildWidgetExtraConfig(
       extraConfig.range = form.extraEndpoint;
     } else if (form.widgetType === "guacamole") {
       extraConfig.dataSource = form.extraEndpoint;
+    } else if (form.widgetType === "uptimekuma") {
+      extraConfig.statusPageSlug = form.extraEndpoint;
     } else {
       extraConfig.endpointId = form.extraEndpoint;
     }

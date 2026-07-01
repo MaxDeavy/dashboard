@@ -14,7 +14,7 @@ Dienste als Kacheln in Kategorie-Spalten mit Glass-UI. Jede Kachel kann einen **
 
 **Theme-Presets** (Stealth, Ember, Neon, Cobalt) oder eigene Farben, Dark/Light Mode, Hintergrundbild und -farbe, Logo-Upload — Kachel-, Fenster- und Seitenbreite anpassbar.
 
-### Live-API-Hover-Widgets (35+ Dienste)
+### Live-API-Hover-Widgets (46+ Dienste)
 
 Über eine Kachel hovern für **Echtzeitdaten** aus der API: Plex, Proxmox, Pi-hole, qBittorrent, Home Assistant, FRITZ!Box und mehr. Zugangsdaten werden **AES-256-GCM-verschlüsselt** in SQLite gespeichert.
 
@@ -245,10 +245,21 @@ Im Admin: **Dienste** → Dienst bearbeiten → **Links & Widget**
 | **Kavita / Audiobookshelf** | Auth-Key / API-Token | Bibliotheken, Serien, Speicher / Medien |
 | **Navidrome** | Benutzer + Passwort | Künstler, Alben, gerade läuft |
 | **Paperless-ngx** | API-Token | Dokumente, Posteingang |
+| **Trilium Notes** | ETAPI-Token | Notizen, Anhänge, Speicher |
+| **Uptime Kuma** | API-Key / Status-Page | Monitore online/offline, Antwortzeit |
+| **Vaultwarden** | Admin-Token | Benutzer, Organisationen |
+| **Gitea** | Access Token | Repos, Issues, Pull Requests |
+| **Syncthing** | API-Key | Geräte, Ordner, Sync-Traffic |
+| **Authentik** | API-Token | Benutzer, Apps, Provider |
+| **FreshRSS** | E-Mail + API-Passwort | Ungelesen, Feeds, Kategorien |
+| **BookStack** | API-Token | Regale, Bücher, Seiten |
+| **Frigate** | Benutzer + Passwort | Kameras, Detektion, Events |
+| **Autobrr** | API-Key | Releases, Filter, Indexer |
+| **Romm** | Benutzer + Passwort | Plattformen, ROMs, Speicher |
 | **n8n / Grafana** | API-Key | Workflows / Dashboards |
 | **Home Assistant** | Access-Token | Entitäten, Automationen oder Entity-State |
 | **QNAP** | Benutzer + Passwort | CPU, RAM, Volume, Temperatur |
-| **FileBrowser** | Benutzer + Passwort | Speicherauslastung, Benutzer, Version |
+| **FileBrowser** | Benutzer + Passwort | Speicherauslastung, Freigaben, Version |
 | **Guacamole** | Benutzer + Passwort | Verbindungen |
 | **FRITZ!Box** | — | Verbindung, Speeds, externe IP, Traffic (TR-064) |
 | **Iframe / Embed** | — | Externe Seite im Hover-Panel |

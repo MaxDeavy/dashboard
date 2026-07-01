@@ -28,6 +28,17 @@ export const WIDGET_TYPES = [
   { value: "audiobookshelf", label: "Audiobookshelf" },
   { value: "navidrome", label: "Navidrome" },
   { value: "paperless", label: "Paperless-ngx" },
+  { value: "trilium", label: "Trilium Notes" },
+  { value: "uptimekuma", label: "Uptime Kuma" },
+  { value: "vaultwarden", label: "Vaultwarden" },
+  { value: "gitea", label: "Gitea" },
+  { value: "syncthing", label: "Syncthing" },
+  { value: "authentik", label: "Authentik" },
+  { value: "freshrss", label: "FreshRSS" },
+  { value: "bookstack", label: "BookStack" },
+  { value: "frigate", label: "Frigate" },
+  { value: "autobrr", label: "Autobrr" },
+  { value: "romm", label: "Romm" },
   { value: "n8n", label: "n8n" },
   { value: "grafana", label: "Grafana" },
   { value: "qnap", label: "QNAP" },
@@ -61,9 +72,16 @@ export const API_KEY_WIDGETS = new Set([
   "paperless",
   "n8n",
   "grafana",
+  "uptimekuma",
+  "vaultwarden",
+  "gitea",
+  "syncthing",
+  "authentik",
+  "bookstack",
+  "autobrr",
 ]);
 
-export const TOKEN_WIDGETS = new Set(["homeassistant", "mealie"]);
+export const TOKEN_WIDGETS = new Set(["homeassistant", "mealie", "trilium"]);
 
 export const USERNAME_PASSWORD_WIDGETS = new Set([
   "qbittorrent",
@@ -74,4 +92,7 @@ export const USERNAME_PASSWORD_WIDGETS = new Set([
   "qnap",
   "npm",
   "navidrome",
+  "freshrss",
+  "frigate",
+  "romm",
 ]);

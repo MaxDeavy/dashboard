@@ -2,6 +2,18 @@
 
 All notable changes to this project are documented in this file.
 
+## [Unreleased]
+
+### Added
+
+- **Trilium Notes** hover widget via ETAPI (`/etapi/metrics`)
+- **10 new hover widgets:** Uptime Kuma, Vaultwarden, Gitea, Syncthing, Authentik, FreshRSS, BookStack, Frigate, Autobrr, Romm
+
+### Fixed
+
+- Missing widget field translations (`documents`, `endpoint`, `shares`, Trilium labels)
+- **FileBrowser** share count label corrected (`Shares` instead of `Files`)
+
 ## [1.0.3] - 2026-06-30
 
 ### Added

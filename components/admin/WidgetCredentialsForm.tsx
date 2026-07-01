@@ -78,7 +78,9 @@ export function WidgetCredentialsForm({
         <>
           <div className="space-y-2">
             <Label>
-              {form.widgetType === "npm" ? t("email") : t("username")}
+              {form.widgetType === "npm" || form.widgetType === "freshrss"
+                ? t("email")
+                : t("username")}
             </Label>
             <Input
               value={form.username}
@@ -105,7 +107,9 @@ export function WidgetCredentialsForm({
       {TOKEN_WIDGETS.has(form.widgetType) && (
         <div className="space-y-2">
           <Label>
-            {form.widgetType === "mealie" ? t("apiToken") : t("accessToken")}
+            {form.widgetType === "mealie" || form.widgetType === "trilium"
+              ? t("apiToken")
+              : t("accessToken")}
           </Label>
           <Input
             type="password"
@@ -302,6 +306,10 @@ export function WidgetCredentialsForm({
         <p className="text-xs text-muted-foreground">{t("paperlessHint")}</p>
       )}
 
+      {form.widgetType === "trilium" && (
+        <p className="text-xs text-muted-foreground">{t("triliumHint")}</p>
+      )}
+
       {form.widgetType === "tautulli" && (
         <p className="text-xs text-muted-foreground">{t("tautulliHint")}</p>
       )}
@@ -324,6 +332,56 @@ export function WidgetCredentialsForm({
         <p className="text-xs text-muted-foreground">
           {t("filebrowserHint", { api: "/api/usage" })}
         </p>
+      )}
+
+      {form.widgetType === "uptimekuma" && (
+        <>
+          <div className="space-y-2">
+            <Label>{t("uptimeKumaStatusPage")}</Label>
+            <Input
+              value={form.extraEndpoint}
+              onChange={(e) => onChange({ extraEndpoint: e.target.value })}
+              placeholder={t("uptimeKumaStatusPagePlaceholder")}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">{t("uptimeKumaHint")}</p>
+        </>
+      )}
+
+      {form.widgetType === "vaultwarden" && (
+        <p className="text-xs text-muted-foreground">{t("vaultwardenHint")}</p>
+      )}
+
+      {form.widgetType === "gitea" && (
+        <p className="text-xs text-muted-foreground">{t("giteaHint")}</p>
+      )}
+
+      {form.widgetType === "syncthing" && (
+        <p className="text-xs text-muted-foreground">{t("syncthingHint")}</p>
+      )}
+
+      {form.widgetType === "authentik" && (
+        <p className="text-xs text-muted-foreground">{t("authentikHint")}</p>
+      )}
+
+      {form.widgetType === "freshrss" && (
+        <p className="text-xs text-muted-foreground">{t("freshrssHint")}</p>
+      )}
+
+      {form.widgetType === "bookstack" && (
+        <p className="text-xs text-muted-foreground">{t("bookstackHint")}</p>
+      )}
+
+      {form.widgetType === "frigate" && (
+        <p className="text-xs text-muted-foreground">{t("frigateHint")}</p>
+      )}
+
+      {form.widgetType === "autobrr" && (
+        <p className="text-xs text-muted-foreground">{t("autobrrHint")}</p>
+      )}
+
+      {form.widgetType === "romm" && (
+        <p className="text-xs text-muted-foreground">{t("rommHint")}</p>
       )}
     </>
   );
@@ -351,9 +409,17 @@ const credentialLabelKeys = {
   technitium: true,
   audiobookshelf: true,
   paperless: true,
+  trilium: true,
   tautulli: true,
   n8n: true,
   grafana: true,
+  uptimekuma: true,
+  vaultwarden: true,
+  gitea: true,
+  syncthing: true,
+  authentik: true,
+  bookstack: true,
+  autobrr: true,
 } as const;
 
 function getApiUrlPlaceholder(widgetType: string): string {
@@ -403,12 +469,34 @@ function getApiUrlPlaceholder(widgetType: string): string {
       return "http://grafana.local:3000";
     case "paperless":
       return "http://paperless.local:8000";
+    case "trilium":
+      return "http://trilium.local:8080";
     case "tautulli":
       return "http://tautulli.local:8181";
     case "navidrome":
       return "http://navidrome.local:4533";
     case "bazarr":
       return "http://bazarr.local:6767";
+    case "uptimekuma":
+      return "http://uptime.local:3001";
+    case "vaultwarden":
+      return "https://vault.local";
+    case "gitea":
+      return "http://git.local:3000";
+    case "syncthing":
+      return "http://syncthing.local:8384";
+    case "authentik":
+      return "http://auth.local";
+    case "freshrss":
+      return "http://rss.local";
+    case "bookstack":
+      return "http://bookstack.local";
+    case "frigate":
+      return "http://frigate.local:8971";
+    case "autobrr":
+      return "http://autobrr.local:7474";
+    case "romm":
+      return "http://romm.local:8080";
     default:
       return "";
   }

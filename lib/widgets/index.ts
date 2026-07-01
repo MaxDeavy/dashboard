@@ -3,6 +3,9 @@ import { getServiceById } from "@/lib/db/queries";
 import type { WidgetConfig } from "@/lib/db/schema";
 import { withWidgetFetchContext } from "@/lib/server-fetch";
 import { fetchArrWidget } from "./arr";
+import { fetchAuthentikWidget } from "./authentik";
+import { fetchAutobrrWidget } from "./autobrr";
+import { fetchBookStackWidget } from "./bookstack";
 import type { WidgetConfigInput, WidgetCredentials, WidgetResult } from "./base";
 import { credentialString } from "./base";
 import { fetchAdguardWidget } from "./adguard";
@@ -11,6 +14,9 @@ import { fetchDelugeWidget } from "./deluge";
 import { fetchDockerWidget } from "./docker";
 import { fetchFilebrowserWidget } from "./filebrowser";
 import { fetchFritzboxWidget } from "./fritzbox";
+import { fetchFreshRssWidget } from "./freshrss";
+import { fetchFrigateWidget } from "./frigate";
+import { fetchGiteaWidget } from "./gitea";
 import { fetchGenericWidget } from "./generic";
 import { fetchGrafanaWidget } from "./grafana";
 import { fetchGuacamoleWidget } from "./guacamole";
@@ -33,9 +39,14 @@ import { fetchPortainerWidget } from "./portainer";
 import { fetchProxmoxWidget } from "./proxmox";
 import { fetchQbittorrentWidget } from "./qbittorrent";
 import { fetchQnapWidget } from "./qnap";
+import { fetchRommWidget } from "./romm";
 import { fetchSabnzbdWidget } from "./sabnzbd";
+import { fetchSyncthingWidget } from "./syncthing";
 import { fetchTautulliWidget } from "./tautulli";
 import { fetchTechnitiumWidget } from "./technitium";
+import { fetchTriliumWidget } from "./trilium";
+import { fetchUptimeKumaWidget } from "./uptimekuma";
+import { fetchVaultwardenWidget } from "./vaultwarden";
 import { fetchTransmissionWidget } from "./transmission";
 
 function normalizeCredentials(
@@ -172,6 +183,28 @@ export async function fetchWidgetData(
         return fetchNavidromeWidget(widgetInput);
       case "paperless":
         return fetchPaperlessWidget(widgetInput);
+      case "trilium":
+        return fetchTriliumWidget(widgetInput);
+      case "uptimekuma":
+        return fetchUptimeKumaWidget(widgetInput);
+      case "vaultwarden":
+        return fetchVaultwardenWidget(widgetInput);
+      case "gitea":
+        return fetchGiteaWidget(widgetInput);
+      case "syncthing":
+        return fetchSyncthingWidget(widgetInput);
+      case "authentik":
+        return fetchAuthentikWidget(widgetInput);
+      case "freshrss":
+        return fetchFreshRssWidget(widgetInput);
+      case "bookstack":
+        return fetchBookStackWidget(widgetInput);
+      case "frigate":
+        return fetchFrigateWidget(widgetInput);
+      case "autobrr":
+        return fetchAutobrrWidget(widgetInput);
+      case "romm":
+        return fetchRommWidget(widgetInput);
       case "n8n":
         return fetchN8nWidget(widgetInput);
       case "grafana":
